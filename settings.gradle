@@ -1,0 +1,2 @@
+rootProject.name='koubilgi'
+include ':app'

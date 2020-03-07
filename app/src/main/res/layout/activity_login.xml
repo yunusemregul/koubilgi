@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <ImageView
+        android:id="@+id/image_logo"
+        android:layout_width="230dp"
+        android:layout_height="134dp"
+        android:layout_marginTop="101dp"
+        android:contentDescription="KOU Bilgi Sistemi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo_login" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_disclaimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/segoeui"
+        android:textColor="@color/colorText"
+        android:textSize="14sp"
+        android:text="Kocaeli Üniversitesi'nden bağımsız olarak yapılmıştır."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/entry_studentid"
+        android:layout_width="300dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="85dp"
+        android:background="@drawable/background_edittext"
+        android:drawableStart="@drawable/icon_login_numara"
+        android:drawablePadding="8dp"
+        android:fontFamily="@font/segoeui"
+        android:hint="Numara"
+        android:inputType="numberSigned"
+        android:paddingStart="16dp"
+        android:textColor="@color/colorText"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_logo" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/entry_pass"
+        android:layout_width="300dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="10dp"
+        android:inputType="textPassword"
+        android:hint="Şifre"
+        android:background="@drawable/background_edittext"
+        android:paddingStart="16dp"
+        android:fontFamily="@font/segoeui"
+        android:textSize="14sp"
+        android:drawableStart="@drawable/icon_login_sifre"
+        android:textColor="@color/colorText"
+        android:drawablePadding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/entry_studentid" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_login"
+        android:layout_width="300dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="20dp"
+        android:text="GİRİŞ"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/seguisb"
+        android:textSize="12sp"
+        android:background="@drawable/background_edittext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/entry_pass" />
+</androidx.constraintlayout.widget.ConstraintLayout>
