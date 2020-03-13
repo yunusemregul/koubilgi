@@ -11,18 +11,16 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.IOException;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.HttpCookie;
-import java.net.URL;
-import java.util.List;
-import java.util.Scanner;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity
 {
@@ -38,7 +36,7 @@ public class LoginActivity extends AppCompatActivity
         final SharedPreferences.Editor editor = studentCredentials.edit();
 
         // Start the main menu activity if user has already logged in
-        if (studentCredentials.getString("studentId", null)!=null && studentCredentials.getString("password", null)!=null)
+        if (studentCredentials.getString("studentNumber", null) != null && studentCredentials.getString("password", null) != null)
         {
             Intent intent = new Intent(this, MainMenuActivity.class);
             finish();
@@ -50,6 +48,8 @@ public class LoginActivity extends AppCompatActivity
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        final RequestQueue queue = SingletonRequestQueue.getInstance(getApplicationContext()).getRequestQueue();
+
         // Get relative DP size
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
@@ -59,12 +59,12 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                // entry StudentID, entry Pass
-                TextInputEditText eStud = findViewById(R.id.entry_studentid);
-                TextInputEditText ePass = findViewById(R.id.entry_pass);
+                // entry StudentNumber, entry Pass
+                TextInputEditText eStud = findViewById(R.id.entry_studentnumber),
+                        ePass = findViewById(R.id.entry_pass);
 
-                GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground();
-                GradientDrawable gPassBackground = (GradientDrawable) ePass.getBackground();
+                final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(),
+                        gPassBackground = (GradientDrawable) ePass.getBackground();
 
                 // Set red stroke of 2dp when there's no text on entries
                 // Should find some better way to not repeat the code
@@ -81,59 +81,58 @@ public class LoginActivity extends AppCompatActivity
                 if (eStud.getText().length() > 0 && ePass.getText().length() > 0)
                 {
                     // Login to the site with student credentials
-                    try
-                    {
-                        CookieManager cm = new CookieManager();
-                        CookieHandler.setDefault(cm);
-
-                        URL url = new URL("https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm");
-
-                        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-                        con.setRequestMethod("POST");
-                        con.setDoOutput(true);
-                        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-                        String studId = eStud.getText().toString(), pass = ePass.getText().toString();
-                        String params = String.format("LoggingOn=1&OgrNo=%s&Sifre=%s", studId, pass);
-                        con.setFixedLengthStreamingMode(params.getBytes().length);
-                        con.getOutputStream().write(params.getBytes());
-                        con.connect();
-
-                        Scanner scnr = new Scanner(con.getInputStream()).useDelimiter("\\A");
-                        String body = scnr.hasNext() ? scnr.next() : "";
-
-                        boolean success = true;
-                        if (body.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
-                        {
-                            gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
-                            gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
-                            success = false;
-                        }
-
-                        // If login was successful, save cookies, save credentials
-                        if (success)
-                        {
-                            editor.putString("studentId",studId);
-                            editor.putString("password",pass);
-                            editor.apply();
-
-                            List<HttpCookie> cookies = cm.getCookieStore().getCookies();
-
-                            for (HttpCookie cookie : cookies)
+                    final String studId = eStud.getText().toString(), pass = ePass.getText().toString();
+                    String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
+                    StringRequest postReq = new StringRequest(Request.Method.POST, url,
+                            new Response.Listener<String>()
                             {
-                                System.out.println(cookie);
-                            }
+                                @Override
+                                public void onResponse(String response)
+                                {
+                                    boolean success = true;
+                                    if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
+                                    {
+                                        gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
+                                        gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
+                                        success = false;
+                                    }
 
-                            Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
-                            finish();
-                            startActivity(intent);
-                            overridePendingTransition(0, 0); // Avoid sliding animation
-                        }
-                    }
-                    catch (IOException e)
+                                    // If login was successful, save cookies, save credentials
+                                    if (success)
+                                    {
+                                        editor.putString("studentNumber", studId);
+                                        editor.putString("password", pass);
+                                        editor.apply();
+
+                                        Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
+                                        finish();
+                                        startActivity(intent);
+                                        overridePendingTransition(0, 0); // Avoid sliding animation
+                                    }
+                                }
+                            },
+                            new Response.ErrorListener()
+                            {
+                                @Override
+                                public void onErrorResponse(VolleyError error)
+                                {
+                                    // TODO: Show error screen 'Can not log in.'
+                                }
+                            }
+                    )
                     {
-                        e.printStackTrace();
-                    }
+                        @Override
+                        protected Map<String, String> getParams()
+                        {
+                            Map<String, String> params = new HashMap<String, String>();
+                            params.put("LoggingOn", "1");
+                            params.put("OgrNo", studId);
+                            params.put("Sifre", pass);
+
+                            return params;
+                        }
+                    };
+                    queue.add(postReq);
                 }
             }
         });
