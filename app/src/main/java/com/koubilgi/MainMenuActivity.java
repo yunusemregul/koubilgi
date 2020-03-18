@@ -2,22 +2,34 @@ package com.koubilgi;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
 import org.jsoup.Jsoup;
+import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+/*
+    TODO:
+        Make a separated singleton-pattern Student class.
+ */
 
 public class MainMenuActivity extends AppCompatActivity
 {
@@ -25,18 +37,30 @@ public class MainMenuActivity extends AppCompatActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_mainmenu);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        final TextView tStudentName = findViewById(R.id.studentName),
+                tStudentNumber = findViewById(R.id.studentNumber);
 
-        SharedPreferences studentCredentials = getSharedPreferences("credentials", MODE_PRIVATE);
+        final RequestQueue queue = SingletonRequestQueue.getInstance(this).getRequestQueue();
+        final SharedPreferences studentCredentials = getSharedPreferences("credentials", MODE_PRIVATE);
+        final SharedPreferences data = getSharedPreferences("data", MODE_PRIVATE);
+        final SharedPreferences.Editor dataEditor = data.edit();
 
         final String studId = studentCredentials.getString("studentNumber", null),
                 pass = studentCredentials.getString("password", null);
 
         if (studId == null || pass == null)
             return;
+
+        if (data.contains("studentName"))
+            tStudentName.setText(data.getString("studentName", "Bilinmeyen Öğrenci"));
+        if (data.contains("studentNumber"))
+            tStudentNumber.setText(data.getString("studentNumber","123456789"));
+
+        final CookieManager manager = new CookieManager();
+        CookieHandler.setDefault(manager);
 
         String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
         StringRequest postReq = new StringRequest(Request.Method.POST, url,
@@ -54,17 +78,25 @@ public class MainMenuActivity extends AppCompatActivity
                         if (info != null)
                         {
                             String[] infoTxt = info.text().split(" ", 2);
-                            TextView tStudentName = findViewById(R.id.studentName),
-                                    tStudentNumber = findViewById(R.id.studentNumber);
 
                             tStudentName.setText(infoTxt[1]);
                             tStudentNumber.setText(infoTxt[0]);
+
+                            dataEditor.putString("studentName",infoTxt[1]);
+                            dataEditor.putString("studentNumber",infoTxt[0]);
+
+                            CookieStore store = manager.getCookieStore();
+                            List<HttpCookie> cookies = store.getCookies();
+
+                            String cookieString = StringUtil.join(cookies, "; ");
+                            dataEditor.putString("cookieString", cookieString);
+                            dataEditor.apply();
 
                             /*
                                 TODO:
                                  Get department info from
                                     'https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/KisiselBilgiler/KisiselBilgiGoruntuleme.cfm'
-                                 with parameters
+                                 with POST parameters
                                      'Anketid:0
                                       Baglanti:Giris
                                       Veri:-1;-1'
@@ -78,11 +110,22 @@ public class MainMenuActivity extends AppCompatActivity
                     @Override
                     public void onErrorResponse(VolleyError error)
                     {
-                        // TODO: Show error screen and go offline mode maybe?
+                        // TODO: Show error screen 'Can not connect' and go offline mode maybe?
                     }
                 }
         )
         {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+
+                if (data.contains("cookieString"))
+                    headers.put("Cookie", data.getString("cookieString", ""));
+
+                return headers;
+            }
+
             @Override
             protected Map<String, String> getParams()
             {
@@ -94,6 +137,6 @@ public class MainMenuActivity extends AppCompatActivity
                 return params;
             }
         };
-        SingletonRequestQueue.getInstance(this).add(postReq);
+        queue.add(postReq);
     }
 }

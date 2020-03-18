@@ -13,14 +13,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity" android:label="KOU Bilgi" android:screenOrientation="portrait"
+        <activity
+            android:name=".LoginActivity"
+            android:label="KOU Bilgi"
+            android:screenOrientation="portrait"
+            android:theme="@style/LoadingScreenTheme"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainMenuActivity" android:label="Ana Menü" android:screenOrientation="portrait"
+        <activity
+            android:name=".MainMenuActivity"
+            android:label="Ana Menü"
+            android:screenOrientation="portrait"
+            android:theme="@style/LoadingScreenTheme"
             tools:ignore="LockedOrientationActivity">
 
         </activity>

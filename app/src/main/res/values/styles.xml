@@ -8,4 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="LoadingScreenTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/layerlist_loading</item>
+    </style>
 </resources>

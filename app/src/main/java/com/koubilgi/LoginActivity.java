@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -29,24 +28,24 @@ public class LoginActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         // Saving student credentials could be encrypted but not on open-source
         SharedPreferences studentCredentials = getSharedPreferences("credentials", MODE_PRIVATE);
         final SharedPreferences.Editor editor = studentCredentials.edit();
 
         // Start the main menu activity if user has already logged in
-        if (studentCredentials.getString("studentNumber", null) != null && studentCredentials.getString("password", null) != null)
+        if (studentCredentials.contains("studentNumber") && studentCredentials.contains("password"))
         {
-            Intent intent = new Intent(this, MainMenuActivity.class);
             finish();
+            Intent intent = new Intent(this, MainMenuActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
             overridePendingTransition(0, 0); // Avoid sliding animation
             return;
         }
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        setTheme(R.style.AppTheme);
+        setContentView(R.layout.activity_login);
 
         final RequestQueue queue = SingletonRequestQueue.getInstance(getApplicationContext()).getRequestQueue();
 
