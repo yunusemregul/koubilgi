@@ -6,12 +6,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.RequestQueue;
-
-/*
-    TODO:
-        Make a separated singleton-pattern Student class.
- */
+import com.koubilgi.api.LoginListener;
+import com.koubilgi.api.Student;
 
 public class MainMenuActivity extends AppCompatActivity
 {
@@ -23,37 +19,53 @@ public class MainMenuActivity extends AppCompatActivity
         setContentView(R.layout.activity_mainmenu);
 
         final TextView tStudentName = findViewById(R.id.studentName),
-                tStudentNumber = findViewById(R.id.studentNumber);
+                tStudentNumber = findViewById(R.id.studentNumber),
+                tStudentDepartment = findViewById(R.id.studentDepartment);
 
-        final RequestQueue queue = SingletonRequestQueue.getInstance(this).getRequestQueue();
         final SharedPreferences studentCredentials = getSharedPreferences("credentials", MODE_PRIVATE);
         final SharedPreferences data = getSharedPreferences("data", MODE_PRIVATE);
-        final SharedPreferences.Editor dataEditor = data.edit();
 
-        final String studId = studentCredentials.getString("studentNumber", null),
+        final String numb = studentCredentials.getString("number", null),
                 pass = studentCredentials.getString("password", null);
 
-        if (studId == null || pass == null)
+        if (numb == null || pass == null)
             return;
 
         if (data.contains("studentName"))
             tStudentName.setText(data.getString("studentName", "Bilinmeyen Öğrenci"));
         if (data.contains("studentNumber"))
-            tStudentNumber.setText(data.getString("studentNumber","123456789"));
+            tStudentNumber.setText(data.getString("studentNumber", "123456789"));
+        if (data.contains("studentDepartment"))
+            tStudentDepartment.setText(data.getString("studentDepartment", "Bilinmeyen Bölüm"));
 
-        Student.getInstance(this).logIn(studId, pass, new LoginListener()
+        Student.getInstance(this).logIn(numb, pass, new LoginListener()
         {
             @Override
-            public void onSuccess(String name, String number)
+            public void onSuccess(String... args)
             {
-                tStudentName.setText(name);
-                tStudentNumber.setText(number);
+                tStudentName.setText(args[0]); // name
+                tStudentNumber.setText(args[1]); // number
+
+                Student.getInstance(getApplicationContext()).personalInfo(new LoginListener()
+                {
+                    @Override
+                    public void onSuccess(String... args)
+                    {
+                        tStudentDepartment.setText(args[0]);
+                    }
+
+                    @Override
+                    public void onFailure(String reason)
+                    {
+
+                    }
+                });
             }
 
             @Override
             public void onFailure(String reason)
             {
-
+                // TODO: Show error screen 'Can not log in.' if reason equals site
             }
         });
     }

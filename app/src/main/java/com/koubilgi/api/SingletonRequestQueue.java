@@ -1,4 +1,4 @@
-package com.koubilgi;
+package com.koubilgi.api;
 
 import android.content.Context;
 

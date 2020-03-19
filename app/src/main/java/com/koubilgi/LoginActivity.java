@@ -10,9 +10,10 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.RequestQueue;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.koubilgi.api.LoginListener;
+import com.koubilgi.api.Student;
 
 public class LoginActivity extends AppCompatActivity
 {
@@ -24,10 +25,9 @@ public class LoginActivity extends AppCompatActivity
 
         // Saving student credentials could be encrypted but not on open-source
         SharedPreferences studentCredentials = getSharedPreferences("credentials", MODE_PRIVATE);
-        final SharedPreferences.Editor editor = studentCredentials.edit();
 
-        // Start the main menu activity if user has already logged in
-        if (studentCredentials.contains("studentNumber") && studentCredentials.contains("password"))
+        // Start the main menu activity if user has logged in before
+        if (studentCredentials.contains("number") && studentCredentials.contains("password"))
         {
             finish();
             Intent intent = new Intent(this, MainMenuActivity.class);
@@ -39,8 +39,6 @@ public class LoginActivity extends AppCompatActivity
 
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_login);
-
-        final RequestQueue queue = SingletonRequestQueue.getInstance(this).getRequestQueue();
 
         // Get relative DP size
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -73,19 +71,15 @@ public class LoginActivity extends AppCompatActivity
                 if (eStud.getText().length() > 0 && ePass.getText().length() > 0)
                 {
                     // Login to the site with student credentials
-                    final String studId = eStud.getText().toString(), pass = ePass.getText().toString();
+                    final String numb = eStud.getText().toString(), pass = ePass.getText().toString();
 
-                    Student.getInstance(getApplicationContext()).logIn(studId,
+                    Student.getInstance(getApplicationContext()).logIn(numb,
                             pass,
                             new LoginListener()
                             {
                                 @Override
-                                public void onSuccess(String name, String number)
+                                public void onSuccess(String... args)
                                 {
-                                    editor.putString("studentNumber", studId);
-                                    editor.putString("password", pass);
-                                    editor.apply();
-
                                     Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
                                     finish();
                                     startActivity(intent);
@@ -100,6 +94,7 @@ public class LoginActivity extends AppCompatActivity
                                         gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
                                         gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
                                     }
+                                    // TODO: Show error screen 'Can not log in.' if reason equals site
                                 }
                             });
                 }
