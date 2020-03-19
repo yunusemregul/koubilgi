@@ -10,16 +10,9 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity
 {
@@ -47,7 +40,7 @@ public class LoginActivity extends AppCompatActivity
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_login);
 
-        final RequestQueue queue = SingletonRequestQueue.getInstance(getApplicationContext()).getRequestQueue();
+        final RequestQueue queue = SingletonRequestQueue.getInstance(this).getRequestQueue();
 
         // Get relative DP size
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -81,57 +74,34 @@ public class LoginActivity extends AppCompatActivity
                 {
                     // Login to the site with student credentials
                     final String studId = eStud.getText().toString(), pass = ePass.getText().toString();
-                    String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
-                    StringRequest postReq = new StringRequest(Request.Method.POST, url,
-                            new Response.Listener<String>()
+
+                    Student.getInstance(getApplicationContext()).logIn(studId,
+                            pass,
+                            new LoginListener()
                             {
                                 @Override
-                                public void onResponse(String response)
+                                public void onSuccess(String name, String number)
                                 {
-                                    boolean success = true;
-                                    if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
+                                    editor.putString("studentNumber", studId);
+                                    editor.putString("password", pass);
+                                    editor.apply();
+
+                                    Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
+                                    finish();
+                                    startActivity(intent);
+                                    overridePendingTransition(0, 0); // Avoid sliding animation
+                                }
+
+                                @Override
+                                public void onFailure(String reason)
+                                {
+                                    if (reason.equals("credentials"))
                                     {
                                         gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
                                         gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
-                                        success = false;
-                                    }
-
-                                    // If login was successful, save cookies, save credentials
-                                    if (success)
-                                    {
-                                        editor.putString("studentNumber", studId);
-                                        editor.putString("password", pass);
-                                        editor.apply();
-
-                                        Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
-                                        finish();
-                                        startActivity(intent);
-                                        overridePendingTransition(0, 0); // Avoid sliding animation
                                     }
                                 }
-                            },
-                            new Response.ErrorListener()
-                            {
-                                @Override
-                                public void onErrorResponse(VolleyError error)
-                                {
-                                    // TODO: Show error screen 'Can not log in.'
-                                }
-                            }
-                    )
-                    {
-                        @Override
-                        protected Map<String, String> getParams()
-                        {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("LoggingOn", "1");
-                            params.put("OgrNo", studId);
-                            params.put("Sifre", pass);
-
-                            return params;
-                        }
-                    };
-                    queue.add(postReq);
+                            });
                 }
             }
         });
