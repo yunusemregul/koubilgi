@@ -7,17 +7,21 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
 import com.koubilgi.api.LoginListener;
 import com.koubilgi.api.Student;
 
+/*
+    TODO:
+        Show popup screen 'Logging in..'
+ */
+
 public class LoginActivity extends AppCompatActivity
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -30,7 +34,7 @@ public class LoginActivity extends AppCompatActivity
         if (studentCredentials.contains("number") && studentCredentials.contains("password"))
         {
             finish();
-            Intent intent = new Intent(this, MainMenuActivity.class);
+            Intent intent = new Intent(this, MainmenuActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
             overridePendingTransition(0, 0); // Avoid sliding animation
@@ -43,14 +47,14 @@ public class LoginActivity extends AppCompatActivity
         // Get relative DP size
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
-        final MaterialButton button = findViewById(R.id.button_login);
+        final Button button = findViewById(R.id.button_login);
         button.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 // entry StudentNumber, entry Pass
-                TextInputEditText eStud = findViewById(R.id.entry_studentnumber),
+                EditText eStud = findViewById(R.id.entry_studentnumber),
                         ePass = findViewById(R.id.entry_pass);
 
                 final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(),
@@ -80,7 +84,7 @@ public class LoginActivity extends AppCompatActivity
                                 @Override
                                 public void onSuccess(String... args)
                                 {
-                                    Intent intent = new Intent(getBaseContext(), MainMenuActivity.class);
+                                    Intent intent = new Intent(getBaseContext(), MainmenuActivity.class);
                                     finish();
                                     startActivity(intent);
                                     overridePendingTransition(0, 0); // Avoid sliding animation

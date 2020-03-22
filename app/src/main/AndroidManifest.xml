@@ -25,12 +25,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainMenuActivity"
+            android:name=".MainmenuActivity"
             android:label="Ana Menü"
             android:screenOrientation="portrait"
             android:theme="@style/LoadingScreenTheme"
-            tools:ignore="LockedOrientationActivity">
-
-        </activity>
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".SubmenuActivity"
+            android:label="Alt Menü"
+            android:screenOrientation="portrait"
+            android:theme="@style/LoadingScreenTheme"
+            tools:ignore="LockedOrientationActivity" />
     </application>
 </manifest>

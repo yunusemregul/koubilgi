@@ -8,17 +8,16 @@
 
     <ImageView
         android:id="@+id/image_logo"
-        android:layout_width="230dp"
-        android:layout_height="134dp"
-        android:layout_marginTop="101dp"
-        android:contentDescription="KOU Bilgi Sistemi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:contentDescription="@string/app_name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/logo_login" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/text_disclaimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,12 +25,12 @@
         android:fontFamily="@font/segoeui"
         android:textColor="@color/colorText"
         android:textSize="12sp"
-        android:text="Kocaeli Üniversitesi'nden bağımsız olarak yapılmıştır."
+        android:text="@string/disclaimer_login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <EditText
         android:id="@+id/entry_studentnumber"
         android:layout_width="300dp"
         android:layout_height="42dp"
@@ -40,7 +39,7 @@
         android:drawableStart="@drawable/icon_login_numara"
         android:drawablePadding="8dp"
         android:fontFamily="@font/segoeui"
-        android:hint="Numara"
+        android:hint="@string/Number"
         android:inputType="numberSigned"
         android:paddingStart="16dp"
         android:textColor="@color/colorText"
@@ -49,13 +48,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_logo" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <EditText
         android:id="@+id/entry_pass"
         android:layout_width="300dp"
         android:layout_height="42dp"
         android:layout_marginTop="10dp"
         android:inputType="textPassword"
-        android:hint="Şifre"
+        android:hint="@string/Password"
         android:background="@drawable/background_generalbox"
         android:paddingStart="16dp"
         android:fontFamily="@font/segoeui"
@@ -67,16 +66,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/entry_studentnumber" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/button_login"
         android:layout_width="300dp"
-        android:layout_height="52dp"
+        android:layout_height="42dp"
         android:layout_marginTop="20dp"
-        android:text="GİRİŞ"
+        android:background="@drawable/background_loginbutton"
         android:textColor="@color/colorWhite"
         android:fontFamily="@font/seguisb"
+        android:text="@string/LOGIN"
         android:textSize="12sp"
-        android:background="@drawable/background_generalbox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/entry_pass" />

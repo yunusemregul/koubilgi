@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">KOU Bilgi Sistemi</string>
+    <string name="disclaimer_login">Kocaeli Üniversitesi\'nden bağımsız olarak yapılmıştır.</string>
+    <string name="Number">Numara</string>
+    <string name="Password">Şifre</string>
+    <string name="LOGIN">GİRİŞ</string>
+    <string name="Student_Name">Öğrenci Adı</string>
+    <string name="UNKNOWN_PERSON">BİLİNMEYEN KİŞİ</string>
+    <string name="UNKNOWN_NUMBER">123456789</string>
+    <string name="UNKNOWN_DEPARTMENT">BİLİNMEYEN BÖLÜM</string>
+    <string name="Student_Number">Öğrenci Numarası</string>
+    <string name="Department">Bölüm</string>
+    <string name="GRADE_INFO">NOT BİLGİLERİ</string>
+    <string name="SYLLABUS">DERS PROGRAMI</string>
+    <string name="MEALS">YEMEKHANE</string>
+    <string name="EXAM_SCHEDULE">SINAV TAKVİMİ</string>
+    <string name="FEE_STATUS">HARÇ DURUMU</string>
+    <string name="ANNOUNCEMENTS">DUYURULAR</string>
 </resources>
