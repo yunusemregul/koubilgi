@@ -10,10 +10,11 @@
     <string name="UNKNOWN_DEPARTMENT">BİLİNMEYEN BÖLÜM</string>
     <string name="Student_Number">Öğrenci Numarası</string>
     <string name="Department">Bölüm</string>
-    <string name="GRADE_INFO">NOT BİLGİLERİ</string>
+    <string name="GRADES">NOT BİLGİLERİ</string>
     <string name="SYLLABUS">DERS PROGRAMI</string>
     <string name="MEALS">YEMEKHANE</string>
     <string name="EXAM_SCHEDULE">SINAV TAKVİMİ</string>
     <string name="FEE_STATUS">HARÇ DURUMU</string>
     <string name="ANNOUNCEMENTS">DUYURULAR</string>
+    <string name="GENERAL">GENEL DURUM</string>
 </resources>

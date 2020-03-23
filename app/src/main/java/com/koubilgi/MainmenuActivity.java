@@ -2,14 +2,14 @@ package com.koubilgi;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.GridLayout;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
 import com.koubilgi.api.LoginListener;
 import com.koubilgi.api.Student;
+import com.koubilgi.submenus.SubmenuButtonAdapter;
 
 /*
     TODO:
@@ -76,15 +76,7 @@ public class MainmenuActivity extends AppCompatActivity
             }
         });
 
-        GridLayout submenus = findViewById(R.id.submenus);
-
-        for (int i = 0; i < submenus.getChildCount(); i++)
-        {
-            CardView menuButton = (CardView) submenus.getChildAt(i);
-            menuButton.setClickable(true);
-
-            if (menuButton.getId() != -1)
-                System.out.println(getResources().getResourceName(menuButton.getId()));
-        }
+        GridView submenus = findViewById(R.id.submenus);
+        submenus.setAdapter(new SubmenuButtonAdapter(this));
     }
 }

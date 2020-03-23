@@ -27,14 +27,14 @@ import static android.content.Context.MODE_PRIVATE;
 
 /*
     TODO:
-        If university changes any of the pages,
+        If the university changes any of the pages,
         we should make the app go offline mode until been updated.
  */
 
 /**
  * Student class that is single instanced over the whole app. It does the functionalities like logging
  * in, getting student's personal info and other student-related things.
- * <p>
+ *
  * Made referring to the Singleton design pattern.
  */
 public class Student
