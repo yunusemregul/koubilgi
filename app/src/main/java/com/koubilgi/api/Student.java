@@ -34,7 +34,7 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * Student class that is single instanced over the whole app. It does the functionalities like logging
  * in, getting student's personal info and other student-related things.
- *
+ * <p>
  * Made referring to the Singleton design pattern.
  */
 public class Student
@@ -121,8 +121,8 @@ public class Student
      * listener.onSuccess with student's name and number, if the connection is not successful
      * calls listener.onFailure with the reason.
      *
-     * @param num number of the logging in student
-     * @param pass password of the logging in student
+     * @param num      number of the logging in student
+     * @param pass     password of the logging in student
      * @param listener the listener that waits for the methods response
      */
     public void logIn(final String num, final String pass, final ConnectionListener listener)
@@ -136,7 +136,9 @@ public class Student
                     {
                         if (response.contains("alert") && response.contains("hata"))
                         {
-                            listener.onFailure("relogin");
+                            if (listener != null)
+                                listener.onFailure("relogin");
+                            // TODO: Go offline mode
                             return;
                         }
 
@@ -175,10 +177,12 @@ public class Student
                             saveData();
                             saveCredentials();
 
-                            listener.onSuccess(name, number);
+                            if (listener != null)
+                                listener.onSuccess(name, number);
                         } else
                         {
-                            listener.onFailure("credentials");
+                            if (listener != null)
+                                listener.onFailure("credentials");
                         }
                     }
                 },
@@ -187,7 +191,8 @@ public class Student
                     @Override
                     public void onErrorResponse(VolleyError error)
                     {
-                        listener.onFailure("site");
+                        if (listener != null)
+                            listener.onFailure("site");
                     }
                 }
         )
@@ -207,12 +212,25 @@ public class Student
     }
 
     /**
+     * Marks active student for re-log. Means that there was an error making some request to the
+     * school site and we should log in again.
+     */
+    private void markForRelog()
+    {
+        loggedIn = false;
+        // Log in again
+        logIn(Student.credentials.getString("number", ""),
+                Student.credentials.getString("password", ""),
+                null);
+    }
+
+    /**
      * If this method has been called before, calls method listener.onSuccess with the parameter
      * of active student's department name.
      * If the method has never called before, connects to the school site and parses the
      * student department from students personal info, saves it for later uses, calls
      * listener.onSuccess with student's department name.
-     *
+     * <p>
      * Calls listener.onFailure with the reason if there's any errors.
      *
      * @param listener the listener that waits for the methods response
@@ -238,6 +256,7 @@ public class Student
                         if (response.contains("alert") && response.contains("hata"))
                         {
                             listener.onFailure("relogin");
+                            markForRelog();
                             return;
                         }
 
@@ -308,9 +327,106 @@ public class Student
         queue.add(postReq);
     }
 
-    public void makeRequestTo(String url, final ConnectionListener listener)
+    /**
+     * Makes post request to the specified url with params and calls back the result on listener.
+     * Uses student session cookies while making the request.
+     *
+     * @param url      to make the request
+     * @param params   to post
+     * @param listener that waits for the callback
+     */
+    public void makePostRequest(String url, final Map<String, String> params, final ConnectionListener listener)
     {
+        if (!loggedIn)
+            return;
 
+        StringRequest postReq = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        if (response.contains("alert") && response.contains("hata"))
+                        {
+                            listener.onFailure("relogin");
+                            markForRelog();
+                            return;
+                        }
+
+                        listener.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        // We assume that we failed because site is not reachable
+                        listener.onFailure("site");
+                    }
+                }
+        )
+        {
+            @Override
+            public Map<String, String> getHeaders()
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Cookie", cookieString);
+
+                return headers;
+            }
+
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return params;
+            }
+        };
+        queue.add(postReq);
+    }
+
+    public void makeGetRequest(String url, final ConnectionListener listener)
+    {
+        if (!loggedIn)
+            return;
+
+        StringRequest getReq = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>()
+                {
+
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        if (response.contains("alert") && response.contains("hata"))
+                        {
+                            listener.onFailure("relogin");
+                            markForRelog();
+                            return;
+                        }
+
+                        listener.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        listener.onFailure("site");
+                    }
+                }
+        )
+        {
+            @Override
+            public Map<String, String> getHeaders()
+            {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("Cookie", cookieString);
+
+                return headers;
+            }
+        };
+        queue.add(getReq);
     }
 
     public static String getName()
