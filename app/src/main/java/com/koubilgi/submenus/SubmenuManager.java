@@ -11,7 +11,7 @@ public class SubmenuManager
             new FeeStatusSubmenu(),
     };
 
-    static Submenu getSubmenuByName(int nameResource)
+    public static Submenu getSubmenuByName(int nameResource)
     {
         for (Submenu submenu : submenus)
         {

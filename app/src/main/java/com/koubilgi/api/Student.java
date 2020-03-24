@@ -125,7 +125,7 @@ public class Student
      * @param pass password of the logging in student
      * @param listener the listener that waits for the methods response
      */
-    public void logIn(final String num, final String pass, final LoginListener listener)
+    public void logIn(final String num, final String pass, final ConnectionListener listener)
     {
         String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
         StringRequest postReq = new StringRequest(Request.Method.POST, url,
@@ -217,7 +217,7 @@ public class Student
      *
      * @param listener the listener that waits for the methods response
      */
-    public void personalInfo(final LoginListener listener)
+    public void personalInfo(final ConnectionListener listener)
     {
         if (!loggedIn)
             return;
@@ -306,6 +306,11 @@ public class Student
             }
         };
         queue.add(postReq);
+    }
+
+    public void makeRequestTo(String url, final ConnectionListener listener)
+    {
+
     }
 
     public static String getName()

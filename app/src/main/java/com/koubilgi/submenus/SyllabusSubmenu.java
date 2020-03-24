@@ -1,5 +1,7 @@
 package com.koubilgi.submenus;
 
+import android.content.Context;
+
 import com.koubilgi.R;
 
 public class SyllabusSubmenu extends Submenu
@@ -10,7 +12,7 @@ public class SyllabusSubmenu extends Submenu
     }
 
     @Override
-    public void fillContentView()
+    public void fillContentView(Context context)
     {
 
     }

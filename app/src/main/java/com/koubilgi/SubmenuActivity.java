@@ -5,6 +5,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.koubilgi.submenus.SubmenuManager;
+
 public class SubmenuActivity extends AppCompatActivity
 {
     @Override
@@ -14,7 +16,10 @@ public class SubmenuActivity extends AppCompatActivity
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_submenu);
 
+        int nameResource = getIntent().getExtras().getInt("name");
         TextView header = findViewById(R.id.submenu_headertext);
-        header.setText(getIntent().getExtras().getInt("name"));
+        header.setText(nameResource);
+
+        SubmenuManager.getSubmenuByName(nameResource).fillContentView(this);
     }
 }

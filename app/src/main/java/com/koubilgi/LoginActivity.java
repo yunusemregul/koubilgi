@@ -12,7 +12,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.koubilgi.api.LoginListener;
+import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
 
 /*
@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity
 
                     Student.getInstance(getApplicationContext()).logIn(numb,
                             pass,
-                            new LoginListener()
+                            new ConnectionListener()
                             {
                                 @Override
                                 public void onSuccess(String... args)

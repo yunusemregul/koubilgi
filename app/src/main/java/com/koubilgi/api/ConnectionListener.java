@@ -1,6 +1,6 @@
 package com.koubilgi.api;
 
-public interface LoginListener
+public interface ConnectionListener
 {
     void onSuccess(String... args);
 

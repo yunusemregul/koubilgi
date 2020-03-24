@@ -1,5 +1,7 @@
 package com.koubilgi.submenus;
 
+import android.content.Context;
+
 public abstract class Submenu
 {
     private int nameResource;
@@ -11,7 +13,7 @@ public abstract class Submenu
         iconResource = iconRes;
     }
 
-    public abstract void fillContentView();
+    public abstract void fillContentView(Context context);
 
     public int getNameResource()
     {

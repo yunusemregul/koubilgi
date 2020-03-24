@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.koubilgi.api.LoginListener;
+import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
 import com.koubilgi.submenus.SubmenuButtonAdapter;
 
@@ -45,7 +45,7 @@ public class MainmenuActivity extends AppCompatActivity
         if (data.contains("studentDepartment"))
             tStudentDepartment.setText(data.getString("studentDepartment", "Bilinmeyen Bölüm"));
 
-        Student.getInstance(this).logIn(numb, pass, new LoginListener()
+        Student.getInstance(this).logIn(numb, pass, new ConnectionListener()
         {
             @Override
             public void onSuccess(String... args)
@@ -53,7 +53,7 @@ public class MainmenuActivity extends AppCompatActivity
                 tStudentName.setText(args[0]); // name
                 tStudentNumber.setText(args[1]); // number
 
-                Student.getInstance(getApplicationContext()).personalInfo(new LoginListener()
+                Student.getInstance(getApplicationContext()).personalInfo(new ConnectionListener()
                 {
                     @Override
                     public void onSuccess(String... args)
