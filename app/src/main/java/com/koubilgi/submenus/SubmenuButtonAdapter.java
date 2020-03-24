@@ -1,6 +1,7 @@
 package com.koubilgi.submenus;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koubilgi.R;
+import com.koubilgi.SubmenuActivity;
 
 public class SubmenuButtonAdapter extends BaseAdapter
 {
@@ -38,16 +40,27 @@ public class SubmenuButtonAdapter extends BaseAdapter
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    public View getView(final int position, View convertView, ViewGroup parent)
     {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View cardView = inflater.inflate(R.layout.cardview_submenu, null);
+        View cardView = inflater.inflate(R.layout.cardview_submenu, parent, false);
         ImageView image = cardView.findViewById(R.id.submenu_image);
         TextView text = cardView.findViewById(R.id.submenu_text);
 
         image.setImageResource(SubmenuManager.submenus[position].getIconResource());
         text.setText(SubmenuManager.submenus[position].getNameResource());
+
+        cardView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent = new Intent(context, SubmenuActivity.class);
+                intent.putExtra("name", SubmenuManager.submenus[position].getNameResource());
+                context.startActivity(intent);
+            }
+        });
 
         return cardView;
     }

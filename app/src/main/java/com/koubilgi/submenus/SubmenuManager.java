@@ -10,4 +10,15 @@ public class SubmenuManager
             new ExamScheduleSubmenu(),
             new FeeStatusSubmenu(),
     };
+
+    static Submenu getSubmenuByName(int nameResource)
+    {
+        for (Submenu submenu : submenus)
+        {
+            if (submenu.getNameResource() == nameResource)
+                return submenu;
+        }
+
+        return null;
+    }
 }
