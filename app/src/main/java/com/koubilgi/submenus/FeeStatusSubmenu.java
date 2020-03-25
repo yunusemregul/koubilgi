@@ -22,6 +22,8 @@ public class FeeStatusSubmenu extends Submenu
                     @Override
                     public void onSuccess(String... args)
                     {
+                        String response = args[0];
+
 
                     }
 

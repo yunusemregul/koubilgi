@@ -29,7 +29,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/segoeui"
-            android:text="UNKNOWN"
+            android:text="SAMPLE DATA"
             android:textAlignment="center"
             android:textAllCaps="true"
             android:textColor="@color/colorText"

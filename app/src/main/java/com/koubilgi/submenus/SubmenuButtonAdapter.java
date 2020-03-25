@@ -44,7 +44,7 @@ public class SubmenuButtonAdapter extends BaseAdapter
     {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View cardView = inflater.inflate(R.layout.cardview_submenu, parent, false);
+        View cardView = inflater.inflate(R.layout.cardview_submenubutton, null);
         ImageView image = cardView.findViewById(R.id.submenu_image);
         TextView text = cardView.findViewById(R.id.submenu_text);
 
