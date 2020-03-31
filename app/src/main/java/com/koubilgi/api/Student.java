@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -136,6 +137,7 @@ public class Student
      */
     public void logIn(final String num, final String pass, final ConnectionListener listener)
     {
+        // Do not try to login again if we are logged in already
         if (loggedIn)
         {
             listener.onSuccess(name, number);
@@ -154,7 +156,9 @@ public class Student
         dialogBuilder.setView(webView);
         dialogBuilder.setCancelable(false);
         dialogBuilder.setTitle("reCAPTCHA");
+
         final AlertDialog dialog = dialogBuilder.show();
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
         webView.setWebViewClient(new WebViewClient()
         {
@@ -167,11 +171,12 @@ public class Student
                         "{" +
                         "var sitekey = $('div.g-recaptcha').attr('data-sitekey');" +
                         "$('body > *').remove(); " +
-                        "$('body').append('<div id=\"captcha\"></div>'); " +
+                        "$('body').append('<div id=\"captcha\" style=\"display:flex;justify-content:center;align-items:center;overflow:hidden;padding:20px;\"></div>'); " +
                         "grecaptcha.render('captcha', {\n" +
                         "    'sitekey' : sitekey,\n" +
                         "    'callback' : function(response){console.log('koubilgicaptchatoken:'+response)},\n" +
                         "});" +
+                        "$('div:not(#captcha)').css('display', 'inline-block');" +
                         "$('body').css('background-color','transparent');" +
                         "}");
                 webView.setVisibility(View.VISIBLE);
