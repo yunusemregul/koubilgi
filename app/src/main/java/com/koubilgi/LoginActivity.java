@@ -47,6 +47,8 @@ public class LoginActivity extends AppCompatActivity
         // Get relative DP size
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
+        final Student student = Student.getInstance(this);
+
         final Button button = findViewById(R.id.button_login);
         button.setOnClickListener(new View.OnClickListener()
         {
@@ -77,7 +79,7 @@ public class LoginActivity extends AppCompatActivity
                     // Login to the site with student credentials
                     final String numb = eStud.getText().toString(), pass = ePass.getText().toString();
 
-                    Student.getInstance(getApplicationContext()).logIn(numb,
+                    student.logIn(numb,
                             pass,
                             new ConnectionListener()
                             {

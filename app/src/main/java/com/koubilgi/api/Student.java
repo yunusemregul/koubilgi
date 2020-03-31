@@ -1,7 +1,14 @@
 package com.koubilgi.api;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.view.View;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -82,6 +89,8 @@ public class Student
         if (instance == null)
             instance = new Student(ctx);
 
+        context = ctx;
+
         return instance;
     }
 
@@ -127,88 +136,145 @@ public class Student
      */
     public void logIn(final String num, final String pass, final ConnectionListener listener)
     {
-        String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
-        StringRequest postReq = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>()
+        if (loggedIn)
+        {
+            listener.onSuccess(name, number);
+            return;
+        }
+
+        final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
+
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+
+        final WebView webView = new WebView(context);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        webView.setVisibility(View.GONE);
+
+        dialogBuilder.setView(webView);
+        dialogBuilder.setCancelable(false);
+        dialogBuilder.setTitle("reCAPTCHA");
+        final AlertDialog dialog = dialogBuilder.show();
+
+        webView.setWebViewClient(new WebViewClient()
+        {
+            @Override
+            public void onPageFinished(WebView view, String url)
+            {
+                super.onPageFinished(view, url);
+
+                webView.loadUrl("javascript: if($('div.g-recaptcha').length)" +
+                        "{" +
+                        "var sitekey = $('div.g-recaptcha').attr('data-sitekey');" +
+                        "$('body > *').remove(); " +
+                        "$('body').append('<div id=\"captcha\"></div>'); " +
+                        "grecaptcha.render('captcha', {\n" +
+                        "    'sitekey' : sitekey,\n" +
+                        "    'callback' : function(response){console.log('koubilgicaptchatoken:'+response)},\n" +
+                        "});" +
+                        "$('body').css('background-color','transparent');" +
+                        "}");
+                webView.setVisibility(View.VISIBLE);
+            }
+        });
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage)
+            {
+                String message = consoleMessage.message();
+                if (message.startsWith("koubilgicaptchatoken:"))
                 {
-                    @Override
-                    public void onResponse(String response)
-                    {
-                        if (response.contains("alert") && response.contains("hata"))
-                        {
-                            if (listener != null)
-                                listener.onFailure("relogin");
-                            // TODO: Go offline mode
-                            return;
-                        }
+                    final String token = message.substring(21);
 
-                        boolean success = true;
-                        if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
-                            success = false;
+                    dialog.dismiss();
+                    StringRequest postReq = new StringRequest(Request.Method.POST, url,
+                            new Response.Listener<String>()
+                            {
+                                @Override
+                                public void onResponse(String response)
+                                {
+                                    if (response.contains("alert") && response.contains("hata"))
+                                    {
+                                        if (listener != null)
+                                            listener.onFailure("relogin");
+                                        // TODO: Go offline mode
+                                        return;
+                                    }
 
-                        Document doc = Jsoup.parse(response);
+                                    boolean success = true;
+                                    if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
+                                        success = false;
 
-                        // Extract student name and number
-                        Element info = doc.select("h4").first();
+                                    Document doc = Jsoup.parse(response);
 
-                        if (info == null)
-                            success = false;
+                                    // Extract student name and number
+                                    Element info = doc.select("h4").first();
 
-                        // If login was successful or not inform so
-                        if (success)
-                        {
-                            loggedIn = true;
+                                    if (info == null)
+                                        success = false;
 
-                            // Save cookies
-                            CookieStore store = cookieManager.getCookieStore();
-                            List<HttpCookie> cookies = store.getCookies();
+                                    // If login was successful or not inform so
+                                    if (success)
+                                    {
+                                        loggedIn = true;
 
-                            String[] infoTxt = info.text().split(" ", 2);
+                                        // Save cookies
+                                        CookieStore store = cookieManager.getCookieStore();
+                                        List<HttpCookie> cookies = store.getCookies();
+
+                                        String[] infoTxt = info.text().split(" ", 2);
                                 /*
                                     index 1 = student name
                                     index 0 = student number
                                  */
-                            name = infoTxt[1];
-                            number = infoTxt[0];
-                            password = pass;
-                            cookieString = StringUtil.join(cookies, "; ");
+                                        name = infoTxt[1];
+                                        number = infoTxt[0];
+                                        password = pass;
+                                        cookieString = StringUtil.join(cookies, "; ");
 
-                            // Save data and credentials for later
-                            saveData();
-                            saveCredentials();
+                                        // Save data and credentials for later
+                                        saveData();
+                                        saveCredentials();
 
-                            if (listener != null)
-                                listener.onSuccess(name, number);
-                        } else
-                        {
-                            if (listener != null)
-                                listener.onFailure("credentials");
-                        }
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
+                                        if (listener != null)
+                                            listener.onSuccess(name, number);
+                                    } else
+                                    {
+                                        if (listener != null)
+                                            listener.onFailure("credentials");
+                                    }
+                                }
+                            },
+                            new Response.ErrorListener()
+                            {
+                                @Override
+                                public void onErrorResponse(VolleyError error)
+                                {
+                                    if (listener != null)
+                                        listener.onFailure("site");
+                                }
+                            }
+                    )
                     {
-                        if (listener != null)
-                            listener.onFailure("site");
-                    }
-                }
-        )
-        {
-            @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("LoggingOn", "1");
-                params.put("OgrNo", num);
-                params.put("Sifre", pass);
+                        @Override
+                        protected Map<String, String> getParams()
+                        {
+                            Map<String, String> params = new HashMap<String, String>();
+                            params.put("LoggingOn", "1");
+                            params.put("OgrNo", num);
+                            params.put("Sifre", pass);
+                            params.put("g-recaptcha-response", token);
 
-                return params;
+                            return params;
+                        }
+                    };
+                    queue.add(postReq);
+                }
+                return super.onConsoleMessage(consoleMessage);
             }
-        };
-        queue.add(postReq);
+        });
+        webView.loadUrl(url);
     }
 
     /**
@@ -338,7 +404,10 @@ public class Student
     public void makePostRequest(String url, final Map<String, String> params, final ConnectionListener listener)
     {
         if (!loggedIn)
+        {
+            markForRelog();
             return;
+        }
 
         StringRequest postReq = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>()
@@ -388,7 +457,10 @@ public class Student
     public void makeGetRequest(String url, final ConnectionListener listener)
     {
         if (!loggedIn)
+        {
+            markForRelog();
             return;
+        }
 
         StringRequest getReq = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>()

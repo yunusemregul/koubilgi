@@ -14,6 +14,7 @@ import com.koubilgi.SubmenuActivity;
 
 public class SubmenuButtonAdapter extends BaseAdapter
 {
+
     private final Context context;
 
     public SubmenuButtonAdapter(Context ctx)
