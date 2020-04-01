@@ -1,6 +1,5 @@
 package com.koubilgi;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -25,27 +24,23 @@ public class MainmenuActivity extends AppCompatActivity
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_mainmenu);
 
+        Student student = Student.getInstance(this);
+
         final TextView tStudentName = findViewById(R.id.studentName),
                 tStudentNumber = findViewById(R.id.studentNumber),
                 tStudentDepartment = findViewById(R.id.studentDepartment);
 
-        final SharedPreferences studentCredentials = getSharedPreferences("credentials", MODE_PRIVATE);
-        final SharedPreferences data = getSharedPreferences("data", MODE_PRIVATE);
-
-        final String numb = studentCredentials.getString("number", null),
-                pass = studentCredentials.getString("password", null);
-
-        if (numb == null || pass == null)
+        if (!student.hasCredentials())
             return;
 
-        if (data.contains("studentName"))
-            tStudentName.setText(data.getString("studentName", "Bilinmeyen Öğrenci"));
-        if (data.contains("studentNumber"))
-            tStudentNumber.setText(data.getString("studentNumber", "123456789"));
-        if (data.contains("studentDepartment"))
-            tStudentDepartment.setText(data.getString("studentDepartment", "Bilinmeyen Bölüm"));
+        if (student.getName() != null)
+            tStudentName.setText(student.getName());
+        if (student.getNumber() != null)
+            tStudentNumber.setText(student.getNumber());
+        if (student.getDepartment() != null)
+            tStudentDepartment.setText(student.getDepartment());
 
-        Student.getInstance(this).logIn(numb, pass, new ConnectionListener()
+        Student.getInstance(this).logIn(student.getNumber(), student.getPassword(), new ConnectionListener()
         {
             @Override
             public void onSuccess(String... args)

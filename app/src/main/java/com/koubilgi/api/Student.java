@@ -2,7 +2,6 @@ package com.koubilgi.api;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,6 +22,12 @@ import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookieStore;
@@ -30,8 +35,6 @@ import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /*
     TODO:
@@ -45,23 +48,19 @@ import static android.content.Context.MODE_PRIVATE;
  * <p>
  * Made referring to the Singleton design pattern.
  */
-public class Student
+public class Student implements Serializable
 {
-    private static String name;
-    private static String number;
-    private static String password;
-    private static String department;
-
     private static boolean loggedIn;
-    private static String cookieString;
-
     private static Context context;
+    private String name;
+    private String number;
+    private String password;
+
     private static Student instance;
+    private String department;
+    private String cookieString;
     private static CookieManager cookieManager;
     private static RequestQueue queue;
-
-    private static SharedPreferences credentials;
-    private static SharedPreferences data;
 
     /**
      * Constructs the singleton Student within given context.
@@ -70,13 +69,11 @@ public class Student
      */
     private Student(Context ctx)
     {
+        loggedIn = false;
         context = ctx;
         cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
         queue = SingletonRequestQueue.getInstance(context.getApplicationContext()).getRequestQueue();
-        data = context.getSharedPreferences("data", MODE_PRIVATE);
-        credentials = context.getSharedPreferences("credentials", MODE_PRIVATE);
-        loggedIn = false;
     }
 
     /**
@@ -88,42 +85,46 @@ public class Student
     public static synchronized Student getInstance(Context ctx)
     {
         if (instance == null)
+        {
             instance = new Student(ctx);
+            try
+            {
+                instance = instance.loadFromFile();
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
 
+        // To avoid window leaks
         context = ctx;
 
         return instance;
     }
 
-    /**
-     * Saves the student data using SharedPreferences for giving the user faster startup in later
-     * uses.
-     */
-    private void saveData()
+    private void saveToFile() throws Exception
     {
-        if (!loggedIn)
-            return;
-
-        SharedPreferences.Editor editor = data.edit();
-        editor.putString("studentName", name);
-        editor.putString("studentNumber", number);
-        editor.putString("studentDepartment", department);
-        editor.putString("cookieString", cookieString);
-        editor.apply();
+        FileOutputStream outputStream = context.openFileOutput("student", Context.MODE_PRIVATE);
+        ObjectOutputStream objectStream = new ObjectOutputStream(outputStream);
+        objectStream.writeObject(this);
+        objectStream.close();
+        outputStream.close();
     }
 
-    /**
-     * Saves student credentials using SharedPreferences to use when logging in every time.
-     */
-    private void saveCredentials()
+    private Student loadFromFile() throws Exception
     {
-        if (!loggedIn)
-            return;
+        File file = context.getFileStreamPath("student");
 
-        SharedPreferences.Editor editor = credentials.edit();
-        editor.putString("number", number);
-        editor.putString("password", password);
-        editor.apply();
+        if (file == null || !file.exists())
+            return this;
+
+        FileInputStream inputStream = context.openFileInput("student");
+        ObjectInputStream objectStream = new ObjectInputStream(inputStream);
+        Student loaded = (Student) objectStream.readObject();
+        objectStream.close();
+        inputStream.close();
+
+        return loaded;
     }
 
     /**
@@ -140,10 +141,157 @@ public class Student
         // Do not try to login again if we are logged in already
         if (loggedIn)
         {
-            listener.onSuccess(name, number);
+            if (listener != null)
+                listener.onSuccess(name, number);
             return;
         }
 
+        /*
+            Making login requests to the school site every time the app starts
+            is not a good practice I think. So I thought it would be better to check if our
+            session cookies are still valid. If they are valid then do not try to log in again,
+            if they are not valid then make a log in request.
+
+            Checking session cookies is done by making a get request to any student page.
+            I choose HarcBilgi page because it generally has the lowest Content-Length and thus
+            we will waste the least amount of internet data I think. Which is good for users
+            with limited mobile data.
+         */
+
+        final String harcurl = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi.cfm";
+
+        if (listener != null && name != null && number != null)
+        {
+            makeGetRequest(harcurl, new ConnectionListener()
+            {
+                @Override
+                public void onSuccess(String... args)
+                {
+                    listener.onSuccess(name, number);
+                }
+
+                @Override
+                public void onFailure(String reason)
+                {
+                    makeLogInRequest(num, pass, listener);
+                }
+            });
+        } else
+        {
+            makeLogInRequest(num, pass, listener);
+        }
+    }
+
+    private void makeLogInRequest(final String num, final String pass, final ConnectionListener listener)
+    {
+        final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
+        getCaptchaToken(new ConnectionListener()
+        {
+            @Override
+            public void onSuccess(String... args)
+            {
+                final String token = args[0];
+
+                StringRequest postReq = new StringRequest(Request.Method.POST, url,
+                        new Response.Listener<String>()
+                        {
+                            @Override
+                            public void onResponse(String response)
+                            {
+                                if (response.contains("alert") && response.contains("hata"))
+                                {
+                                    if (listener != null)
+                                        listener.onFailure("relogin");
+                                    // TODO: Go offline mode
+                                    return;
+                                }
+
+                                boolean success = true;
+                                if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
+                                    success = false;
+
+                                Document doc = Jsoup.parse(response);
+
+                                // Extract student name and number
+
+                                Element info = doc.select("h4").first();
+
+                                if (info == null)
+                                    success = false;
+
+                                // If login was successful or not inform so
+                                if (success)
+                                {
+                                    loggedIn = true;
+
+                                    // Save cookies
+                                    CookieStore store = cookieManager.getCookieStore();
+                                    List<HttpCookie> cookies = store.getCookies();
+
+                                    String[] infoTxt = info.text().split(" ", 2);
+                                /*
+                                    index 1 = student name
+                                    index 0 = student number
+                                 */
+                                    name = infoTxt[1];
+                                    number = infoTxt[0];
+                                    password = pass;
+                                    cookieString = StringUtil.join(cookies, "; ");
+
+                                    // Save data and credentials for later
+                                    try
+                                    {
+                                        saveToFile();
+                                    } catch (Exception e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+
+                                    if (listener != null)
+                                        listener.onSuccess(name, number);
+                                } else
+                                {
+                                    if (listener != null)
+                                        listener.onFailure("credentials");
+                                }
+                            }
+                        },
+                        new Response.ErrorListener()
+                        {
+                            @Override
+                            public void onErrorResponse(VolleyError error)
+                            {
+                                if (listener != null)
+                                    listener.onFailure("site");
+                            }
+                        }
+                )
+                {
+                    @Override
+                    protected Map<String, String> getParams()
+                    {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("LoggingOn", "1");
+                        params.put("OgrNo", num);
+                        params.put("Sifre", pass);
+                        params.put("g-recaptcha-response", token);
+
+                        return params;
+                    }
+                };
+                queue.add(postReq);
+            }
+
+            @Override
+            public void onFailure(String reason)
+            {
+
+            }
+        });
+    }
+
+    private void getCaptchaToken(final ConnectionListener listener)
+    {
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
@@ -193,88 +341,7 @@ public class Student
                     final String token = message.substring(21);
 
                     dialog.dismiss();
-                    StringRequest postReq = new StringRequest(Request.Method.POST, url,
-                            new Response.Listener<String>()
-                            {
-                                @Override
-                                public void onResponse(String response)
-                                {
-                                    if (response.contains("alert") && response.contains("hata"))
-                                    {
-                                        if (listener != null)
-                                            listener.onFailure("relogin");
-                                        // TODO: Go offline mode
-                                        return;
-                                    }
-
-                                    boolean success = true;
-                                    if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
-                                        success = false;
-
-                                    Document doc = Jsoup.parse(response);
-
-                                    // Extract student name and number
-                                    Element info = doc.select("h4").first();
-
-                                    if (info == null)
-                                        success = false;
-
-                                    // If login was successful or not inform so
-                                    if (success)
-                                    {
-                                        loggedIn = true;
-
-                                        // Save cookies
-                                        CookieStore store = cookieManager.getCookieStore();
-                                        List<HttpCookie> cookies = store.getCookies();
-
-                                        String[] infoTxt = info.text().split(" ", 2);
-                                /*
-                                    index 1 = student name
-                                    index 0 = student number
-                                 */
-                                        name = infoTxt[1];
-                                        number = infoTxt[0];
-                                        password = pass;
-                                        cookieString = StringUtil.join(cookies, "; ");
-
-                                        // Save data and credentials for later
-                                        saveData();
-                                        saveCredentials();
-
-                                        if (listener != null)
-                                            listener.onSuccess(name, number);
-                                    } else
-                                    {
-                                        if (listener != null)
-                                            listener.onFailure("credentials");
-                                    }
-                                }
-                            },
-                            new Response.ErrorListener()
-                            {
-                                @Override
-                                public void onErrorResponse(VolleyError error)
-                                {
-                                    if (listener != null)
-                                        listener.onFailure("site");
-                                }
-                            }
-                    )
-                    {
-                        @Override
-                        protected Map<String, String> getParams()
-                        {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("LoggingOn", "1");
-                            params.put("OgrNo", num);
-                            params.put("Sifre", pass);
-                            params.put("g-recaptcha-response", token);
-
-                            return params;
-                        }
-                    };
-                    queue.add(postReq);
+                    listener.onSuccess(token);
                 }
                 return super.onConsoleMessage(consoleMessage);
             }
@@ -290,9 +357,7 @@ public class Student
     {
         loggedIn = false;
         // Log in again
-        logIn(Student.credentials.getString("number", ""),
-                Student.credentials.getString("password", ""),
-                null);
+        makeLogInRequest(number, password, null);
     }
 
     /**
@@ -311,9 +376,9 @@ public class Student
         if (!loggedIn)
             return;
 
-        if (data.getString("studentDepartment", null) != null)
+        if (department != null)
         {
-            listener.onSuccess(data.getString("studentDepartment", "Bilinmiyor"));
+            listener.onSuccess(department);
             return;
         }
 
@@ -359,7 +424,13 @@ public class Student
                         depart = depart.replace("i", "İ");
                         depart = depart.replace(" Bölümü", "");
                         department = depart;
-                        saveData();
+                        try
+                        {
+                            saveToFile();
+                        } catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
 
                         listener.onSuccess(depart);
                     }
@@ -408,12 +479,6 @@ public class Student
      */
     public void makePostRequest(String url, final Map<String, String> params, final ConnectionListener listener)
     {
-        if (!loggedIn)
-        {
-            markForRelog();
-            return;
-        }
-
         StringRequest postReq = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>()
                 {
@@ -461,16 +526,9 @@ public class Student
 
     public void makeGetRequest(String url, final ConnectionListener listener)
     {
-        if (!loggedIn)
-        {
-            markForRelog();
-            return;
-        }
-
         StringRequest getReq = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>()
                 {
-
                     @Override
                     public void onResponse(String response)
                     {
@@ -506,23 +564,33 @@ public class Student
         queue.add(getReq);
     }
 
-    public static String getName()
+    public String getName()
     {
         return name;
     }
 
-    public static String getNumber()
+    public String getNumber()
     {
         return number;
     }
 
-    public static String getDepartment()
+    public String getDepartment()
     {
         return department;
     }
 
-    public static boolean isLoggedIn()
+    public boolean isLoggedIn()
     {
         return loggedIn;
+    }
+
+    public boolean hasCredentials()
+    {
+        return (number != null && password != null);
+    }
+
+    public String getPassword()
+    {
+        return password;
     }
 }

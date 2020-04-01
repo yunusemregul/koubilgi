@@ -1,7 +1,6 @@
 package com.koubilgi;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -27,11 +26,9 @@ public class LoginActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        // Saving student credentials could be encrypted but not on open-source
-        SharedPreferences studentCredentials = getSharedPreferences("credentials", MODE_PRIVATE);
-
+        final Student student = Student.getInstance(this);
         // Start the main menu activity if user has logged in before
-        if (studentCredentials.contains("number") && studentCredentials.contains("password"))
+        if (student.hasCredentials())
         {
             finish();
             Intent intent = new Intent(this, MainmenuActivity.class);
@@ -47,7 +44,6 @@ public class LoginActivity extends AppCompatActivity
         // Get relative DP size
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
-        final Student student = Student.getInstance(this);
 
         final Button button = findViewById(R.id.button_login);
         button.setOnClickListener(new View.OnClickListener()
