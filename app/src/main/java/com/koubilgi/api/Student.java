@@ -3,6 +3,7 @@ package com.koubilgi.api;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
@@ -10,12 +11,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.koubilgi.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.internal.StringUtil;
@@ -38,8 +39,8 @@ import java.util.Map;
 
 /*
     TODO:
-        If the university changes any of the pages,
-        we should make the app go offline mode until been updated.
+        If the university changes any of the pages, since we might not be able to support
+        the changes, we should make the app go offline mode until been updated.
  */
 
 /**
@@ -61,6 +62,8 @@ public class Student implements Serializable
     private String cookieString;
     private static CookieManager cookieManager;
     private static RequestQueue queue;
+
+    private static AlertDialog recaptchaDialog;
 
     /**
      * Constructs the singleton Student within given context.
@@ -146,6 +149,31 @@ public class Student implements Serializable
             return;
         }
 
+        // Logging in... screen
+        AlertDialog.Builder logginginPopup = new AlertDialog.Builder(context);
+        logginginPopup.setMessage(R.string.loggingin);
+
+        logginginPopup.setCancelable(false);
+        final AlertDialog loggingin = logginginPopup.show();
+
+        final ConnectionListener logginginListener = new ConnectionListener()
+        {
+            @Override
+            public void onSuccess(String... args)
+            {
+                loggingin.dismiss();
+                listener.onSuccess(args);
+            }
+
+            @Override
+            public void onFailure(String reason)
+            {
+                loggingin.dismiss();
+                listener.onFailure(reason);
+                // TODO: Go offline mode.
+            }
+        };
+
         /*
             Making login requests to the school site every time the app starts
             is not a good practice I think. So I thought it would be better to check if our
@@ -167,18 +195,19 @@ public class Student implements Serializable
                 @Override
                 public void onSuccess(String... args)
                 {
+                    loggingin.dismiss();
                     listener.onSuccess(name, number);
                 }
 
                 @Override
                 public void onFailure(String reason)
                 {
-                    makeLogInRequest(num, pass, listener);
+                    makeLogInRequest(num, pass, logginginListener);
                 }
             });
         } else
         {
-            makeLogInRequest(num, pass, listener);
+            makeLogInRequest(num, pass, logginginListener);
         }
     }
 
@@ -270,7 +299,7 @@ public class Student implements Serializable
                     @Override
                     protected Map<String, String> getParams()
                     {
-                        Map<String, String> params = new HashMap<String, String>();
+                        Map<String, String> params = new HashMap<>();
                         params.put("LoggingOn", "1");
                         params.put("OgrNo", num);
                         params.put("Sifre", pass);
@@ -292,6 +321,10 @@ public class Student implements Serializable
 
     private void getCaptchaToken(final ConnectionListener listener)
     {
+        if (recaptchaDialog != null && recaptchaDialog.isShowing())
+            return;
+
+        Log.d("RECAPTCHA", "Called");
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
@@ -305,8 +338,8 @@ public class Student implements Serializable
         dialogBuilder.setCancelable(false);
         dialogBuilder.setTitle("reCAPTCHA");
 
-        final AlertDialog dialog = dialogBuilder.show();
-        dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        recaptchaDialog = dialogBuilder.show();
+        recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
         webView.setWebViewClient(new WebViewClient()
         {
@@ -340,7 +373,7 @@ public class Student implements Serializable
                 {
                     final String token = message.substring(21);
 
-                    dialog.dismiss();
+                    recaptchaDialog.dismiss();
                     listener.onSuccess(token);
                 }
                 return super.onConsoleMessage(consoleMessage);
@@ -447,9 +480,9 @@ public class Student implements Serializable
         )
         {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
+            public Map<String, String> getHeaders()
             {
-                Map<String, String> headers = new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<>();
                 headers.put("Cookie", cookieString);
 
                 return headers;
@@ -458,7 +491,7 @@ public class Student implements Serializable
             @Override
             protected Map<String, String> getParams()
             {
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 params.put("Anketid", "0");
                 params.put("Baglanti", "Giris");
                 params.put("Veri", "-1;-1");
@@ -509,7 +542,7 @@ public class Student implements Serializable
             @Override
             public Map<String, String> getHeaders()
             {
-                Map<String, String> headers = new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<>();
                 headers.put("Cookie", cookieString);
 
                 return headers;
@@ -555,7 +588,7 @@ public class Student implements Serializable
             @Override
             public Map<String, String> getHeaders()
             {
-                Map<String, String> headers = new HashMap<String, String>();
+                Map<String, String> headers = new HashMap<>();
                 headers.put("Cookie", cookieString);
 
                 return headers;

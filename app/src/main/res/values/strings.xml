@@ -17,4 +17,5 @@
     <string name="FEE_STATUS">HARÇ DURUMU</string>
     <string name="ANNOUNCEMENTS">DUYURULAR</string>
     <string name="GENERAL">GENEL DURUM</string>
+    <string name="loggingin">Giriş yapılıyor...</string>
 </resources>
