@@ -214,7 +214,7 @@ public class Student implements Serializable
     private void makeLogInRequest(final String num, final String pass, final ConnectionListener listener)
     {
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
-        getCaptchaToken(new ConnectionListener()
+        getRecaptchaToken(new ConnectionListener()
         {
             @Override
             public void onSuccess(String... args)
@@ -319,11 +319,8 @@ public class Student implements Serializable
         });
     }
 
-    private void getCaptchaToken(final ConnectionListener listener)
+    private void getRecaptchaToken(final ConnectionListener listener)
     {
-        if (recaptchaDialog != null && recaptchaDialog.isShowing())
-            return;
-
         Log.d("RECAPTCHA", "Called");
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
@@ -388,6 +385,10 @@ public class Student implements Serializable
      */
     private void markForRelog()
     {
+        // if already marked, do not try to mark again
+        if (!loggedIn)
+            return;
+
         loggedIn = false;
         // Log in again
         makeLogInRequest(number, password, null);
