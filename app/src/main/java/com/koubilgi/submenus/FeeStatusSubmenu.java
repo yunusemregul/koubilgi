@@ -141,11 +141,16 @@ class FeeStatusAdapter extends BaseAdapter
         View cardView = inflater.inflate(R.layout.cardview_feestatus, null);
         TextView fee = cardView.findViewById(R.id.feestatus_fee);
         TextView paid = cardView.findViewById(R.id.feestatus_paid);
-        TextView status = cardView.findViewById(R.id.feestatus_status);
+        ImageView checkmark = cardView.findViewById(R.id.feestatus_checkmark);
 
         fee.setText(fees[position].fee);
         paid.setText(fees[position].paid);
-        status.setText(fees[position].status);
+
+        if (fees[position].fee.equals(fees[position].paid))
+            checkmark.setColorFilter(context.getResources().getColor(R.color.colorPrimaryDark));
+        else
+            checkmark.setColorFilter(context.getResources().getColor(R.color.colorBorders));
+
         layout.addView(cardView);
 
         return layout;

@@ -7,95 +7,117 @@
     app:cardCornerRadius="6dp"
     app:cardElevation="6dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:weightSum="3">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/feestatus_fee"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoeuib"
-                android:text="262.50"
-                android:textColor="@color/colorText"
-                android:textSize="25sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoeui"
-                android:text="DÖNEM BORCU"
-                android:textColor="@color/colorText"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/feestatus_paid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoeuib"
-                android:text="262.50"
-                android:textColor="@color/colorText"
-                android:textSize="25sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoeui"
-                android:text="ÖDEDİĞİ TUTAR"
-                android:textColor="@color/colorText"
-                android:textSize="13sp" />
-        </LinearLayout>
+        android:layout_height="match_parent">
 
         <View
+            android:id="@+id/view4"
             android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_gravity="center_vertical"
-            android:background="@color/colorBorders" />
+            android:layout_marginStart="24dp"
+            android:background="@color/colorBorders"
+            app:layout_constraintBottom_toTopOf="@+id/guideline4"
+            app:layout_constraintStart_toEndOf="@+id/feestatus_paid"
+            app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/feestatus_fee"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/segoeuib"
+            android:text="262.50"
+            android:textColor="@color/colorText"
+            android:textSize="25sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline6"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
+            app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
-            <TextView
-                android:id="@+id/feestatus_status"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoeuib"
-                android:text="NORMAL"
-                android:textAllCaps="true"
-                android:textColor="@color/colorText"
-                android:textSize="16sp" />
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/segoeui"
+            android:text="DÖNEM BORCU"
+            android:textColor="@color/colorText"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline4"
+            app:layout_constraintEnd_toEndOf="@+id/feestatus_fee"
+            app:layout_constraintStart_toStartOf="@+id/feestatus_fee"
+            app:layout_constraintTop_toTopOf="@+id/guideline6" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/segoeui"
-                android:text="DURUM"
-                android:textColor="@color/colorText"
-                android:textSize="13sp" />
-        </LinearLayout>
-    </LinearLayout>
+        <TextView
+            android:id="@+id/feestatus_paid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:fontFamily="@font/segoeuib"
+            android:text="262.50"
+            android:textColor="@color/colorText"
+            android:textSize="25sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline6"
+            app:layout_constraintStart_toEndOf="@+id/feestatus_fee"
+            app:layout_constraintTop_toTopOf="@+id/guideline3" />
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/segoeui"
+            android:text="ÖDEDİĞİ TUTAR"
+            android:textColor="@color/colorText"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline4"
+            app:layout_constraintEnd_toEndOf="@+id/feestatus_paid"
+            app:layout_constraintStart_toStartOf="@+id/feestatus_paid"
+            app:layout_constraintTop_toTopOf="@+id/guideline6" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="20dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="7dp"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintGuide_end="7dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="20dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="43dp" />
+
+        <ImageView
+            android:id="@+id/feestatus_checkmark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/guideline4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/view4"
+            app:layout_constraintTop_toTopOf="@+id/guideline3"
+            app:srcCompat="@drawable/checkmark" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
