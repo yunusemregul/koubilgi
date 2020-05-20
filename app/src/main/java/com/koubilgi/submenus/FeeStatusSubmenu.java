@@ -5,8 +5,6 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -63,11 +61,10 @@ public class FeeStatusSubmenu extends Submenu
                             fees[i] = fee;
                         }
 
-                        FeeStatusAdapter adapter = new FeeStatusAdapter(context, fees);
                         LinearLayout layout = ((Activity) context).findViewById(R.id.submenu_linearlayout);
-                        for (int i = 0; i < adapter.getCount(); i++)
+                        for (Fee fee : fees)
                         {
-                            View toAdd = adapter.getView(i, null, null);
+                            View toAdd = fee.createView(context);
                             layout.addView(toAdd);
                         }
                     }
@@ -87,39 +84,8 @@ class Fee
     String status;
     String fee;
     String paid;
-}
 
-class FeeStatusAdapter extends BaseAdapter
-{
-    private final Context context;
-    private Fee[] fees;
-
-    public FeeStatusAdapter(Context context, Fee[] fees)
-    {
-        this.context = context;
-        this.fees = fees;
-    }
-
-    @Override
-    public int getCount()
-    {
-        return fees.length;
-    }
-
-    @Override
-    public Object getItem(int position)
-    {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position)
-    {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent)
+    View createView(Context context)
     {
         final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -133,20 +99,24 @@ class FeeStatusAdapter extends BaseAdapter
         TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
         TextView dividerText = divider.findViewById(R.id.textdivider_text);
         dividerText.setVisibility(View.GONE);
-        dividerMain.setText(fees[position].term);
+        dividerMain.setText(term);
         ImageView dividerImage = divider.findViewById(R.id.textdivider_image);
         dividerImage.setImageResource(R.drawable.icon_lesson_daymarker_circular);
-        layout.addView(divider);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(0, 0, 0, 15);
+
+        layout.addView(divider, layoutParams);
 
         View cardView = inflater.inflate(R.layout.cardview_feestatus, null);
-        TextView fee = cardView.findViewById(R.id.feestatus_fee);
-        TextView paid = cardView.findViewById(R.id.feestatus_paid);
+        TextView feeView = cardView.findViewById(R.id.feestatus_fee);
+        TextView paidView = cardView.findViewById(R.id.feestatus_paid);
         ImageView checkmark = cardView.findViewById(R.id.feestatus_checkmark);
 
-        fee.setText(fees[position].fee);
-        paid.setText(fees[position].paid);
+        feeView.setText(fee);
+        paidView.setText(paid);
 
-        if (fees[position].fee.equals(fees[position].paid))
+        if (fee.equals(paid))
             checkmark.setColorFilter(context.getResources().getColor(R.color.colorPrimaryDark));
         else
             checkmark.setColorFilter(context.getResources().getColor(R.color.colorBorders));
