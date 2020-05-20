@@ -383,7 +383,7 @@ public class Student implements Serializable
      * Marks active student for re-log. Means that there was an error making some request to the
      * school site and we should log in again.
      */
-    private void markForRelog()
+    private void markForRelog(ConnectionListener listener)
     {
         // if already marked, do not try to mark again
         if (!loggedIn)
@@ -391,7 +391,7 @@ public class Student implements Serializable
 
         loggedIn = false;
         // Log in again
-        makeLogInRequest(number, password, null);
+        makeLogInRequest(number, password, listener);
     }
 
     /**
@@ -426,7 +426,20 @@ public class Student implements Serializable
                         if (response.contains("alert") && response.contains("hata"))
                         {
                             listener.onFailure("relogin");
-                            markForRelog();
+                            markForRelog(new ConnectionListener()
+                            {
+                                @Override
+                                public void onSuccess(String... args)
+                                {
+                                    personalInfo(listener);
+                                }
+
+                                @Override
+                                public void onFailure(String reason)
+                                {
+
+                                }
+                            });
                             return;
                         }
 
@@ -511,7 +524,7 @@ public class Student implements Serializable
      * @param params   to post
      * @param listener that waits for the callback
      */
-    public void makePostRequest(String url, final Map<String, String> params, final ConnectionListener listener)
+    public void makePostRequest(final String url, final Map<String, String> params, final ConnectionListener listener)
     {
         StringRequest postReq = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>()
@@ -522,7 +535,20 @@ public class Student implements Serializable
                         if (response.contains("alert") && response.contains("hata"))
                         {
                             listener.onFailure("relogin");
-                            markForRelog();
+                            markForRelog(new ConnectionListener()
+                            {
+                                @Override
+                                public void onSuccess(String... args)
+                                {
+                                    makePostRequest(url, params, listener);
+                                }
+
+                                @Override
+                                public void onFailure(String reason)
+                                {
+
+                                }
+                            });
                             return;
                         }
 
@@ -558,7 +584,13 @@ public class Student implements Serializable
         queue.add(postReq);
     }
 
-    public void makeGetRequest(String url, final ConnectionListener listener)
+    /**
+     * Makes get request to specified url with student cookies.
+     *
+     * @param url      to make get request
+     * @param listener that listens for response
+     */
+    public void makeGetRequest(final String url, final ConnectionListener listener)
     {
         StringRequest getReq = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>()
@@ -569,7 +601,20 @@ public class Student implements Serializable
                         if (response.contains("alert") && response.contains("hata"))
                         {
                             listener.onFailure("relogin");
-                            markForRelog();
+                            markForRelog(new ConnectionListener()
+                            {
+                                @Override
+                                public void onSuccess(String... args)
+                                {
+                                    makeGetRequest(url, listener);
+                                }
+
+                                @Override
+                                public void onFailure(String reason)
+                                {
+
+                                }
+                            });
                             return;
                         }
 
