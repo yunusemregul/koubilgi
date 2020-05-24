@@ -28,53 +28,53 @@ public class FeeStatusSubmenu extends Submenu
     @Override
     public void fillContentView(final Context context)
     {
-        Student.getInstance(context).makeGetRequest("https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi.cfm",
-                new ConnectionListener()
+        Student.getInstance(context).makeGetRequest("https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi.cfm", new ConnectionListener()
+        {
+            @Override
+            public void onSuccess(String... args)
+            {
+                String response = args[0];
+
+                Document doc = Jsoup.parse(response);
+
+                Elements mainDivs = doc.select("div.col-lg-12:has(div.col-lg-2):gt(0)");
+                Fee[] fees = new Fee[mainDivs.size()];
+
+                for (int i = 0; i < mainDivs.size(); i++)
                 {
-                    @Override
-                    public void onSuccess(String... args)
+                    Element parent = mainDivs.get(i);
+                    Elements els = parent.select("div.col-lg-2");
+
+                    if (els.size() != 6)
                     {
-                        String response = args[0];
-
-                        Document doc = Jsoup.parse(response);
-
-                        Elements mainDivs = doc.select("div.col-lg-12:has(div.col-lg-2):gt(0)");
-                        Fee[] fees = new Fee[mainDivs.size()];
-
-                        for (int i = 0; i < mainDivs.size(); i++)
-                        {
-                            Element parent = mainDivs.get(i);
-                            Elements els = parent.select("div.col-lg-2");
-
-                            if (els.size() != 6)
-                            {
-                                // TODO: Site has been changed, go offline for this submenu indefinitely (till updated)
-                                return;
-                            }
-
-                            Fee fee = new Fee();
-                            fee.term = els.first().text();
-                            fee.fee = els.get(1).text();
-                            fee.paid = els.get(3).text();
-                            fee.status = els.last().text();
-
-                            fees[i] = fee;
-                        }
-
-                        LinearLayout layout = ((Activity) context).findViewById(R.id.submenu_linearlayout);
-                        for (Fee fee : fees)
-                        {
-                            View toAdd = fee.createView(context);
-                            layout.addView(toAdd);
-                        }
+                        // TODO: Site has been changed, go offline for this submenu indefinitely (till updated)
+                        System.out.println("Site has been changed!");
+                        return;
                     }
 
-                    @Override
-                    public void onFailure(String reason)
-                    {
-                        // TODO: Go offline until next start of this submenu
-                    }
-                });
+                    Fee fee = new Fee();
+                    fee.term = els.first().text();
+                    fee.fee = els.get(1).text();
+                    fee.paid = els.get(3).text();
+                    fee.status = els.last().text();
+
+                    fees[i] = fee;
+                }
+
+                LinearLayout layout = ((Activity) context).findViewById(R.id.submenu_linearlayout);
+                for (Fee fee : fees)
+                {
+                    View toAdd = fee.createView(context);
+                    layout.addView(toAdd);
+                }
+            }
+
+            @Override
+            public void onFailure(String reason)
+            {
+                // TODO: Go offline until next start of this submenu
+            }
+        });
     }
 }
 
