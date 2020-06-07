@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
-import com.koubilgi.submenus.SubmenuButtonAdapter;
+import com.koubilgi.components.SubmenuButtonAdapter;
 
 /*
     TODO:
@@ -26,9 +26,8 @@ public class MainmenuActivity extends AppCompatActivity
 
         Student student = Student.getInstance(this);
 
-        final TextView tStudentName = findViewById(R.id.studentName),
-                tStudentNumber = findViewById(R.id.studentNumber),
-                tStudentDepartment = findViewById(R.id.studentDepartment);
+        final TextView tStudentName = findViewById(R.id.studentName), tStudentNumber =
+                findViewById(R.id.studentNumber), tStudentDepartment = findViewById(R.id.studentDepartment);
 
         if (!student.hasCredentials())
             return;

@@ -14,11 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
 
-/*
-    TODO:
-        Show popup screen 'Logging in..'
- */
-
 public class LoginActivity extends AppCompatActivity
 {
     @Override
@@ -52,53 +47,52 @@ public class LoginActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 // entry StudentNumber, entry Pass
-                EditText eStud = findViewById(R.id.entry_studentnumber),
-                        ePass = findViewById(R.id.entry_pass);
+                EditText eStud = findViewById(R.id.entry_studentnumber), ePass = findViewById(R.id.entry_pass);
 
-                final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(),
-                        gPassBackground = (GradientDrawable) ePass.getBackground();
+                final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(), gPassBackground =
+                        (GradientDrawable) ePass.getBackground();
 
                 // Set red stroke of 2dp when there's no text on entries
                 // Should find some better way to not repeat the code
                 if (eStud.getText().length() == 0)
                     gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
                 else
-                    gStudBackground.setStroke((int) metrics.density, getApplicationContext().getResources().getColor(R.color.colorBorders));
+                    gStudBackground.setStroke((int) metrics.density,
+                            getApplicationContext().getResources().getColor(R.color.colorBorders));
 
                 if (ePass.getText().length() == 0)
                     gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
                 else
-                    gPassBackground.setStroke((int) metrics.density, getApplicationContext().getResources().getColor(R.color.colorBorders));
+                    gPassBackground.setStroke((int) metrics.density,
+                            getApplicationContext().getResources().getColor(R.color.colorBorders));
 
                 if (eStud.getText().length() > 0 && ePass.getText().length() > 0)
                 {
                     // Login to the site with student credentials
                     final String numb = eStud.getText().toString(), pass = ePass.getText().toString();
 
-                    student.logIn(numb,
-                            pass,
-                            new ConnectionListener()
-                            {
-                                @Override
-                                public void onSuccess(String... args)
-                                {
-                                    Intent intent = new Intent(getBaseContext(), MainmenuActivity.class);
-                                    finish();
-                                    startActivity(intent);
-                                    overridePendingTransition(0, 0); // Avoid sliding animation
-                                }
+                    student.logIn(numb, pass, new ConnectionListener()
+                    {
+                        @Override
+                        public void onSuccess(String... args)
+                        {
+                            Intent intent = new Intent(getBaseContext(), MainmenuActivity.class);
+                            finish();
+                            startActivity(intent);
+                            overridePendingTransition(0, 0); // Avoid sliding animation
+                        }
 
-                                @Override
-                                public void onFailure(String reason)
-                                {
-                                    if (reason.equals("credentials"))
-                                    {
-                                        gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
-                                        gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
-                                    }
-                                    // TODO: Show error screen 'Can not log in.' if reason equals site
-                                }
-                            });
+                        @Override
+                        public void onFailure(String reason)
+                        {
+                            if (reason.equals("credentials"))
+                            {
+                                gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
+                                gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
+                            }
+                            // TODO: Show error screen 'Can not log in.' if reason equals site
+                        }
+                    });
                 }
             }
         });

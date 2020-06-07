@@ -1,4 +1,4 @@
-package com.koubilgi.submenus;
+package com.koubilgi.components;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.koubilgi.R;
 import com.koubilgi.SubmenuActivity;
+import com.koubilgi.submenus.SubmenuManager;
 
 public class SubmenuButtonAdapter extends BaseAdapter
 {

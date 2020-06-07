@@ -20,7 +20,7 @@ import org.jsoup.select.Elements;
 
 public class FeeStatusSubmenu extends Submenu
 {
-    public FeeStatusSubmenu()
+    FeeStatusSubmenu()
     {
         super(R.string.FEE_STATUS, R.drawable.icon_mainmenu_harcdurumu);
     }
@@ -28,7 +28,8 @@ public class FeeStatusSubmenu extends Submenu
     @Override
     public void fillContentView(final Context context)
     {
-        Student.getInstance(context).makeGetRequest("https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi.cfm", new ConnectionListener()
+        Student.getInstance(context).makeGetRequest("https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi"
+                + ".cfm", new ConnectionListener()
         {
             @Override
             public void onSuccess(String... args)
@@ -38,6 +39,13 @@ public class FeeStatusSubmenu extends Submenu
                 Document doc = Jsoup.parse(response);
 
                 Elements mainDivs = doc.select("div.col-lg-12:has(div.col-lg-2):gt(0)");
+
+                if (mainDivs.size() <= 0)
+                {
+                    // TODO: Site has been changed, go offline for this submenu indefinitely (till updated)
+                    return;
+                }
+
                 Fee[] fees = new Fee[mainDivs.size()];
 
                 for (int i = 0; i < mainDivs.size(); i++)
@@ -64,7 +72,7 @@ public class FeeStatusSubmenu extends Submenu
                 LinearLayout layout = ((Activity) context).findViewById(R.id.submenu_linearlayout);
                 for (Fee fee : fees)
                 {
-                    View toAdd = fee.createView(context);
+                    View toAdd = fee.getView(context);
                     layout.addView(toAdd);
                 }
             }
@@ -85,7 +93,7 @@ class Fee
     String fee;
     String paid;
 
-    View createView(Context context)
+    View getView(Context context)
     {
         final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -93,7 +101,8 @@ class Fee
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setClipToPadding(false);
-        layout.setPadding((int) metrics.density * 20, (int) metrics.density * 10, (int) metrics.density * 20, (int) metrics.density * 10);
+        layout.setPadding((int) metrics.density * 20, (int) metrics.density * 10, (int) metrics.density * 20,
+                (int) metrics.density * 10);
 
         View divider = inflater.inflate(R.layout.text_divider, null);
         TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
@@ -103,7 +112,8 @@ class Fee
         ImageView dividerImage = divider.findViewById(R.id.textdivider_image);
         dividerImage.setImageResource(R.drawable.icon_lesson_daymarker_circular);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
+                , LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(0, 0, 0, 15);
 
         layout.addView(divider, layoutParams);

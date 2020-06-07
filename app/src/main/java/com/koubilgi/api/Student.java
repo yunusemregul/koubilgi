@@ -44,9 +44,9 @@ import java.util.Map;
  */
 
 /**
- * Student class that is single instanced over the whole app. It does the functionalities like logging
- * in, getting student's personal info and other student-related things.
- * <p>
+ * Student class that is single instanced over the whole app. It does the functionalities like logging in, getting
+ * student's personal info and other student-related things.
+ *
  * Made referring to the Singleton design pattern.
  */
 public class Student implements Serializable
@@ -131,9 +131,8 @@ public class Student implements Serializable
     }
 
     /**
-     * Logs in the student with given credentials. If the connection is successful, calls
-     * listener.onSuccess with student's name and number, if the connection is not successful
-     * calls listener.onFailure with the reason.
+     * Logs in the student with given credentials. If the connection is successful, calls listener.onSuccess with
+     * student's name and number, if the connection is not successful calls listener.onFailure with the reason.
      *
      * @param num      number of the logging in student
      * @param pass     password of the logging in student
@@ -175,15 +174,14 @@ public class Student implements Serializable
         };
 
         /*
-            Making login requests to the school site every time the app starts
-            is not a good practice I think. So I thought it would be better to check if our
-            session cookies are still valid. If they are valid then do not try to log in again,
-            if they are not valid then make a log in request.
+            Making login requests to the school site every time the app starts is not a good practice I think. So I
+            thought it would be better to check if we already logged in. We can check this by using our latest
+            session cookies. If they are valid then do not try to log in again, if they are not valid then make a log
+             in request.
 
-            Checking session cookies is done by making a get request to any student page.
-            I choose HarcBilgi page because it generally has the lowest Content-Length and thus
-            we will waste the least amount of internet data I think. Which is good for users
-            with limited mobile data.
+            Checking session cookies is done by making a get request to any student page. I choose HarcBilgi page
+            because it generally has the lowest Content-Length and thus we will waste the least amount of internet
+            data I think. Which is good for users with limited mobile data.
          */
 
         final String harcurl = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi.cfm";
@@ -205,7 +203,8 @@ public class Student implements Serializable
                     makeLogInRequest(num, pass, logginginListener);
                 }
             });
-        } else
+        }
+        else
         {
             makeLogInRequest(num, pass, logginginListener);
         }
@@ -221,80 +220,78 @@ public class Student implements Serializable
             {
                 final String token = args[0];
 
-                StringRequest postReq = new StringRequest(Request.Method.POST, url,
-                        new Response.Listener<String>()
+                StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response)
+                    {
+                        if (response.contains("alert") && response.contains("hata"))
                         {
-                            @Override
-                            public void onResponse(String response)
-                            {
-                                if (response.contains("alert") && response.contains("hata"))
-                                {
-                                    if (listener != null)
-                                        listener.onFailure("relogin");
-                                    // TODO: Go offline mode
-                                    return;
-                                }
+                            if (listener != null)
+                                listener.onFailure("relogin");
+                            // TODO: Go offline mode
+                            return;
+                        }
 
-                                boolean success = true;
-                                if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
-                                    success = false;
+                        boolean success = true;
+                        if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
+                            success = false;
 
-                                Document doc = Jsoup.parse(response);
+                        Document doc = Jsoup.parse(response);
 
-                                // Extract student name and number
+                        // Extract student name and number
 
-                                Element info = doc.select("h4").first();
+                        Element info = doc.select("h4").first();
 
-                                if (info == null)
-                                    success = false;
+                        if (info == null)
+                            success = false;
 
-                                // If login was successful or not inform so
-                                if (success)
-                                {
-                                    loggedIn = true;
+                        // If login was successful or not inform so
+                        if (success)
+                        {
+                            loggedIn = true;
 
-                                    // Save cookies
-                                    CookieStore store = cookieManager.getCookieStore();
-                                    List<HttpCookie> cookies = store.getCookies();
+                            // Save cookies
+                            CookieStore store = cookieManager.getCookieStore();
+                            List<HttpCookie> cookies = store.getCookies();
 
-                                    String[] infoTxt = info.text().split(" ", 2);
+                            String[] infoTxt = info.text().split(" ", 2);
                                 /*
                                     index 1 = student name
                                     index 0 = student number
                                  */
-                                    name = infoTxt[1];
-                                    number = infoTxt[0];
-                                    password = pass;
-                                    cookieString = StringUtil.join(cookies, "; ");
+                            name = infoTxt[1];
+                            number = infoTxt[0];
+                            password = pass;
+                            cookieString = StringUtil.join(cookies, "; ");
 
-                                    // Save data and credentials for later
-                                    try
-                                    {
-                                        saveToFile();
-                                    } catch (Exception e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-
-                                    if (listener != null)
-                                        listener.onSuccess(name, number);
-                                } else
-                                {
-                                    if (listener != null)
-                                        listener.onFailure("credentials");
-                                }
-                            }
-                        },
-                        new Response.ErrorListener()
-                        {
-                            @Override
-                            public void onErrorResponse(VolleyError error)
+                            // Save data and credentials for later
+                            try
                             {
-                                if (listener != null)
-                                    listener.onFailure("site");
+                                saveToFile();
+                            } catch (Exception e)
+                            {
+                                e.printStackTrace();
                             }
+
+                            if (listener != null)
+                                listener.onSuccess(name, number);
                         }
-                )
+                        else
+                        {
+                            if (listener != null)
+                                listener.onFailure("credentials");
+                        }
+                    }
+                }, new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        if (listener != null)
+                            listener.onFailure("site");
+                    }
+                })
                 {
                     @Override
                     protected Map<String, String> getParams()
@@ -336,7 +333,8 @@ public class Student implements Serializable
         dialogBuilder.setTitle("reCAPTCHA");
 
         recaptchaDialog = dialogBuilder.show();
-        recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
 
         webView.setWebViewClient(new WebViewClient()
         {
@@ -345,18 +343,7 @@ public class Student implements Serializable
             {
                 super.onPageFinished(view, url);
 
-                webView.loadUrl("javascript: if($('div.g-recaptcha').length)" +
-                        "{" +
-                        "var sitekey = $('div.g-recaptcha').attr('data-sitekey');" +
-                        "$('body > *').remove(); " +
-                        "$('body').append('<div id=\"captcha\" style=\"display:flex;justify-content:center;align-items:center;overflow:hidden;padding:20px;\"></div>'); " +
-                        "grecaptcha.render('captcha', {\n" +
-                        "    'sitekey' : sitekey,\n" +
-                        "    'callback' : function(response){console.log('koubilgicaptchatoken:'+response)},\n" +
-                        "});" +
-                        "$('div:not(#captcha)').css('display', 'inline-block');" +
-                        "$('body').css('background-color','transparent');" +
-                        "}");
+                webView.loadUrl("javascript: if($('div.g-recaptcha').length)" + "{" + "var sitekey = $('div" + ".g" + "-recaptcha').attr" + "('data-sitekey');" + "$('body > *').remove(); " + "$('body').append" + "('<div id=\"captcha\" " + "style=\"display:flex;justify-content:center;align-items:center;" + "overflow:hidden;padding:20px;" + "\"></div>'); " + "grecaptcha.render('captcha', {\n" + "   " + " 'sitekey' : sitekey,\n" + "    'callback' :" + " function(response){console.log" + "('koubilgicaptchatoken:'+response)},\n" + "});" + "$('div:not(#captcha)" + "').css" + "('display', 'inline-block');" + "$('body').css('background-color','transparent');" + "}");
                 webView.setVisibility(View.VISIBLE);
             }
         });
@@ -380,8 +367,8 @@ public class Student implements Serializable
     }
 
     /**
-     * Marks active student for re-log. Means that there was an error making some request to the
-     * school site and we should log in again.
+     * Marks active student for re-log. Means that there was an error making some request to the school site and we
+     * should log in again.
      */
     private void markForRelog(ConnectionListener listener)
     {
@@ -395,12 +382,11 @@ public class Student implements Serializable
     }
 
     /**
-     * If this method has been called before, calls method listener.onSuccess with the parameter
-     * of active student's department name.
-     * If the method has never called before, connects to the school site and parses the
-     * student department from students personal info, saves it for later uses, calls
-     * listener.onSuccess with student's department name.
-     * <p>
+     * If this method has been called before, calls method listener.onSuccess with the parameter of active student's
+     * department name. If the method has never called before, connects to the school site and parses the student
+     * department from students personal info, saves it for later uses, calls listener.onSuccess with student's
+     * department name.
+     *
      * Calls listener.onFailure with the reason if there's any errors.
      *
      * @param listener the listener that waits for the methods response
@@ -417,81 +403,79 @@ public class Student implements Serializable
         }
 
         String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/KisiselBilgiler/KisiselBilgiGoruntuleme.cfm";
-        StringRequest postReq = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>()
+        StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                if (response.contains("alert") && response.contains("hata"))
                 {
-                    @Override
-                    public void onResponse(String response)
+                    listener.onFailure("relogin");
+                    markForRelog(new ConnectionListener()
                     {
-                        if (response.contains("alert") && response.contains("hata"))
+                        @Override
+                        public void onSuccess(String... args)
                         {
-                            listener.onFailure("relogin");
-                            markForRelog(new ConnectionListener()
-                            {
-                                @Override
-                                public void onSuccess(String... args)
-                                {
-                                    personalInfo(listener);
-                                }
-
-                                @Override
-                                public void onFailure(String reason)
-                                {
-
-                                }
-                            });
-                            return;
+                            personalInfo(listener);
                         }
 
-                        Document doc = Jsoup.parse(response);
-                        Element form = doc.select("#OgrKisiselBilgiler").first();
-                        Element boldDiv = form.select("b:contains(Bölüm)").first().parent();
-                        Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
-
-                        /*
-                            We are trying to extract department info from whole personal information page
-                            First we find the div that has a child as <b>Bölüm</b> then
-                            then get its parent and select the last element we need which is students
-                            department.
-
-                            Heres what these variables mean with an example:
-                                boldDiv =
-                                    <div class="col-sm-4"><b>Bölüm</b></div>
-
-                                boldDiv.parent() =
-                                    <div class="col-sm-6">
-										<div class="col-sm-4"><b>Bölüm</b></div>
-										<div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
-									</div>
-
-                                departmentDiv =
-                                    <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
-                         */
-                        String depart = departmentDiv.html();
-                        depart = depart.replace("i", "İ");
-                        depart = depart.replace(" Bölümü", "");
-                        department = depart;
-                        try
+                        @Override
+                        public void onFailure(String reason)
                         {
-                            saveToFile();
-                        } catch (Exception e)
-                        {
-                            e.printStackTrace();
+
                         }
-
-                        listener.onSuccess(depart);
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        // We assume that we failed because site is not reachable
-                        listener.onFailure("site");
-                    }
+                    });
+                    return;
                 }
-        )
+
+                Document doc = Jsoup.parse(response);
+                Element form = doc.select("#OgrKisiselBilgiler").first();
+                Element boldDiv = form.select("b:contains(Bölüm)").first().parent();
+                Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
+
+                /*
+                    We are trying to extract department info from whole personal information page
+                    First we find the div that has a child as <b>Bölüm</b> then
+                    then get its parent and select the last element we need which is students
+                    department.
+
+                    Heres what these variables mean with an example:
+                        boldDiv =
+                            <div class="col-sm-4"><b>Bölüm</b></div>
+
+                        boldDiv.parent() =
+                            <div class="col-sm-6">
+                                <div class="col-sm-4"><b>Bölüm</b></div>
+                                <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
+                            </div>
+
+                        departmentDiv =
+                            <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
+                 */
+
+                String depart = departmentDiv.html();
+                depart = depart.replace("i", "İ");
+                depart = depart.replace(" Bölümü", "");
+                department = depart;
+                try
+                {
+                    saveToFile();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                listener.onSuccess(depart);
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                // We assume that we failed because site is not reachable
+                listener.onFailure("site");
+            }
+        })
         {
             @Override
             public Map<String, String> getHeaders()
@@ -517,8 +501,8 @@ public class Student implements Serializable
     }
 
     /**
-     * Makes post request to the specified url with params and calls back the result on listener.
-     * Uses student session cookies while making the request.
+     * Makes post request to the specified url with params and calls back the result on listener. Uses student session
+     * cookies while making the request.
      *
      * @param url      to make the request
      * @param params   to post
@@ -526,45 +510,42 @@ public class Student implements Serializable
      */
     public void makePostRequest(final String url, final Map<String, String> params, final ConnectionListener listener)
     {
-        StringRequest postReq = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>()
+        StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                if (response.contains("alert") && response.contains("hata"))
                 {
-                    @Override
-                    public void onResponse(String response)
+                    listener.onFailure("relogin");
+                    markForRelog(new ConnectionListener()
                     {
-                        if (response.contains("alert") && response.contains("hata"))
+                        @Override
+                        public void onSuccess(String... args)
                         {
-                            listener.onFailure("relogin");
-                            markForRelog(new ConnectionListener()
-                            {
-                                @Override
-                                public void onSuccess(String... args)
-                                {
-                                    makePostRequest(url, params, listener);
-                                }
-
-                                @Override
-                                public void onFailure(String reason)
-                                {
-
-                                }
-                            });
-                            return;
+                            makePostRequest(url, params, listener);
                         }
 
-                        listener.onSuccess(response);
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        // We assume that we failed because site is not reachable
-                        listener.onFailure("site");
-                    }
+                        @Override
+                        public void onFailure(String reason)
+                        {
+
+                        }
+                    });
+                    return;
                 }
-        )
+
+                listener.onSuccess(response);
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                // We assume that we failed because site is not reachable
+                listener.onFailure("site");
+            }
+        })
         {
             @Override
             public Map<String, String> getHeaders()
@@ -592,44 +573,41 @@ public class Student implements Serializable
      */
     public void makeGetRequest(final String url, final ConnectionListener listener)
     {
-        StringRequest getReq = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>()
+        StringRequest getReq = new StringRequest(Request.Method.GET, url, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                if (response.contains("alert") && response.contains("hata"))
                 {
-                    @Override
-                    public void onResponse(String response)
+                    listener.onFailure("relogin");
+                    markForRelog(new ConnectionListener()
                     {
-                        if (response.contains("alert") && response.contains("hata"))
+                        @Override
+                        public void onSuccess(String... args)
                         {
-                            listener.onFailure("relogin");
-                            markForRelog(new ConnectionListener()
-                            {
-                                @Override
-                                public void onSuccess(String... args)
-                                {
-                                    makeGetRequest(url, listener);
-                                }
-
-                                @Override
-                                public void onFailure(String reason)
-                                {
-
-                                }
-                            });
-                            return;
+                            makeGetRequest(url, listener);
                         }
 
-                        listener.onSuccess(response);
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        listener.onFailure("site");
-                    }
+                        @Override
+                        public void onFailure(String reason)
+                        {
+
+                        }
+                    });
+                    return;
                 }
-        )
+
+                listener.onSuccess(response);
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                listener.onFailure("site");
+            }
+        })
         {
             @Override
             public Map<String, String> getHeaders()

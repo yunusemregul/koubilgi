@@ -15,7 +15,11 @@
             android:id="@+id/syllabus_classname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:ems="8"
             android:fontFamily="@font/seguisb"
+            android:lines="1"
+            android:maxLines="1"
             android:text="Veritabanı Yönetimi"
             android:textColor="@color/colorText"
             android:textSize="16sp"
@@ -86,26 +90,26 @@
             android:text="17:00"
             android:textColor="@color/colorText"
             android:textSize="23sp"
-            app:layout_constraintEnd_toStartOf="@+id/guideline8"
-            app:layout_constraintTop_toTopOf="@+id/guideline7" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/syllabus_classname"
+            app:layout_constraintEnd_toStartOf="@+id/guideline8" />
 
         <TextView
             android:id="@+id/syllabus_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="26sp"
             android:fontFamily="@font/segoeui"
             android:text="3 ders"
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline8"
-            app:layout_constraintTop_toTopOf="@+id/syllabus_starttime" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/syllabus_totaltime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14sp"
             android:fontFamily="@font/segoeui"
             android:text="~2 saat"
             android:textColor="@color/colorText"
