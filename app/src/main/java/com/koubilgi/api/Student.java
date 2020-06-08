@@ -42,8 +42,8 @@ import java.util.Map;
  */
 
 /**
- * Student class that is single instanced over the whole app. It does the functionalities like logging in, getting
- * student's personal info and other student-related things.
+ * Student class that is single instanced over the whole app. It is responsible of logging in to the school site, making
+ * get-post requests to the school site with student credentials and other student related things..
  *
  * Made referring to the Singleton design pattern.
  */
@@ -358,11 +358,7 @@ public class Student implements Serializable
                         "=onloadCallback\"></script>\n" + "</head>\n" + "<body>\n" + "\t<div id=\"captcha\" " +
                         "style" + "=\"display:flex;justify-content:center;align-items:center;overflow:hidden;" +
                         "padding:20px;\"> " + "</div>\n" + "</body>\n" + "\t<script type=\"text/javascript\">\n" +
-                        "\t\tfunction onloadCallback()" + "\n" + "\t\t{\n" + "\t\t\tgrecaptcha.render(\"captcha\", " +
-                        "{\n" + "\t\t\t\t\"sitekey\" : " + "\"6Le02eMUAAAAAF8BB2Ur7AuEErb6hvvtlUUwcf2a\",\n" + "\t\t" +
-                        "\t\t\"callback\" : function(response) {\n" + "\t\t\t\t\tconsole.log" +
-                        "(\"koubilgicaptchatoken:\"+response)\n" + "\t\t\t\t}\n" + "\t\t\t})\n" + "\t\t}\n" + "\t" +
-                        "</script>\n" + "</html>";
+                        "\t\tfunction onloadCallback()" + "\n" + "\t\t{\n" + "\t\t\tgrecaptcha.render(\"captcha\", " + "{\n" + "\t\t\t\t\"sitekey\" : " + "\"6Le02eMUAAAAAF8BB2Ur7AuEErb6hvvtlUUwcf2a\",\n" + "\t\t" + "\t\t\"callback\" : function(response) {\n" + "\t\t\t\t\tconsole.log" + "(\"koubilgicaptchatoken:\"+response)\n" + "\t\t\t\t}\n" + "\t\t\t})\n" + "\t\t}\n" + "\t" + "</script>\n" + "</html>";
         webView.loadDataWithBaseURL(url, data, "text/html", "UTF-8", null);
     }
 
@@ -382,16 +378,9 @@ public class Student implements Serializable
     }
 
     /**
-     * If this method has been called before, calls method listener.onSuccess with the parameter of active student's
-     * department name. If the method has never called before, connects to the school site and parses the student
-     * department from students personal info, saves it for later uses, calls listener.onSuccess with student's
-     * department name.
-     *
-     * Calls listener.onFailure with the reason if there's any errors.
-     *
-     * @param listener the listener that waits for the methods response
+     * TODO: Replace this with makePostRequest method
      */
-    public void personalInfo(final ConnectionListener listener)
+    public void makePersonalInfoRequest(final ConnectionListener listener)
     {
         if (!loggedIn)
             return;
@@ -416,7 +405,7 @@ public class Student implements Serializable
                         @Override
                         public void onSuccess(String... args)
                         {
-                            personalInfo(listener);
+                            makePersonalInfoRequest(listener);
                         }
 
                         @Override

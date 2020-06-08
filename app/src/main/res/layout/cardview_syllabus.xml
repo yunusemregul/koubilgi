@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="307dp"
-    android:layout_height="105dp"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     app:cardCornerRadius="6dp"
     app:cardElevation="6dp">
@@ -13,14 +13,12 @@
 
         <TextView
             android:id="@+id/syllabus_classname"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:ems="8"
             android:fontFamily="@font/seguisb"
-            android:lines="1"
-            android:maxLines="1"
-            android:text="Veritabanı Yönetimi"
+            android:maxLines="2"
+            android:text="CLASS NAME"
             android:textColor="@color/colorText"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -30,13 +28,21 @@
             android:id="@+id/syllabus_subject"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:fontFamily="@font/segoeui"
-            android:text="Veritabanı Yönetimi"
+            android:text="SUBJECT"
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="@+id/syllabus_classname" />
+            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_classname_subject" />
+
+        <Space
+            android:id="@+id/space_marginbottom_classname_subject"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="4sp"
+            app:layout_constraintBottom_toBottomOf="@+id/syllabus_classname"
+            app:layout_constraintEnd_toEndOf="@+id/syllabus_classname"
+            app:layout_constraintStart_toStartOf="@+id/syllabus_classname" />
 
         <TextView
             android:id="@+id/syllabus_teacher"
@@ -45,7 +51,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/segoeui"
-            android:text="Veritabanı Yönetimi"
+            android:text="TEACHER NAME"
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/imageView"
@@ -66,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/segoeui"
-            android:text="Büyük Amfi"
+            android:text="LOCATION"
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline9"
@@ -93,29 +99,45 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/syllabus_classname"
             app:layout_constraintEnd_toStartOf="@+id/guideline8" />
 
+        <Space
+            android:id="@+id/space_marginbottom_starttime_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8sp"
+            app:layout_constraintBottom_toBottomOf="@+id/syllabus_starttime"
+            app:layout_constraintEnd_toEndOf="@+id/syllabus_starttime"
+            app:layout_constraintStart_toStartOf="@+id/syllabus_starttime" />
+
         <TextView
             android:id="@+id/syllabus_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="26sp"
             android:fontFamily="@font/segoeui"
             android:text="3 ders"
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline8"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_starttime_count" />
+
+        <Space
+            android:id="@+id/space_marginbottom_count_totaltime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4sp"
+            app:layout_constraintBottom_toBottomOf="@+id/syllabus_count"
+            app:layout_constraintEnd_toEndOf="@+id/syllabus_count"
+            app:layout_constraintStart_toStartOf="@+id/syllabus_count" />
 
         <TextView
             android:id="@+id/syllabus_totaltime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14sp"
             android:fontFamily="@font/segoeui"
             android:text="~2 saat"
             android:textColor="@color/colorText"
             android:textSize="10sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline8"
-            app:layout_constraintTop_toTopOf="@+id/syllabus_count" />
+            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_count_totaltime" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
@@ -144,5 +166,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_end="7dp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

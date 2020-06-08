@@ -40,7 +40,7 @@ public class MainmenuActivity extends AppCompatActivity
             tStudentDepartment.setText(student.getDepartment());
         else
         {
-            Student.getInstance(this).personalInfo(new ConnectionListener()
+            Student.getInstance(this).makePersonalInfoRequest(new ConnectionListener()
             {
                 @Override
                 public void onSuccess(String... args)

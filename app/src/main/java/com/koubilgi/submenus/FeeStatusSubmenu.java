@@ -114,7 +114,7 @@ class Fee
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
                 , LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 0, 15);
+        layoutParams.setMargins(0, 0, 0, (int) (metrics.density * 4));
 
         layout.addView(divider, layoutParams);
 

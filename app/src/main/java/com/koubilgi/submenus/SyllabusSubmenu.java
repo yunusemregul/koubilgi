@@ -73,11 +73,11 @@ public class SyllabusSubmenu extends Submenu
                                     String[] teacherAndLocation = column.select("i").get(i).html().split("<br>");
                                     String teacher = teacherAndLocation[0];
                                     String location = teacherAndLocation[1];
+                                    location = location.substring(1, location.length() - 1);
 
                                     days[columnIndex - 1].addClass(new Class(className, location, teacher, rowTime));
                                 }
                             }
-                            //days[rowIndex-1].addClass();
                         }
                     } catch (Exception e)
                     {
@@ -111,7 +111,7 @@ public class SyllabusSubmenu extends Submenu
  */
 class Day
 {
-    // TODO: Find a better way
+    // TODO: Find a better way, doesnt support localisation
     final String[] days = {"Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"};
 
     int dayIndex;
@@ -130,7 +130,7 @@ class Day
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setClipToPadding(false);
-        layout.setPadding((int) metrics.density * 20, (int) metrics.density * 10, (int) metrics.density * 20,
+        layout.setPadding(0, (int) metrics.density * 10, (int) metrics.density * 20,
                 (int) metrics.density * 10);
 
         View divider = inflater.inflate(R.layout.text_divider, null);
@@ -141,16 +141,18 @@ class Day
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
                 , LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 0, 20);
+        layoutParams.setMargins(0, 0, 0, (int) (metrics.density * 12));
 
         layout.addView(divider, layoutParams);
 
-        layoutParams.setMargins(0, 20, 0, 0);
-
         for (int i = 0; i < classes.size(); i++)
         {
+            LinearLayout.LayoutParams cardViewLayout =
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+            cardViewLayout.setMargins((int) (metrics.density * 36), 0, 0, (int) (metrics.density * 12));
             View cardView = this.classes.get(i).getView(context);
-            layout.addView(cardView, layoutParams);
+            layout.addView(cardView, cardViewLayout);
         }
 
         return layout;
