@@ -4,12 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -126,6 +124,8 @@ public class Student implements Serializable
         Student loaded = (Student) objectStream.readObject();
         objectStream.close();
         inputStream.close();
+
+        loggedIn = true;
 
         return loaded;
     }
@@ -326,7 +326,6 @@ public class Student implements Serializable
         final WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.setVisibility(View.GONE);
 
         dialogBuilder.setView(webView);
         dialogBuilder.setCancelable(false);
@@ -336,17 +335,6 @@ public class Student implements Serializable
         recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
 
-        webView.setWebViewClient(new WebViewClient()
-        {
-            @Override
-            public void onPageFinished(WebView view, String url)
-            {
-                super.onPageFinished(view, url);
-
-                webView.loadUrl("javascript: if($('div.g-recaptcha').length)" + "{" + "var sitekey = $('div" + ".g" + "-recaptcha').attr" + "('data-sitekey');" + "$('body > *').remove(); " + "$('body').append" + "('<div id=\"captcha\" " + "style=\"display:flex;justify-content:center;align-items:center;" + "overflow:hidden;padding:20px;" + "\"></div>'); " + "grecaptcha.render('captcha', {\n" + "   " + " 'sitekey' : sitekey,\n" + "    'callback' :" + " function(response){console.log" + "('koubilgicaptchatoken:'+response)},\n" + "});" + "$('div:not(#captcha)" + "').css" + "('display', 'inline-block');" + "$('body').css('background-color','transparent');" + "}");
-                webView.setVisibility(View.VISIBLE);
-            }
-        });
         webView.setWebChromeClient(new WebChromeClient()
         {
             @Override
@@ -363,7 +351,19 @@ public class Student implements Serializable
                 return super.onConsoleMessage(consoleMessage);
             }
         });
-        webView.loadUrl(url);
+
+        // TODO: This looks bad and is not readable
+        String data =
+                "<html>\n" + "<head>\n" + "\t<script src=\"https://www.google.com/recaptcha/api" + ".js?onload" +
+                        "=onloadCallback\"></script>\n" + "</head>\n" + "<body>\n" + "\t<div id=\"captcha\" " +
+                        "style" + "=\"display:flex;justify-content:center;align-items:center;overflow:hidden;" +
+                        "padding:20px;\"> " + "</div>\n" + "</body>\n" + "\t<script type=\"text/javascript\">\n" +
+                        "\t\tfunction onloadCallback()" + "\n" + "\t\t{\n" + "\t\t\tgrecaptcha.render(\"captcha\", " +
+                        "{\n" + "\t\t\t\t\"sitekey\" : " + "\"6Le02eMUAAAAAF8BB2Ur7AuEErb6hvvtlUUwcf2a\",\n" + "\t\t" +
+                        "\t\t\"callback\" : function(response) {\n" + "\t\t\t\t\tconsole.log" +
+                        "(\"koubilgicaptchatoken:\"+response)\n" + "\t\t\t\t}\n" + "\t\t\t})\n" + "\t\t}\n" + "\t" +
+                        "</script>\n" + "</html>";
+        webView.loadDataWithBaseURL(url, data, "text/html", "UTF-8", null);
     }
 
     /**

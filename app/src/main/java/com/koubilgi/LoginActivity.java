@@ -39,7 +39,6 @@ public class LoginActivity extends AppCompatActivity
         // Get relative DP size
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
-
         final Button button = findViewById(R.id.button_login);
         button.setOnClickListener(new View.OnClickListener()
         {

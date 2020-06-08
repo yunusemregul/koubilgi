@@ -38,37 +38,23 @@ public class MainmenuActivity extends AppCompatActivity
             tStudentNumber.setText(student.getNumber());
         if (student.getDepartment() != null)
             tStudentDepartment.setText(student.getDepartment());
-
-        Student.getInstance(this).logIn(student.getNumber(), student.getPassword(), new ConnectionListener()
+        else
         {
-            @Override
-            public void onSuccess(String... args)
+            Student.getInstance(this).personalInfo(new ConnectionListener()
             {
-                tStudentName.setText(args[0]); // name
-                tStudentNumber.setText(args[1]); // number
-
-                Student.getInstance(getApplicationContext()).personalInfo(new ConnectionListener()
+                @Override
+                public void onSuccess(String... args)
                 {
-                    @Override
-                    public void onSuccess(String... args)
-                    {
-                        tStudentDepartment.setText(args[0]);
-                    }
+                    tStudentDepartment.setText(args[0]);
+                }
 
-                    @Override
-                    public void onFailure(String reason)
-                    {
+                @Override
+                public void onFailure(String reason)
+                {
 
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(String reason)
-            {
-                // TODO: Show error screen 'Can not log in.' if reason equals site
-            }
-        });
+                }
+            });
+        }
 
         GridView submenus = findViewById(R.id.submenus);
         submenus.setAdapter(new SubmenuButtonAdapter(this));
