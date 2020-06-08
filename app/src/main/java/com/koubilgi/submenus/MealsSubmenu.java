@@ -8,7 +8,7 @@ public class MealsSubmenu extends Submenu
 {
     public MealsSubmenu()
     {
-        super(R.string.MEALS, R.drawable.icon_mainmenu_yemekhane);
+        super(R.string.submenu_meals, R.drawable.icon_mainmenu_yemekhane);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.koubilgi.submenus;
 import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -17,16 +18,22 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+/**
+ * TODO: Find a way to get when did school term started
+ */
 
 public class SyllabusSubmenu extends Submenu
 {
     SyllabusSubmenu()
     {
-        super(R.string.SYLLABUS, R.drawable.icon_mainmenu_dersprogrami);
+        super(R.string.submenu_syllabus, R.drawable.icon_mainmenu_dersprogrami);
     }
 
     @Override
@@ -111,9 +118,6 @@ public class SyllabusSubmenu extends Submenu
  */
 class Day
 {
-    // TODO: Find a better way, doesnt support localisation
-    final String[] days = {"Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"};
-
     int dayIndex;
     ArrayList<Class> classes = new ArrayList<>();
 
@@ -130,14 +134,19 @@ class Day
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setClipToPadding(false);
-        layout.setPadding(0, (int) metrics.density * 10, (int) metrics.density * 20,
-                (int) metrics.density * 10);
+        layout.setPadding(0, (int) metrics.density * 10, (int) metrics.density * 20, (int) metrics.density * 10);
 
         View divider = inflater.inflate(R.layout.text_divider, null);
         TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
         TextView dividerText = divider.findViewById(R.id.textdivider_text);
         dividerText.setVisibility(View.GONE);
         dividerMain.setText(getName());
+
+        if ((Calendar.MONDAY + dayIndex) == Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
+        {
+            dividerText.setVisibility(View.VISIBLE);
+            dividerText.setText(R.string.submenu_syllabus_today);
+        }
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
                 , LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -151,8 +160,23 @@ class Day
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
             cardViewLayout.setMargins((int) (metrics.density * 36), 0, 0, (int) (metrics.density * 12));
-            View cardView = this.classes.get(i).getView(context);
+            View cardView = classes.get(i).getView(context);
             layout.addView(cardView, cardViewLayout);
+
+            // TODO: Follow the design, its not complete
+            if (i + 1 < classes.size())
+            {
+                if (classes.get(i).getEndTime() < classes.get(i + 1).startTime.getTime())
+                {
+                    TextView freeTime = new TextView(context);
+                    String text =
+                            TimeUnit.MINUTES.convert(classes.get(i + 1).startTime.getTime() - classes.get(i).getEndTime(), TimeUnit.MILLISECONDS) + " dakika ara";
+                    freeTime.setText(text);
+                    freeTime.setGravity(Gravity.CENTER);
+                    freeTime.setTextColor(context.getResources().getColor(R.color.colorText));
+                    layout.addView(freeTime, cardViewLayout);
+                }
+            }
         }
 
         return layout;
@@ -160,7 +184,7 @@ class Day
 
     String getName()
     {
-        return days[dayIndex];
+        return DateFormatSymbols.getInstance().getWeekdays()[Calendar.MONDAY + dayIndex];
     }
 
     void addClass(Class toAdd)
@@ -212,8 +236,8 @@ class Class
 
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         ((TextView) cardView.findViewById(R.id.syllabus_starttime)).setText(format.format(startTime));
-        ((TextView) cardView.findViewById(R.id.syllabus_count)).setText(count + " ders");
-        ((TextView) cardView.findViewById(R.id.syllabus_totaltime)).setText(count * 40 + " dakika");
+        ((TextView) cardView.findViewById(R.id.syllabus_count)).setText(String.format(context.getString(R.string.submenu_syllabus_class_count), count));
+        ((TextView) cardView.findViewById(R.id.syllabus_totaltime)).setText(String.format(context.getString(R.string.submenu_syllabus_class_total_time), count * 40));
 
         return cardView;
     }

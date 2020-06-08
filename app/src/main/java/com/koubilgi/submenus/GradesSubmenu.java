@@ -8,7 +8,7 @@ public class GradesSubmenu extends Submenu
 {
     public GradesSubmenu()
     {
-        super(R.string.GRADES, R.drawable.icon_mainmenu_notbilgileri);
+        super(R.string.submenu_grades, R.drawable.icon_mainmenu_notbilgileri);
     }
 
     @Override

@@ -150,7 +150,7 @@ public class Student implements Serializable
 
         // Logging in... screen
         AlertDialog.Builder logginginPopup = new AlertDialog.Builder(context);
-        logginginPopup.setMessage(R.string.loggingin);
+        logginginPopup.setMessage(R.string.logging_in);
 
         logginginPopup.setCancelable(false);
         final AlertDialog loggingin = logginginPopup.show();

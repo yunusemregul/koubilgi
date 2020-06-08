@@ -8,7 +8,7 @@ public class GeneralSubmenu extends Submenu
 {
     public GeneralSubmenu()
     {
-        super(R.string.GENERAL, R.drawable.icon_mainmenu_geneldurum);
+        super(R.string.submenu_general, R.drawable.icon_mainmenu_geneldurum);
     }
 
     @Override

@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".LoginActivity"
-            android:label="KOU Bilgi"
+            android:label="@string/app_name_short"
             android:screenOrientation="portrait"
             android:theme="@style/LoadingScreenTheme"
             tools:ignore="LockedOrientationActivity">
@@ -26,13 +26,13 @@
         </activity>
         <activity
             android:name=".MainmenuActivity"
-            android:label="Ana Menü"
+            android:label="@string/menu_main"
             android:screenOrientation="portrait"
             android:theme="@style/LoadingScreenTheme"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".SubmenuActivity"
-            android:label="Alt Menü"
+            android:label="@string/menu_sub"
             android:screenOrientation="portrait"
             android:theme="@style/LoadingScreenTheme"
             tools:ignore="LockedOrientationActivity" />

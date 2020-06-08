@@ -22,7 +22,7 @@ public class FeeStatusSubmenu extends Submenu
 {
     FeeStatusSubmenu()
     {
-        super(R.string.FEE_STATUS, R.drawable.icon_mainmenu_harcdurumu);
+        super(R.string.submenu_fee_status, R.drawable.icon_mainmenu_harcdurumu);
     }
 
     @Override

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">KOU Info. System</string>
+    <string name="disclaimer_3rdparty">Kocaeli Üniversitesi\'nden bağımsız olarak yapılmıştır.</string>
+    <string name="number">Number</string>
+    <string name="password">Password</string>
+    <string name="login">LOGIN</string>
+    <string name="student_name">Student Name</string>
+    <string name="unknown_person">UNKNOWN PERSON</string>
+    <string name="unknown_number">123456789</string>
+    <string name="unknown_department">UNKNOWN DEPARTMENT</string>
+    <string name="student_number">Student Number</string>
+    <string name="department">Department</string>
+    <string name="submenu_grades">GRADES</string>
+    <string name="submenu_syllabus">SYLLABUS</string>
+    <string name="submenu_meals">MEALS</string>
+    <string name="submenu_exam_schedule">EXAM SCHED.</string>
+    <string name="submenu_fee_status">FEE STATUS</string>
+    <string name="announcements">ANNOUNCEMENTS</string>
+    <string name="submenu_general">GENERAL</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="submenu_fee_status_term_fee">TERM FEE</string>
+    <string name="submenu_fee_status_paid_amount">PAID</string>
+    <string name="submenu_fee_status_status">STATUS</string>
+    <string name="submenu_syllabus_today">TODAY</string>
+    <string name="submenu_syllabus_class_count">%d classes</string>
+    <string name="submenu_syllabus_class_total_time">~%d minutes</string>
+    <string name="app_name_short">KOU Info</string>
+    <string name="menu_main">Main Menu</string>
+    <string name="menu_sub">Sub Menu</string>
+</resources>

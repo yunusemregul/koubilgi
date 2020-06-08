@@ -33,6 +33,7 @@
             android:textAlignment="center"
             android:textAllCaps="true"
             android:textColor="@color/colorText"
+            android:maxLines="1"
             android:textSize="11sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
