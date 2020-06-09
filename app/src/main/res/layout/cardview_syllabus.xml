@@ -93,17 +93,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/seguisb"
+            android:includeFontPadding="false"
             android:text="17:00"
             android:textColor="@color/colorText"
             android:textSize="23sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/syllabus_classname"
-            app:layout_constraintEnd_toStartOf="@+id/guideline8" />
+            app:layout_constraintEnd_toStartOf="@+id/guideline8"
+            app:layout_constraintTop_toTopOf="@+id/guideline7" />
 
         <Space
             android:id="@+id/space_marginbottom_starttime_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8sp"
+            android:layout_marginBottom="5sp"
             app:layout_constraintBottom_toBottomOf="@+id/syllabus_starttime"
             app:layout_constraintEnd_toEndOf="@+id/syllabus_starttime"
             app:layout_constraintStart_toStartOf="@+id/syllabus_starttime" />
@@ -113,6 +114,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/segoeui"
+            android:includeFontPadding="false"
             android:text="3 ders"
             android:textColor="@color/colorText"
             android:textSize="12sp"
@@ -123,7 +125,7 @@
             android:id="@+id/space_marginbottom_count_totaltime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4sp"
+            android:layout_marginBottom="2sp"
             app:layout_constraintBottom_toBottomOf="@+id/syllabus_count"
             app:layout_constraintEnd_toEndOf="@+id/syllabus_count"
             app:layout_constraintStart_toStartOf="@+id/syllabus_count" />
@@ -133,6 +135,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/segoeui"
+            android:includeFontPadding="false"
             android:text="~2 saat"
             android:textColor="@color/colorText"
             android:textSize="10sp"

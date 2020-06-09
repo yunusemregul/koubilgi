@@ -119,8 +119,8 @@ public class SyllabusSubmenu extends Submenu
  */
 class Day implements Serializable
 {
-    int dayIndex;
-    ArrayList<Class> classes = new ArrayList<>();
+    final int dayIndex;
+    final ArrayList<Class> classes = new ArrayList<>();
 
     Day(int dayIndex)
     {
@@ -210,10 +210,10 @@ class Day implements Serializable
 
 class Class implements Serializable
 {
-    String name;
-    String location;
-    String teacher;
-    Date startTime;
+    final String name;
+    final String location;
+    final String teacher;
+    final Date startTime;
     private int count = 1; // how many of this class
 
     Class(String name, String location, String teacher, Date start)

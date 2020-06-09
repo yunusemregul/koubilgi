@@ -4,8 +4,8 @@ import android.content.Context;
 
 public abstract class Submenu
 {
-    private int nameResource;
-    private int iconResource;
+    private final int nameResource;
+    private final int iconResource;
 
     Submenu(int nameRes, int iconRes)
     {

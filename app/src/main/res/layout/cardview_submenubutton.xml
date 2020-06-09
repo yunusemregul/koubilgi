@@ -6,6 +6,7 @@
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="6dp"
+    android:focusable="true"
     app:cardElevation="6dp">
 
     <LinearLayout

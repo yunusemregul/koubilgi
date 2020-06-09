@@ -3,7 +3,6 @@ package com.koubilgi.api;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
@@ -319,7 +318,6 @@ public class Student implements Serializable
 
     private void getRecaptchaToken(final ConnectionListener listener)
     {
-        Log.d("RECAPTCHA", "Called");
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
@@ -330,7 +328,6 @@ public class Student implements Serializable
         settings.setJavaScriptEnabled(true);
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(false);
-        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setDomStorageEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
@@ -642,8 +639,4 @@ public class Student implements Serializable
         return (number != null && password != null);
     }
 
-    public String getPassword()
-    {
-        return password;
-    }
 }
