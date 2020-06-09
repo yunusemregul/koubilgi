@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.android.volley.Request;
@@ -324,16 +325,22 @@ public class Student implements Serializable
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 
         final WebView webView = new WebView(context);
-        webView.getSettings().setJavaScriptEnabled(true);
         webView.setBackgroundColor(Color.TRANSPARENT);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setBuiltInZoomControls(false);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setDomStorageEnabled(true);
+        webView.setVerticalScrollBarEnabled(false);
 
         dialogBuilder.setView(webView);
         dialogBuilder.setCancelable(false);
         dialogBuilder.setTitle("reCAPTCHA");
 
         recaptchaDialog = dialogBuilder.show();
-        recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT);
+        recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
         webView.setWebChromeClient(new WebChromeClient()
         {

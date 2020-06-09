@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -116,7 +117,7 @@ public class SyllabusSubmenu extends Submenu
 /**
  * Represents a syllabus day which includes classes
  */
-class Day
+class Day implements Serializable
 {
     int dayIndex;
     ArrayList<Class> classes = new ArrayList<>();
@@ -207,7 +208,7 @@ class Day
     }
 }
 
-class Class
+class Class implements Serializable
 {
     String name;
     String location;
