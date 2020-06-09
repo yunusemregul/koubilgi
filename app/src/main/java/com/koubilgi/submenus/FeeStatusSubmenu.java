@@ -38,7 +38,7 @@ public class FeeStatusSubmenu extends Submenu
 
                 Document doc = Jsoup.parse(response);
 
-                Elements mainDivs = doc.select("div.col-lg-12:has(div.col-lg-2):gt(0)");
+                Elements mainDivs = doc.select("div.panel-body > div.col-lg-12:has(div.col-lg-2):not(div.bg-info)");
 
                 if (mainDivs.size() <= 0)
                 {
@@ -52,13 +52,6 @@ public class FeeStatusSubmenu extends Submenu
                 {
                     Element parent = mainDivs.get(i);
                     Elements els = parent.select("div.col-lg-2");
-
-                    if (els.size() != 6)
-                    {
-                        // TODO: Site has been changed, go offline for this submenu indefinitely (till updated)
-                        System.out.println("Site has been changed!");
-                        return;
-                    }
 
                     Fee fee = new Fee();
                     fee.term = els.first().text();
