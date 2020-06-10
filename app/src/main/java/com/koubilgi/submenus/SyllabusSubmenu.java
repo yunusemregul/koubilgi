@@ -6,12 +6,15 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.koubilgi.R;
 import com.koubilgi.api.ConnectionListener;
+import com.koubilgi.api.SimpleDate;
 import com.koubilgi.api.Student;
+import com.koubilgi.components.TimeSpanView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,11 +23,8 @@ import org.jsoup.select.Elements;
 
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * TODO: Find a way to get when did school term started
@@ -65,9 +65,7 @@ public class SyllabusSubmenu extends Submenu
 
                     try
                     {
-                        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-
-                        Date rowTime = format.parse(columns.get(0).select("i").text());
+                        SimpleDate rowTime = new SimpleDate(columns.get(0).select("i").text());
 
                         for (int columnIndex = 1; columnIndex < columns.size(); columnIndex++)
                         {
@@ -135,7 +133,6 @@ class Day implements Serializable
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setClipToPadding(false);
-        layout.setPadding(0, (int) metrics.density * 10, (int) metrics.density * 20, (int) metrics.density * 10);
 
         View divider = inflater.inflate(R.layout.text_divider, null);
         TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
@@ -151,7 +148,7 @@ class Day implements Serializable
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
                 , LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 0, (int) (metrics.density * 12));
+        layoutParams.setMargins(0, 0, 0, (int) (metrics.density * 5));
 
         layout.addView(divider, layoutParams);
 
@@ -160,18 +157,19 @@ class Day implements Serializable
             LinearLayout.LayoutParams cardViewLayout =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
-            cardViewLayout.setMargins((int) (metrics.density * 36), 0, 0, (int) (metrics.density * 12));
+            cardViewLayout.setMargins(0, 0, 0, (int) (metrics.density * 5));
             View cardView = classes.get(i).getView(context);
             layout.addView(cardView, cardViewLayout);
 
             // TODO: Follow the design, its not complete
             if (i + 1 < classes.size())
             {
-                if (classes.get(i).getEndTime() < classes.get(i + 1).startTime.getTime())
+                if (classes.get(i).endTime.getTime() < classes.get(i + 1).startTime.getTime())
                 {
                     TextView freeTime = new TextView(context);
                     String text =
-                            TimeUnit.MINUTES.convert(classes.get(i + 1).startTime.getTime() - classes.get(i).getEndTime(), TimeUnit.MILLISECONDS) + " dakika ara";
+                            (classes.get(i + 1).startTime.getTime() - classes.get(i).endTime.getTime()) + " " +
+                                    "dakika ara";
                     freeTime.setText(text);
                     freeTime.setGravity(Gravity.CENTER);
                     freeTime.setTextColor(context.getResources().getColor(R.color.colorText));
@@ -197,7 +195,7 @@ class Day implements Serializable
             if (!cl.name.equals(toAdd.name))
                 continue;
 
-            if (TimeUnit.MINUTES.convert(toAdd.startTime.getTime() - cl.getEndTime(), TimeUnit.MILLISECONDS) <= 60)
+            if ((toAdd.startTime.getTime() - cl.endTime.getTime()) <= 60)
             {
                 cl.increaseCount();
                 return;
@@ -213,48 +211,70 @@ class Class implements Serializable
     final String name;
     final String location;
     final String teacher;
-    final Date startTime;
+
+    final SimpleDate startTime;
+    SimpleDate endTime;
+
     private int count = 1; // how many of this class
 
-    Class(String name, String location, String teacher, Date start)
+    Class(String name, String location, String teacher, SimpleDate start)
     {
         this.name = name;
         this.location = location;
         this.teacher = teacher;
         this.startTime = start;
+        this.endTime = new SimpleDate(startTime.hour + (int) ((40 * count) / 60.f), startTime.minute + (40 * count) % 60);
     }
 
     View getView(Context context)
     {
+        final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.setPadding(0, (int) (metrics.density * 10), 0, (int) (metrics.density * 10));
+        layout.setClipToPadding(false);
+
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View cardView = inflater.inflate(R.layout.cardview_syllabus, null);
+        final View cardView = inflater.inflate(R.layout.cardview_syllabus, null);
 
         ((TextView) cardView.findViewById(R.id.syllabus_classname)).setText(name);
         //((TextView) cardView.findViewById(R.id.syllabus_subject)).setText(subject);
         ((TextView) cardView.findViewById(R.id.syllabus_teacher)).setText(teacher);
         ((TextView) cardView.findViewById(R.id.syllabus_location)).setText(location);
 
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        ((TextView) cardView.findViewById(R.id.syllabus_starttime)).setText(format.format(startTime));
+        ((TextView) cardView.findViewById(R.id.syllabus_starttime)).setText(startTime.toString());
         ((TextView) cardView.findViewById(R.id.syllabus_count)).setText(String.format(context.getString(R.string.submenu_syllabus_class_count), count));
         ((TextView) cardView.findViewById(R.id.syllabus_totaltime)).setText(String.format(context.getString(R.string.submenu_syllabus_class_total_time), count * 40));
 
-        return cardView;
+        final TimeSpanView spanView = new TimeSpanView(context);
+        spanView.setStartTime(startTime);
+        spanView.setEndTime(endTime);
+        int spanViewWidth = (int) (metrics.density * 13);
+        spanView.setLayoutParams(new LinearLayout.LayoutParams(spanViewWidth, ViewGroup.LayoutParams.MATCH_PARENT));
+        spanView.setX((int) (metrics.density * 20) - spanViewWidth / 2);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
+                , LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins((int) (metrics.density * 32), 0, (int) (metrics.density * 20), 0);
+
+        layout.addView(spanView);
+        layout.addView(cardView, layoutParams);
+
+        return layout;
     }
 
     void increaseCount()
     {
         count++;
+
+        endTime.hour = startTime.hour + (int) ((40 * count) / 60.f);
+        endTime.minute = startTime.minute + (40 * count) % 60;
     }
 
     int getCount()
     {
         return this.count;
-    }
-
-    long getEndTime()
-    {
-        return (startTime.getTime() + count * 40 * 60 * 1000);
     }
 }

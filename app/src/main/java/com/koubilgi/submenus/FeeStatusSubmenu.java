@@ -38,7 +38,7 @@ public class FeeStatusSubmenu extends Submenu
 
                 Document doc = Jsoup.parse(response);
 
-                Elements mainDivs = doc.select("div.panel-body > div.col-lg-12:has(div.col-lg-2):not(div.bg-info)");
+                Elements mainDivs = doc.select("div.panel-body > div.col-lg-12:not(div.bg-info):has(div.col-lg-2)");
 
                 if (mainDivs.size() <= 0)
                 {
