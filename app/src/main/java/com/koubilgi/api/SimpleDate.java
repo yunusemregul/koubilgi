@@ -4,24 +4,32 @@ import androidx.annotation.NonNull;
 
 public class SimpleDate
 {
-    public int hour;
-    public int minute;
+    private int day;
+    private int hour;
+    private int minute;
 
-    public SimpleDate(int hour, int minute)
+    public SimpleDate(int minutes)
     {
+        this.day = (int) (minutes / (float) (24 * 60));
+        this.hour = (int) ((minutes % (24 * 60)) / 60.f);
+        this.minute = ((minutes % (24 * 60)) % 60);
+    }
+
+    public SimpleDate(int day, int hour, int minute)
+    {
+        this.day = day;
         this.hour = hour;
         this.minute = minute;
     }
 
-    public SimpleDate(String format)
+    public int getMinutes()
     {
-        this.hour = Integer.parseInt(format.substring(0, 2));
-        this.minute = Integer.parseInt(format.substring(3, 5));
+        return ((this.day * 24 * 60) + (this.hour * 60 + this.minute));
     }
 
-    public int getTime()
+    public SimpleDate addMinutes(int minutes)
     {
-        return (this.hour * 60 + this.minute);
+        return new SimpleDate(getMinutes() + minutes);
     }
 
     @NonNull
@@ -29,5 +37,35 @@ public class SimpleDate
     public String toString()
     {
         return String.format("%02d:%02d", this.hour, this.minute);
+    }
+
+    public int getDay()
+    {
+        return day;
+    }
+
+    public void setDay(int day)
+    {
+        this.day = day;
+    }
+
+    public int getHour()
+    {
+        return hour;
+    }
+
+    public void setHour(int hour)
+    {
+        this.hour = hour;
+    }
+
+    public int getMinute()
+    {
+        return minute;
+    }
+
+    public void setMinute(int minute)
+    {
+        this.minute = minute;
     }
 }

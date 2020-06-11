@@ -65,7 +65,9 @@ public class SyllabusSubmenu extends Submenu
 
                     try
                     {
-                        SimpleDate rowTime = new SimpleDate(columns.get(0).select("i").text());
+                        String hourString = columns.get(0).select("i").text();
+                        int hour = Integer.parseInt(hourString.substring(0, 2));
+                        int minute = Integer.parseInt(hourString.substring(3, 5));
 
                         for (int columnIndex = 1; columnIndex < columns.size(); columnIndex++)
                         {
@@ -81,7 +83,9 @@ public class SyllabusSubmenu extends Submenu
                                     String location = teacherAndLocation[1];
                                     location = location.substring(1, location.length() - 1);
 
-                                    days[columnIndex - 1].addClass(new Class(className, location, teacher, rowTime));
+                                    SimpleDate classDate = new SimpleDate(columnIndex - 1, hour, minute);
+
+                                    days[columnIndex - 1].addClass(new Class(className, location, teacher, classDate));
                                 }
                             }
                         }
@@ -164,11 +168,11 @@ class Day implements Serializable
             // TODO: Follow the design, its not complete
             if (i + 1 < classes.size())
             {
-                if (classes.get(i).endTime.getTime() < classes.get(i + 1).startTime.getTime())
+                if (classes.get(i).endTime.getMinutes() < classes.get(i + 1).startTime.getMinutes())
                 {
                     TextView freeTime = new TextView(context);
                     String text =
-                            (classes.get(i + 1).startTime.getTime() - classes.get(i).endTime.getTime()) + " " +
+                            (classes.get(i + 1).startTime.getMinutes() - classes.get(i).endTime.getMinutes()) + " " +
                                     "dakika ara";
                     freeTime.setText(text);
                     freeTime.setGravity(Gravity.CENTER);
@@ -195,7 +199,7 @@ class Day implements Serializable
             if (!cl.name.equals(toAdd.name))
                 continue;
 
-            if ((toAdd.startTime.getTime() - cl.endTime.getTime()) <= 60)
+            if ((toAdd.startTime.getMinutes() - cl.endTime.getMinutes()) <= 60)
             {
                 cl.increaseCount();
                 return;
@@ -223,7 +227,7 @@ class Class implements Serializable
         this.location = location;
         this.teacher = teacher;
         this.startTime = start;
-        this.endTime = new SimpleDate(startTime.hour + (int) ((40 * count) / 60.f), startTime.minute + (40 * count) % 60);
+        this.endTime = start.addMinutes(40 * count);
     }
 
     View getView(Context context)
@@ -268,9 +272,7 @@ class Class implements Serializable
     void increaseCount()
     {
         count++;
-
-        endTime.hour = startTime.hour + (int) ((40 * count) / 60.f);
-        endTime.minute = startTime.minute + (40 * count) % 60;
+        endTime = startTime.addMinutes(count * 40);
     }
 
     int getCount()
