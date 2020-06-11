@@ -51,24 +51,31 @@ public class TimeSpanView extends View
         Rect top = new Rect(0, 0, getWidth(), 6);
         Rect bottom = new Rect(0, getHeight() - 6, getWidth(), getHeight());
 
-        canvas.drawRect(back, colorBordersPaint);
-
         Calendar calendar = Calendar.getInstance();
         SimpleDate now = new SimpleDate(calendar.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY,
                 calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
 
-        if (now.getMinutes() > startTime.getMinutes())
+        if (now.getDay() > endTime.getDay() || now.getTime() > endTime.getTime())
         {
-            Rect progress = new Rect();
+            canvas.drawRect(back, colorPrimaryPaint);
+        }
+        else
+        {
+            canvas.drawRect(back, colorBordersPaint);
 
-            progress.left = back.left;
-            progress.top = back.top;
-            progress.right = back.right;
+            if (now.getTime() > startTime.getTime())
+            {
+                Rect progress = new Rect();
 
-            progress.bottom =
-                    (int) (((float) (now.getMinutes() - startTime.getMinutes()) / (endTime.getMinutes() - startTime.getMinutes())) * (getHeight() - 6));
+                progress.left = back.left;
+                progress.top = back.top;
+                progress.right = back.right;
 
-            canvas.drawRect(progress, colorPrimaryPaint);
+                progress.bottom =
+                        (int) (((float) (now.getTime() - startTime.getTime()) / (endTime.getTime() - startTime.getTime())) * (getHeight() - 6));
+
+                canvas.drawRect(progress, colorPrimaryPaint);
+            }
         }
 
         canvas.drawRect(top, colorTextPaint);

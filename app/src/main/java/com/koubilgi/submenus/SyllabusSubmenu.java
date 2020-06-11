@@ -168,11 +168,10 @@ class Day implements Serializable
             // TODO: Follow the design, its not complete
             if (i + 1 < classes.size())
             {
-                if (classes.get(i).endTime.getMinutes() < classes.get(i + 1).startTime.getMinutes())
+                if (classes.get(i).endTime.getTime() < classes.get(i + 1).startTime.getTime())
                 {
                     TextView freeTime = new TextView(context);
-                    String text =
-                            (classes.get(i + 1).startTime.getMinutes() - classes.get(i).endTime.getMinutes()) + " " +
+                    String text = (classes.get(i + 1).startTime.getTime() - classes.get(i).endTime.getTime()) + " " +
                                     "dakika ara";
                     freeTime.setText(text);
                     freeTime.setGravity(Gravity.CENTER);
@@ -199,7 +198,7 @@ class Day implements Serializable
             if (!cl.name.equals(toAdd.name))
                 continue;
 
-            if ((toAdd.startTime.getMinutes() - cl.endTime.getMinutes()) <= 60)
+            if ((toAdd.startTime.getTime() - cl.endTime.getTime()) <= 60)
             {
                 cl.increaseCount();
                 return;
