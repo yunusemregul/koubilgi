@@ -4,11 +4,11 @@ import android.content.Context;
 
 import com.koubilgi.R;
 
-public class GeneralSubmenu extends Submenu
+public class Meals extends Submenu
 {
-    public GeneralSubmenu()
+    public Meals()
     {
-        super(R.string.submenu_general, R.drawable.icon_mainmenu_geneldurum);
+        super(R.string.submenu_meals, R.drawable.icon_mainmenu_yemekhane);
     }
 
     @Override

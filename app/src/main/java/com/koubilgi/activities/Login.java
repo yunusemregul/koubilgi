@@ -15,7 +15,7 @@ import com.koubilgi.R;
 import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
 
-public class LoginActivity extends AppCompatActivity
+public class Login extends AppCompatActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity
         if (student.hasCredentials())
         {
             finish();
-            Intent intent = new Intent(this, MainmenuActivity.class);
+            Intent intent = new Intent(this, Mainmenu.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
             overridePendingTransition(0, 0); // Avoid sliding animation
@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity
                         @Override
                         public void onSuccess(String... args)
                         {
-                            Intent intent = new Intent(getBaseContext(), MainmenuActivity.class);
+                            Intent intent = new Intent(getBaseContext(), Mainmenu.class);
                             finish();
                             startActivity(intent);
                             overridePendingTransition(0, 0); // Avoid sliding animation

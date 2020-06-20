@@ -4,11 +4,11 @@ import android.content.Context;
 
 import com.koubilgi.R;
 
-public class GradesSubmenu extends Submenu
+public class ExamSchedule extends Submenu
 {
-    public GradesSubmenu()
+    public ExamSchedule()
     {
-        super(R.string.submenu_grades, R.drawable.icon_mainmenu_notbilgileri);
+        super(R.string.submenu_exam_schedule, R.drawable.icon_mainmenu_sinavprogrami);
     }
 
     @Override

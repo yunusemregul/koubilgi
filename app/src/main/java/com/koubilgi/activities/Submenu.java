@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.koubilgi.R;
 import com.koubilgi.submenus.SubmenuManager;
 
-public class SubmenuActivity extends AppCompatActivity
+public class Submenu extends AppCompatActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)

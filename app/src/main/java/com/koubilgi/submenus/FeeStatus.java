@@ -18,9 +18,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class FeeStatusSubmenu extends Submenu
+public class FeeStatus extends Submenu
 {
-    FeeStatusSubmenu()
+    FeeStatus()
     {
         super(R.string.submenu_fee_status, R.drawable.icon_mainmenu_harcdurumu);
     }

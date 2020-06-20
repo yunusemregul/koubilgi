@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koubilgi.R;
-import com.koubilgi.activities.SubmenuActivity;
+import com.koubilgi.activities.Submenu;
 import com.koubilgi.submenus.SubmenuManager;
 
 public class SubmenuButtonAdapter extends BaseAdapter
@@ -57,7 +57,7 @@ public class SubmenuButtonAdapter extends BaseAdapter
             @Override
             public void onClick(View v)
             {
-                Intent intent = new Intent(context, SubmenuActivity.class);
+                Intent intent = new Intent(context, Submenu.class);
                 intent.putExtra("name", SubmenuManager.submenus[position].getNameResource());
                 context.startActivity(intent);
             }

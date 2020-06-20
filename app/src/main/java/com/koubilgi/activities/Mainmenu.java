@@ -17,7 +17,7 @@ import com.koubilgi.components.SubmenuButtonAdapter;
         Do parallax effect for top dock, when scrolled.
  */
 
-public class MainmenuActivity extends AppCompatActivity
+public class Mainmenu extends AppCompatActivity
 {
     @Override
     public void onCreate(Bundle savedInstanceState)

@@ -31,9 +31,9 @@ import java.util.Calendar;
  * TODO: Find a way to get when did school term started
  */
 
-public class SyllabusSubmenu extends Submenu
+public class Syllabus extends Submenu
 {
-    SyllabusSubmenu()
+    Syllabus()
     {
         super(R.string.submenu_syllabus, R.drawable.icon_mainmenu_dersprogrami);
     }

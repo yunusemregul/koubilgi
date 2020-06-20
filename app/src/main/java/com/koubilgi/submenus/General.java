@@ -4,11 +4,11 @@ import android.content.Context;
 
 import com.koubilgi.R;
 
-public class ExamScheduleSubmenu extends Submenu
+public class General extends Submenu
 {
-    public ExamScheduleSubmenu()
+    public General()
     {
-        super(R.string.submenu_exam_schedule, R.drawable.icon_mainmenu_sinavprogrami);
+        super(R.string.submenu_general, R.drawable.icon_mainmenu_geneldurum);
     }
 
     @Override
