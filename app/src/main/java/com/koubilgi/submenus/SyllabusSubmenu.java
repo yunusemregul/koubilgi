@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.koubilgi.R;
@@ -138,8 +139,8 @@ class Day implements Serializable
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setClipToPadding(false);
 
-        View divider = inflater.inflate(R.layout.text_divider, null);
-        TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
+        final View divider = inflater.inflate(R.layout.view_submenu_divider, null);
+        final TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
         TextView dividerText = divider.findViewById(R.id.textdivider_text);
         dividerText.setVisibility(View.GONE);
         dividerMain.setText(getName());
@@ -148,6 +149,20 @@ class Day implements Serializable
         {
             dividerText.setVisibility(View.VISIBLE);
             dividerText.setText(R.string.submenu_syllabus_today);
+
+            // TODO: Scroll to today's classes
+
+            final ScrollView scrollView = ((Activity) context).findViewById(R.id.submenu_scrollview);
+            scrollView.post(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    divider.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    System.out.println(divider.getTop());
+                    //scrollView.scrollTo(0, divider.getScrollY());
+                }
+            });
         }
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT

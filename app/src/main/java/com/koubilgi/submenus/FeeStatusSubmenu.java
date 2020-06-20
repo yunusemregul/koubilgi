@@ -97,7 +97,7 @@ class Fee
         layout.setPadding((int) metrics.density * 20, (int) metrics.density * 10, (int) metrics.density * 20,
                 (int) metrics.density * 10);
 
-        View divider = inflater.inflate(R.layout.text_divider, null);
+        View divider = inflater.inflate(R.layout.view_submenu_divider, null);
         TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
         TextView dividerText = divider.findViewById(R.id.textdivider_text);
         dividerText.setVisibility(View.GONE);

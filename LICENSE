@@ -94,7 +94,7 @@ permission, would make you directly or secondarily liable for
 infringement under applicable copyright law, except executing it on a
 computer or modifying a private copy.  Propagation includes copying,
 distribution (with or without modification), making available to the
-public, and in some countries other activities as well.
+public, and in some countries other com.koubilgi.activities as well.
 
   To "convey" a work means any kind of propagation that enables other
 parties to make or receive copies.  Mere interaction with a user through
@@ -134,9 +134,9 @@ produce the work, or an object code interpreter used to run it.
   The "Corresponding Source" for a work in object code form means all
 the source code needed to generate, install, and (for an executable
 work) run the object code and to modify the work, including scripts to
-control those activities.  However, it does not include the work's
+control those com.koubilgi.activities.  However, it does not include the work's
 System Libraries, or general-purpose tools or generally available free
-programs which are used unmodified in performing those activities but
+programs which are used unmodified in performing those com.koubilgi.activities but
 which are not part of the work.  For example, Corresponding Source
 includes interface definition files associated with source files for
 the work, and the source code for shared libraries and dynamically

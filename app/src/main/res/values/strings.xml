@@ -27,4 +27,6 @@
     <string name="app_name_short">KOU Bilgi</string>
     <string name="menu_main">Ana Menü</string>
     <string name="menu_sub">Alt Menü</string>
+    <string name="settings">Ayarlar</string>
+    <string name="messages">Mesajlar</string>
 </resources>

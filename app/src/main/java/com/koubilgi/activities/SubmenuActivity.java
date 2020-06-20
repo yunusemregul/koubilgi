@@ -1,10 +1,11 @@
-package com.koubilgi;
+package com.koubilgi.activities;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.koubilgi.R;
 import com.koubilgi.submenus.SubmenuManager;
 
 public class SubmenuActivity extends AppCompatActivity

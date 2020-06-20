@@ -10,14 +10,22 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="75dp" />
+
         <View
             android:id="@+id/view4"
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="24dp"
             android:background="@color/colorBorders"
             app:layout_constraintBottom_toTopOf="@+id/guideline4"
+            app:layout_constraintEnd_toStartOf="@+id/feestatus_checkmark"
             app:layout_constraintStart_toEndOf="@+id/feestatus_paid"
             app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
@@ -114,8 +122,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/guideline4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/view4"
+            app:layout_constraintEnd_toStartOf="@+id/guideline5"
+            app:layout_constraintStart_toStartOf="@+id/guideline10"
             app:layout_constraintTop_toTopOf="@+id/guideline3"
             app:srcCompat="@drawable/checkmark" />
     </androidx.constraintlayout.widget.ConstraintLayout>

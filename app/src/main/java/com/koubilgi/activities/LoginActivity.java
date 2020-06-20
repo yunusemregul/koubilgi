@@ -1,4 +1,4 @@
-package com.koubilgi;
+package com.koubilgi.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.koubilgi.R;
 import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
 
@@ -86,8 +87,10 @@ public class LoginActivity extends AppCompatActivity
                         {
                             if (reason.equals("credentials"))
                             {
+                                // TODO: Show error screen 'Wrong number or password."
                                 gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
                                 gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
+                                return;
                             }
                             // TODO: Show error screen 'Can not log in.' if reason equals site
                         }

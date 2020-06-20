@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koubilgi.R;
-import com.koubilgi.SubmenuActivity;
+import com.koubilgi.activities.SubmenuActivity;
 import com.koubilgi.submenus.SubmenuManager;
 
 public class SubmenuButtonAdapter extends BaseAdapter

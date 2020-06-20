@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".MainmenuActivity">
+        tools:context="com.koubilgi.activities.MainmenuActivity">
 
         <ImageView
             android:id="@+id/background"
@@ -21,6 +21,40 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/background_mainmenu" />
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="12dp"
+            android:clickable="true"
+            android:drawableTop="@drawable/icon_mainmenu_ayarlar"
+            android:focusable="true"
+            android:fontFamily="@font/segoeui"
+            android:onClick="openSettingsSubmenu"
+            android:text="@string/settings"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clickable="true"
+            android:drawableTop="@drawable/icon_mainmenu_mesajlar"
+            android:focusable="true"
+            android:fontFamily="@font/segoeui"
+            android:onClick="openMessagesSubmenu"
+            android:text="@string/messages"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="@+id/textView"
+            app:layout_constraintStart_toStartOf="@+id/textView"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
 
         <ImageView
             android:id="@+id/userPicture"

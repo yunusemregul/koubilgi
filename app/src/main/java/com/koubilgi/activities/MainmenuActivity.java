@@ -1,11 +1,13 @@
-package com.koubilgi;
+package com.koubilgi.activities;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.koubilgi.R;
 import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
 import com.koubilgi.components.SubmenuButtonAdapter;
@@ -58,5 +60,15 @@ public class MainmenuActivity extends AppCompatActivity
 
         GridView submenus = findViewById(R.id.submenus);
         submenus.setAdapter(new SubmenuButtonAdapter(this));
+    }
+
+    public void openSettingsSubmenu(View view)
+    {
+
+    }
+
+    public void openMessagesSubmenu(View view)
+    {
+
     }
 }
