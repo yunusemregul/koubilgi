@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
- * TODO: Find a way to get when did school term started
+ * TODO: İçinde olduğumuz dönemin ne zaman başaldığını bulabilmemiz gerek şu an kaçıncı haftada olduğumuzu bulmak için.
+ * Belki akademik takvimi indirip onu ayrıştırarak bulabiliriz. Akademik takvim sayfası da ekleriz uygulamaya.
  */
 
 public class Syllabus extends Submenu
@@ -92,7 +93,8 @@ public class Syllabus extends Submenu
                         }
                     } catch (Exception e)
                     {
-                        // TODO: Site has been changed, go offline for this submenu indefinitely (till updated)
+                        // TODO: Üniversite site tasarımını değiştirmiş demektir, bu menüyü uygulamaya güncelleme
+                        //  gelene kadar offline moda geçir.
                         e.printStackTrace();
                     }
                 }
@@ -150,7 +152,7 @@ class Day implements Serializable
             dividerText.setVisibility(View.VISIBLE);
             dividerText.setText(R.string.submenu_syllabus_today);
 
-            // TODO: Scroll to today's classes
+            // TODO: Bugün e scroll atılması gerek otomatik
 
             final ScrollView scrollView = ((Activity) context).findViewById(R.id.submenu_scrollview);
             scrollView.post(new Runnable()
@@ -180,7 +182,7 @@ class Day implements Serializable
             View cardView = classes.get(i).getView(context);
             layout.addView(cardView, cardViewLayout);
 
-            // TODO: Follow the design, its not complete
+            // TODO: Tasarım hedefleri takip edilmeli, bu kısım tam değil.
             if (i + 1 < classes.size())
             {
                 if (classes.get(i).endTime.getTime() < classes.get(i + 1).startTime.getTime())
@@ -233,7 +235,7 @@ class Class implements Serializable
     final SimpleDate startTime;
     SimpleDate endTime;
 
-    private int count = 1; // how many of this class
+    private int count = 1; // bu dersten kaç tane olduğu
 
     Class(String name, String location, String teacher, SimpleDate start)
     {

@@ -39,12 +39,12 @@ public class RequestMaker
     }
 
     /**
-     * Makes post request to the specified url with params and calls back the result on listener. Uses student session
-     * cookies while making the request.
+     * Verilen URL adresine verilen parametreler ile POST isteği gerçekleştirir ve sonuçlarını listener ile döndürür.
+     * POST isteğini yaparken öğrencinin session cookie lerini kullanır.
      *
-     * @param url      to make the request
-     * @param params   to post
-     * @param listener that waits for the callback
+     * @param url      istek yapılacak URL adresi
+     * @param params   POST parametreleri
+     * @param listener isteğin sonucunu bekleyen listener
      */
     public void makePostRequest(final String url, final Map<String, String> params, final ConnectionListener listener)
     {
@@ -104,10 +104,10 @@ public class RequestMaker
     }
 
     /**
-     * Makes get request to specified url with student cookies.
+     * Belirtilen URL adresine GET isteği yapar. GET isteğini yaparken öğrencinin session cookie lerini kullanır.
      *
-     * @param url      to make get request
-     * @param listener that listens for response
+     * @param url      GET isteği yapılacak URL adresi
+     * @param listener isteğin sonucunu bekleyen listener
      */
     public void makeGetRequest(final String url, final ConnectionListener listener)
     {
@@ -200,7 +200,8 @@ public class RequestMaker
             }
         });
 
-        // TODO: This looks bad and is not readable
+        // TODO: Kodda çok çirkin gözüküyor ve okunmuyor bir şekilde daha iyi bi çözüm bulunabilir belki dosyadan
+        //  okuyarak bunu
         String data =
                 "<html>\n" + "<head>\n" + "\t<script src=\"https://www.google.com/recaptcha/api" + ".js?onload" +
                         "=onloadCallback\"></script>\n" + "</head>\n" + "<body>\n" + "\t<div id=\"captcha\" " +

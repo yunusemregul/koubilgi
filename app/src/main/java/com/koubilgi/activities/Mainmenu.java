@@ -12,7 +12,7 @@ import com.koubilgi.api.Student;
 import com.koubilgi.components.SubmenuButtonAdapter;
 import com.koubilgi.utils.ConnectionListener;
 
-// TODO: Do parallax sliding effect for top panel, when scrolled to announcements.
+// TODO: Duyurulara scroll atarken üst bar küçülmeli parallax gibi. Neye benzeyeceği tasarım hedeflerinde görülebilir.
 
 public class Mainmenu extends AppCompatActivity
 {

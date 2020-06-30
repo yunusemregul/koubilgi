@@ -52,7 +52,7 @@ public class Login extends AppCompatActivity
                 final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(), gPassBackground =
                         (GradientDrawable) ePass.getBackground();
 
-                // TODO: Show error screen 'You have to enter a number and password."
+                // TODO: 'Numara ve şifre girişleri doldurulmalıdır' hata ekranı gösterilmeli.
                 // Set red stroke of 2dp when there's no text on entries
                 // Should find some better way to not repeat the code
                 if (eStud.getText().length() == 0)
@@ -88,12 +88,12 @@ public class Login extends AppCompatActivity
                         {
                             if (reason.equals("credentials"))
                             {
-                                // TODO: Show error screen 'Wrong number or password."
+                                // TODO: 'Öğrenci numarası ya da şifresi hatalı' hata ekranı gösterilmeli.
                                 gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
                                 gPassBackground.setStroke((int) metrics.density * 2, Color.RED);
                                 return;
                             }
-                            // TODO: Show error screen 'Can not log in.' if reason equals site
+                            // TODO: Eğer giriş yapılamamasının sebebi site ise 'Site bozuk' gibi bir hata gösterilmeli.
                         }
                     });
                 }

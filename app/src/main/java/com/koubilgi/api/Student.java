@@ -25,15 +25,16 @@ import java.util.Map;
 
 /*
     TODO:
-        If the university changes any of the pages, since we might not be able to support
-        the changes, we should make the app go offline mode until been updated.
+        Üniversite submenu sayfalarından herhangi birini değiştirirse o sayfayı uygulama güncellenene kadar
+        offline olarak kullanıcılara sunabilmeliyiz.
  */
 
 /**
- * Student class that is single instanced over the whole app. It is responsible of logging in to the school site, making
- * get-post requests to the school site with student credentials and other student related things..
+ * Uygulamayı kullanan öğrenciyi temsil eden sınıf. Öğrenciyle ilgili, giriş yapmak, bilgilerini almak (isim, bölüm)
+ * gibi temel işlemleri yerine getirir.
  *
- * Made referring to the Singleton design pattern.
+ * Uygulamada oturumu açık sadece 1 öğrenci olacağı için bu sınıfın tüm uygulama genelinde tek olmasını daha doğru
+ * buldum. Bu yüzden Singleton pattern kullandım.
  */
 public class Student implements Serializable
 {
@@ -50,28 +51,26 @@ public class Student implements Serializable
 
 
     /**
-     * Constructs the singleton Student within given context.
-     *
-     * @param ctx the context we will be working in
+     * Singleton öğrencinin constructor metodu.
      */
-    private Student(Context ctx)
+    private Student()
     {
         loggedIn = false;
-        context = ctx;
         requestMaker = new RequestMaker(context, this);
     }
 
     /**
-     * Returns the only instance of Student, creates one if it does not exist.
+     * Öğrencinin tek instance ini döndürür, instance yoksa oluşturup döndürür.
      *
-     * @param ctx the context we will be working in
+     * @param ctx içinde olduğumuz context
      * @return singleton Student
      */
     public static synchronized Student getInstance(Context ctx)
     {
         if (instance == null)
         {
-            instance = new Student(ctx);
+            context = ctx;
+            instance = new Student();
             try
             {
                 instance = instance.loadFromFile();
@@ -87,6 +86,11 @@ public class Student implements Serializable
         return instance;
     }
 
+    /**
+     * Öğrenci bilgilerini tekrar kullanmak üzere kaydeder.
+     *
+     * @throws Exception
+     */
     private void saveToFile() throws Exception
     {
         FileOutputStream outputStream = context.openFileOutput("student", Context.MODE_PRIVATE);
@@ -96,6 +100,12 @@ public class Student implements Serializable
         outputStream.close();
     }
 
+    /**
+     * Kaydedilmiş öğrenci bilgilerini okur, okuduğu bilgilerle bir öğrenci oluşturup döndürür.
+     *
+     * @return okunan bilgilerle oluşturulan öğrenci
+     * @throws Exception dosya okunurken IO exceptionu oluşursa
+     */
     private Student loadFromFile() throws Exception
     {
         File file = context.getFileStreamPath("student");
@@ -115,16 +125,17 @@ public class Student implements Serializable
     }
 
     /**
-     * Logs in the student with given credentials. If the connection is successful, calls listener.onSuccess with
-     * student's name and number, if the connection is not successful calls listener.onFailure with the reason.
+     * Verilen credential bilgileri ile öğrenci girişi yapmaya çalışır. Eğer giriş başarılı olursa listener.onSuccess
+     * metoduna öğrencinin adını numarasını ve departmanını verir. Eğer giriş başarılı değilse listener.onFailure
+     * metodunu ilgili sebep ile çağırır.
      *
-     * @param num      number of the logging in student
-     * @param pass     password of the logging in student
-     * @param listener the listener that waits for the methods response
+     * @param num      giriş yapacak öğrencinin numarası
+     * @param pass     giriş yapacak öğrencinin şifresi
+     * @param listener giriş sonucunu bekleyen listener
      */
     public void logIn(final String num, final String pass, final ConnectionListener listener)
     {
-        // Do not try to login again if we are logged in already
+        // Eğer zaten önceden giriş yaptıysak tekrar girmeyi deneme
         if (loggedIn)
         {
             if (listener != null)
@@ -132,7 +143,7 @@ public class Student implements Serializable
             return;
         }
 
-        // Logging in... screen
+        // Giriş yapılıyor... popup
         AlertDialog.Builder logginginPopup = new AlertDialog.Builder(context);
         logginginPopup.setMessage(R.string.logging_in);
 
@@ -153,19 +164,15 @@ public class Student implements Serializable
             {
                 loggingin.dismiss();
                 listener.onFailure(reason);
-                // TODO: Go offline mode.
+                // TODO: Offline moda geç
             }
         };
 
         /*
-            Making login requests to the school site every time the app starts is not a good practice I think. So I
-            thought it would be better to check if we already logged in. We can check this by using our latest
-            session cookies. If they are valid then do not try to log in again, if they are not valid then make a log
-             in request.
-
-            Checking session cookies is done by making a get request to any student page. I choose HarcBilgi page
-            because it generally has the lowest Content-Length and thus we will waste the least amount of internet
-            data I think. Which is good for users with limited mobile data.
+            Öğrencinin şu anda zaten giriş yapıp yapmadığını anlamak için HarcBilgi sayfasına GET isteği yapıyoruz.
+            Eğer sayfa giriş yapılmadığı yönünde hata verirse tekrar giriş yapıyoruz. HarcBilgi sayfasını seçtim çünkü
+            boyutu en az olan sayfa genelde o oluyor bence. Boyutu az olması kullanıcının internetini boşuna yemememiz
+            açısından önemli.
          */
 
         final String harcurl = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi.cfm";
@@ -195,12 +202,11 @@ public class Student implements Serializable
     }
 
     /**
-     * Marks active student for re-log. Means that there was an error making some request to the school site and we
-     * should log in again.
+     * Daha önceden giriş yapmış öğrenciyi giriş yapmadı olarak işaretleyerek tekrar giriş yaptırır.
      */
     void markForRelog(ConnectionListener listener)
     {
-        // if already marked, do not try to mark again
+        // Sadece giriş yapmış öğrenciler giriş yapmadı olarak işaretlenebilir
         if (!loggedIn)
             return;
 
@@ -236,7 +242,7 @@ public class Student implements Serializable
                         {
                             if (listener != null)
                                 listener.onFailure("relogin");
-                            // TODO: Go offline mode
+                            // TODO: Offline moda geç
                             return;
                         }
 
@@ -246,33 +252,32 @@ public class Student implements Serializable
 
                         Document doc = Jsoup.parse(response);
 
-                        // Extract student name and number
+                        // Öğrencinin adını ve numarasını ayrıştırır
 
                         Element info = doc.select("h4").first();
 
                         if (info == null)
                             success = false;
 
-                        // If login was successful or not inform so
                         if (success)
                         {
                             loggedIn = true;
 
-                            // Save cookies
+                            // Session cookie lerini kaydet
                             CookieStore store = requestMaker.cookieManager.getCookieStore();
                             List<HttpCookie> cookies = store.getCookies();
 
                             String[] infoTxt = info.text().split(" ", 2);
                                 /*
-                                    index 1 = student name
-                                    index 0 = student number
+                                    index 1 = öğrenci adı
+                                    index 0 = öğrenci numarası
                                  */
                             name = infoTxt[1];
                             number = infoTxt[0];
                             password = pass;
                             cookieString = StringUtil.join(cookies, "; ");
 
-                            // Save data and credentials for later
+                            // Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
                             try
                             {
                                 saveToFile();
@@ -309,9 +314,6 @@ public class Student implements Serializable
         });
     }
 
-    /**
-     * TODO: Replace this with makePostRequest method
-     */
     public void makePersonalInfoRequest(final ConnectionListener listener)
     {
         if (!loggedIn)
@@ -343,12 +345,11 @@ public class Student implements Serializable
                 Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
 
                 /*
-                    We are trying to extract department info from whole personal information page
-                    First we find the div that has a child as <b>Bölüm</b> then
-                    then get its parent and select the last element we need which is students
-                    department.
+                    Öğrencinin bölüm bilgisini tüm kişisel bilgiler sayfası ndan ayrıştırmaya çalışıyoruz.
+                    Önce tüm sayfadan <b>Bölüm</b> elementini içeren ana element i buluyoruz daha sonra o ana element
+                    içindeki öğrencinin bölümü kısmını alıyoruz.
 
-                    Heres what these variables mean with an example:
+                    Buradaki değişkenleri şöyle açıklayabilirim sayfada şu anlama geliyorlar:
                         boldDiv =
                             <div class="col-sm-4"><b>Bölüm</b></div>
 

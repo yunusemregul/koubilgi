@@ -42,7 +42,8 @@ public class FeeStatus extends Submenu
 
                 if (mainDivs.size() <= 0)
                 {
-                    // TODO: Site has been changed, go offline for this submenu indefinitely (till updated)
+                    // TODO: Üniversite site tasarımını değiştirmiş demektir, bu menüyü uygulamaya güncelleme gelene
+                    //  kadar offline moda geçir.
                     return;
                 }
 
@@ -73,7 +74,7 @@ public class FeeStatus extends Submenu
             @Override
             public void onFailure(String reason)
             {
-                // TODO: Go offline until next start of this submenu
+                // TODO: Bu menü yeniden açılana kadar offline olarak göster?
             }
         });
     }

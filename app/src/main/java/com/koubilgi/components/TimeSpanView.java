@@ -12,7 +12,7 @@ import com.koubilgi.utils.SimpleDate;
 import java.util.Calendar;
 
 /**
- * Our own custom component for syllabus menu
+ * Ders programı sayfasında derslerin yanında dersin ne kadar kısmının tamamlandığını gösteren çubuk componenti.
  */
 public class TimeSpanView extends View
 {
