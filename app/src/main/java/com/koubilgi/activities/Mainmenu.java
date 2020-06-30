@@ -8,14 +8,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.koubilgi.R;
-import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
 import com.koubilgi.components.SubmenuButtonAdapter;
+import com.koubilgi.utils.ConnectionListener;
 
-/*
-    TODO:
-        Do parallax effect for top dock, when scrolled.
- */
+// TODO: Do parallax sliding effect for top panel, when scrolled to announcements.
 
 public class Mainmenu extends AppCompatActivity
 {

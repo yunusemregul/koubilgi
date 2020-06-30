@@ -12,10 +12,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.koubilgi.R;
-import com.koubilgi.api.ConnectionListener;
-import com.koubilgi.api.SimpleDate;
 import com.koubilgi.api.Student;
 import com.koubilgi.components.TimeSpanView;
+import com.koubilgi.utils.ConnectionListener;
+import com.koubilgi.utils.SimpleDate;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -41,8 +41,8 @@ public class Syllabus extends Submenu
     @Override
     public void fillContentView(final Context context)
     {
-        Student.getInstance(context).makeGetRequest("https://ogr.kocaeli.edu" + ".tr/KOUBS/Ogrenci/DersIslemleri" +
-                "/DersProgramiIcerik.cfm", new ConnectionListener()
+        Student.getInstance(context).getRequestMaker().makeGetRequest("https://ogr.kocaeli.edu" + ".tr/KOUBS/Ogrenci" +
+                "/DersIslemleri" + "/DersProgramiIcerik.cfm", new ConnectionListener()
         {
             @Override
             public void onSuccess(String... args)

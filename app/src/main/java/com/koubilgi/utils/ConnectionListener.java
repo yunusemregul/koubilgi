@@ -1,4 +1,4 @@
-package com.koubilgi.api;
+package com.koubilgi.utils;
 
 public interface ConnectionListener
 {

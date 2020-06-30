@@ -12,8 +12,8 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.koubilgi.R;
-import com.koubilgi.api.ConnectionListener;
 import com.koubilgi.api.Student;
+import com.koubilgi.utils.ConnectionListener;
 
 public class Login extends AppCompatActivity
 {
@@ -52,6 +52,7 @@ public class Login extends AppCompatActivity
                 final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(), gPassBackground =
                         (GradientDrawable) ePass.getBackground();
 
+                // TODO: Show error screen 'You have to enter a number and password."
                 // Set red stroke of 2dp when there's no text on entries
                 // Should find some better way to not repeat the code
                 if (eStud.getText().length() == 0)

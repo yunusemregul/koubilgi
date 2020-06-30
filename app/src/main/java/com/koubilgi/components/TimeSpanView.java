@@ -7,7 +7,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import com.koubilgi.R;
-import com.koubilgi.api.SimpleDate;
+import com.koubilgi.utils.SimpleDate;
 
 import java.util.Calendar;
 

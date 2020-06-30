@@ -2,19 +2,9 @@ package com.koubilgi.api;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.view.WindowManager;
-import android.webkit.ConsoleMessage;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.koubilgi.R;
+import com.koubilgi.utils.ConnectionListener;
 
 import org.jsoup.Jsoup;
 import org.jsoup.internal.StringUtil;
@@ -27,8 +17,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.CookieHandler;
-import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.util.HashMap;
@@ -58,10 +46,8 @@ public class Student implements Serializable
     private static Student instance;
     private String department;
     private String cookieString;
-    private static CookieManager cookieManager;
-    private static RequestQueue queue;
+    private static RequestMaker requestMaker;
 
-    private static AlertDialog recaptchaDialog;
 
     /**
      * Constructs the singleton Student within given context.
@@ -72,9 +58,7 @@ public class Student implements Serializable
     {
         loggedIn = false;
         context = ctx;
-        cookieManager = new CookieManager();
-        CookieHandler.setDefault(cookieManager);
-        queue = SingletonRequestQueue.getInstance(context.getApplicationContext()).getRequestQueue();
+        requestMaker = new RequestMaker(context, this);
     }
 
     /**
@@ -188,7 +172,7 @@ public class Student implements Serializable
 
         if (listener != null && name != null && number != null)
         {
-            makeGetRequest(harcurl, new ConnectionListener()
+            requestMaker.makeGetRequest(harcurl, new ConnectionListener()
             {
                 @Override
                 public void onSuccess(String... args)
@@ -210,21 +194,44 @@ public class Student implements Serializable
         }
     }
 
+    /**
+     * Marks active student for re-log. Means that there was an error making some request to the school site and we
+     * should log in again.
+     */
+    void markForRelog(ConnectionListener listener)
+    {
+        // if already marked, do not try to mark again
+        if (!loggedIn)
+            return;
+
+        loggedIn = false;
+        // Log in again
+        makeLogInRequest(number, password, listener);
+    }
+
     private void makeLogInRequest(final String num, final String pass, final ConnectionListener listener)
     {
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
-        getRecaptchaToken(new ConnectionListener()
+        requestMaker.getRecaptchaToken(new ConnectionListener()
         {
             @Override
             public void onSuccess(String... args)
             {
                 final String token = args[0];
 
-                StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
+                Map<String, String> params = new HashMap<>();
+                params.put("LoggingOn", "1");
+                params.put("OgrNo", num);
+                params.put("Sifre", pass);
+                params.put("g-recaptcha-response", token);
+
+                requestMaker.makePostRequest(url, params, new ConnectionListener()
                 {
                     @Override
-                    public void onResponse(String response)
+                    public void onSuccess(String... args)
                     {
+                        String response = args[0];
+
                         if (response.contains("alert") && response.contains("hata"))
                         {
                             if (listener != null)
@@ -252,7 +259,7 @@ public class Student implements Serializable
                             loggedIn = true;
 
                             // Save cookies
-                            CookieStore store = cookieManager.getCookieStore();
+                            CookieStore store = requestMaker.cookieManager.getCookieStore();
                             List<HttpCookie> cookies = store.getCookies();
 
                             String[] infoTxt = info.text().split(" ", 2);
@@ -283,102 +290,23 @@ public class Student implements Serializable
                                 listener.onFailure("credentials");
                         }
                     }
-                }, new Response.ErrorListener()
-                {
+
                     @Override
-                    public void onErrorResponse(VolleyError error)
+                    public void onFailure(String reason)
                     {
                         if (listener != null)
-                            listener.onFailure("site");
+                            listener.onFailure(reason);
                     }
-                })
-                {
-                    @Override
-                    protected Map<String, String> getParams()
-                    {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("LoggingOn", "1");
-                        params.put("OgrNo", num);
-                        params.put("Sifre", pass);
-                        params.put("g-recaptcha-response", token);
-
-                        return params;
-                    }
-                };
-                queue.add(postReq);
+                });
             }
 
             @Override
             public void onFailure(String reason)
             {
-
+                if (listener != null)
+                    listener.onFailure(reason);
             }
         });
-    }
-
-    private void getRecaptchaToken(final ConnectionListener listener)
-    {
-        final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
-
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-
-        final WebView webView = new WebView(context);
-        webView.setBackgroundColor(Color.TRANSPARENT);
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setLoadWithOverviewMode(true);
-        settings.setBuiltInZoomControls(false);
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        settings.setDomStorageEnabled(true);
-        webView.setVerticalScrollBarEnabled(false);
-
-        dialogBuilder.setView(webView);
-        dialogBuilder.setCancelable(false);
-        dialogBuilder.setTitle("reCAPTCHA");
-
-        recaptchaDialog = dialogBuilder.show();
-        recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-
-        webView.setWebChromeClient(new WebChromeClient()
-        {
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage)
-            {
-                String message = consoleMessage.message();
-                if (message.startsWith("koubilgicaptchatoken:"))
-                {
-                    final String token = message.substring(21);
-
-                    recaptchaDialog.dismiss();
-                    listener.onSuccess(token);
-                }
-                return super.onConsoleMessage(consoleMessage);
-            }
-        });
-
-        // TODO: This looks bad and is not readable
-        String data =
-                "<html>\n" + "<head>\n" + "\t<script src=\"https://www.google.com/recaptcha/api" + ".js?onload" +
-                        "=onloadCallback\"></script>\n" + "</head>\n" + "<body>\n" + "\t<div id=\"captcha\" " +
-                        "style" + "=\"display:flex;justify-content:center;align-items:center;overflow:hidden;" +
-                        "padding:20px;\"> " + "</div>\n" + "</body>\n" + "\t<script type=\"text/javascript\">\n" +
-                        "\t\tfunction onloadCallback()" + "\n" + "\t\t{\n" + "\t\t\tgrecaptcha.render(\"captcha\", " + "{\n" + "\t\t\t\t\"sitekey\" : " + "\"6Le02eMUAAAAAF8BB2Ur7AuEErb6hvvtlUUwcf2a\",\n" + "\t\t" + "\t\t\"callback\" : function(response) {\n" + "\t\t\t\t\tconsole.log" + "(\"koubilgicaptchatoken:\"+response)\n" + "\t\t\t\t}\n" + "\t\t\t})\n" + "\t\t}\n" + "\t" + "</script>\n" + "</html>";
-        webView.loadDataWithBaseURL(url, data, "text/html", "UTF-8", null);
-    }
-
-    /**
-     * Marks active student for re-log. Means that there was an error making some request to the school site and we
-     * should log in again.
-     */
-    private void markForRelog(ConnectionListener listener)
-    {
-        // if already marked, do not try to mark again
-        if (!loggedIn)
-            return;
-
-        loggedIn = false;
-        // Log in again
-        makeLogInRequest(number, password, listener);
     }
 
     /**
@@ -396,30 +324,18 @@ public class Student implements Serializable
         }
 
         String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/KisiselBilgiler/KisiselBilgiGoruntuleme.cfm";
-        StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
+
+        Map<String, String> params = new HashMap<>();
+        params.put("Anketid", "0");
+        params.put("Baglanti", "Giris");
+        params.put("Veri", "-1;-1");
+
+        requestMaker.makePostRequest(url, params, new ConnectionListener()
         {
             @Override
-            public void onResponse(String response)
+            public void onSuccess(String... args)
             {
-                if (response.contains("alert") && response.contains("hata"))
-                {
-                    listener.onFailure("relogin");
-                    markForRelog(new ConnectionListener()
-                    {
-                        @Override
-                        public void onSuccess(String... args)
-                        {
-                            makePersonalInfoRequest(listener);
-                        }
-
-                        @Override
-                        public void onFailure(String reason)
-                        {
-
-                        }
-                    });
-                    return;
-                }
+                String response = args[0];
 
                 Document doc = Jsoup.parse(response);
                 Element form = doc.select("#OgrKisiselBilgiler").first();
@@ -460,158 +376,19 @@ public class Student implements Serializable
 
                 listener.onSuccess(depart);
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                // We assume that we failed because site is not reachable
-                listener.onFailure("site");
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders()
-            {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Cookie", cookieString);
-
-                return headers;
-            }
 
             @Override
-            protected Map<String, String> getParams()
+            public void onFailure(String reason)
             {
-                Map<String, String> params = new HashMap<>();
-                params.put("Anketid", "0");
-                params.put("Baglanti", "Giris");
-                params.put("Veri", "-1;-1");
-
-                return params;
+                if (listener != null)
+                    listener.onFailure(reason);
             }
-        };
-        queue.add(postReq);
+        });
     }
 
-    /**
-     * Makes post request to the specified url with params and calls back the result on listener. Uses student session
-     * cookies while making the request.
-     *
-     * @param url      to make the request
-     * @param params   to post
-     * @param listener that waits for the callback
-     */
-    public void makePostRequest(final String url, final Map<String, String> params, final ConnectionListener listener)
+    public String getCookies()
     {
-        StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
-        {
-            @Override
-            public void onResponse(String response)
-            {
-                if (response.contains("alert") && response.contains("hata"))
-                {
-                    listener.onFailure("relogin");
-                    markForRelog(new ConnectionListener()
-                    {
-                        @Override
-                        public void onSuccess(String... args)
-                        {
-                            makePostRequest(url, params, listener);
-                        }
-
-                        @Override
-                        public void onFailure(String reason)
-                        {
-
-                        }
-                    });
-                    return;
-                }
-
-                listener.onSuccess(response);
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                // We assume that we failed because site is not reachable
-                listener.onFailure("site");
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders()
-            {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Cookie", cookieString);
-
-                return headers;
-            }
-
-            @Override
-            protected Map<String, String> getParams()
-            {
-                return params;
-            }
-        };
-        queue.add(postReq);
-    }
-
-    /**
-     * Makes get request to specified url with student cookies.
-     *
-     * @param url      to make get request
-     * @param listener that listens for response
-     */
-    public void makeGetRequest(final String url, final ConnectionListener listener)
-    {
-        StringRequest getReq = new StringRequest(Request.Method.GET, url, new Response.Listener<String>()
-        {
-            @Override
-            public void onResponse(String response)
-            {
-                if (response.contains("alert") && response.contains("hata"))
-                {
-                    listener.onFailure("relogin");
-                    markForRelog(new ConnectionListener()
-                    {
-                        @Override
-                        public void onSuccess(String... args)
-                        {
-                            makeGetRequest(url, listener);
-                        }
-
-                        @Override
-                        public void onFailure(String reason)
-                        {
-
-                        }
-                    });
-                    return;
-                }
-
-                listener.onSuccess(response);
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                listener.onFailure("site");
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders()
-            {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Cookie", cookieString);
-
-                return headers;
-            }
-        };
-        queue.add(getReq);
+        return cookieString;
     }
 
     public String getName()
@@ -639,4 +416,8 @@ public class Student implements Serializable
         return (number != null && password != null);
     }
 
+    public RequestMaker getRequestMaker()
+    {
+        return requestMaker;
+    }
 }
