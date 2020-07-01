@@ -23,21 +23,21 @@ public class Login extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         final Student student = Student.getInstance(this);
-        // Start the main menu activity if user has logged in before
+        // Eğer öğrenci daha önceden giriş yaptıysa otomatik giriş yap, ana menü activity sini başlat
         if (student.hasCredentials())
         {
             finish();
             Intent intent = new Intent(this, Mainmenu.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
-            overridePendingTransition(0, 0); // Avoid sliding animation
+            overridePendingTransition(0, 0); // Kayma gibi bir animasyon oluyor onu engellemek için
             return;
         }
 
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_login);
 
-        // Get relative DP size
+        // DP boyutunu öğren
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
 
         final Button button = findViewById(R.id.button_login);
@@ -46,15 +46,15 @@ public class Login extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                // entry StudentNumber, entry Pass
+                // öğrenci numarası ve şifresi girişleri
                 EditText eStud = findViewById(R.id.entry_studentnumber), ePass = findViewById(R.id.entry_pass);
 
                 final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(), gPassBackground =
                         (GradientDrawable) ePass.getBackground();
 
                 // TODO: 'Numara ve şifre girişleri doldurulmalıdır' hata ekranı gösterilmeli.
-                // Set red stroke of 2dp when there's no text on entries
-                // Should find some better way to not repeat the code
+                // Eğer girişler doldurulmadıysa 2DP kırmızı çerçeve ekler
+                // Kod tekrarını önlemek için bir yol bulunabilir belki kod çok kötü gözüküyor
                 if (eStud.getText().length() == 0)
                     gStudBackground.setStroke((int) metrics.density * 2, Color.RED);
                 else
@@ -69,7 +69,7 @@ public class Login extends AppCompatActivity
 
                 if (eStud.getText().length() > 0 && ePass.getText().length() > 0)
                 {
-                    // Login to the site with student credentials
+                    // Öğrencinin girdiği bilgilerle giriş yapmaya çalış
                     final String numb = eStud.getText().toString(), pass = ePass.getText().toString();
 
                     student.logIn(numb, pass, new ConnectionListener()
@@ -80,7 +80,7 @@ public class Login extends AppCompatActivity
                             Intent intent = new Intent(getBaseContext(), Mainmenu.class);
                             finish();
                             startActivity(intent);
-                            overridePendingTransition(0, 0); // Avoid sliding animation
+                            overridePendingTransition(0, 0); // Kayma gibi bir animasyon oluyor onu engellemek için
                         }
 
                         @Override

@@ -39,12 +39,13 @@ public class Mainmenu extends AppCompatActivity
             tStudentDepartment.setText(student.getDepartment());
         else
         {
-            Student.getInstance(this).makePersonalInfoRequest(new ConnectionListener()
+            Student.getInstance(this).getPersonalInfo(new ConnectionListener()
             {
                 @Override
                 public void onSuccess(String... args)
                 {
-                    tStudentDepartment.setText(args[0]);
+                    String department = args[0];
+                    tStudentDepartment.setText(department);
                 }
 
                 @Override

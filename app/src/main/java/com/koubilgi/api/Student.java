@@ -2,14 +2,10 @@ package com.koubilgi.api;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 
 import com.koubilgi.R;
 import com.koubilgi.utils.ConnectionListener;
-
-import org.jsoup.Jsoup;
-import org.jsoup.internal.StringUtil;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,11 +13,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /*
     TODO:
@@ -124,6 +115,11 @@ public class Student implements Serializable
         return loaded;
     }
 
+    public static Context getContext()
+    {
+        return context;
+    }
+
     /**
      * Verilen credential bilgileri ile öğrenci girişi yapmaya çalışır. Eğer giriş başarılı olursa listener.onSuccess
      * metoduna öğrencinin adını numarasını ve departmanını verir. Eğer giriş başarılı değilse listener.onFailure
@@ -156,6 +152,23 @@ public class Student implements Serializable
             public void onSuccess(String... args)
             {
                 loggingin.dismiss();
+
+                name = args[0];
+                number = args[1];
+                password = pass;
+                cookieString = args[2];
+
+                loggedIn = true;
+
+                // Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
+                try
+                {
+                    saveToFile();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
                 listener.onSuccess(args);
             }
 
@@ -165,6 +178,7 @@ public class Student implements Serializable
                 loggingin.dismiss();
                 listener.onFailure(reason);
                 // TODO: Offline moda geç
+                Log.d("HATA", "Giriş yapılamadı! (Sebep: " + reason + ")");
             }
         };
 
@@ -191,13 +205,13 @@ public class Student implements Serializable
                 @Override
                 public void onFailure(String reason)
                 {
-                    makeLogInRequest(num, pass, logginginListener);
+                    requestMaker.makeLogInRequest(num, pass, logginginListener);
                 }
             });
         }
         else
         {
-            makeLogInRequest(num, pass, logginginListener);
+            requestMaker.makeLogInRequest(num, pass, logginginListener);
         }
     }
 
@@ -212,179 +226,7 @@ public class Student implements Serializable
 
         loggedIn = false;
         // Log in again
-        makeLogInRequest(number, password, listener);
-    }
-
-    private void makeLogInRequest(final String num, final String pass, final ConnectionListener listener)
-    {
-        final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
-        requestMaker.getRecaptchaToken(new ConnectionListener()
-        {
-            @Override
-            public void onSuccess(String... args)
-            {
-                final String token = args[0];
-
-                Map<String, String> params = new HashMap<>();
-                params.put("LoggingOn", "1");
-                params.put("OgrNo", num);
-                params.put("Sifre", pass);
-                params.put("g-recaptcha-response", token);
-
-                requestMaker.makePostRequest(url, params, new ConnectionListener()
-                {
-                    @Override
-                    public void onSuccess(String... args)
-                    {
-                        String response = args[0];
-
-                        if (response.contains("alert") && response.contains("hata"))
-                        {
-                            if (listener != null)
-                                listener.onFailure("relogin");
-                            // TODO: Offline moda geç
-                            return;
-                        }
-
-                        boolean success = true;
-                        if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
-                            success = false;
-
-                        Document doc = Jsoup.parse(response);
-
-                        // Öğrencinin adını ve numarasını ayrıştırır
-
-                        Element info = doc.select("h4").first();
-
-                        if (info == null)
-                            success = false;
-
-                        if (success)
-                        {
-                            loggedIn = true;
-
-                            // Session cookie lerini kaydet
-                            CookieStore store = requestMaker.cookieManager.getCookieStore();
-                            List<HttpCookie> cookies = store.getCookies();
-
-                            String[] infoTxt = info.text().split(" ", 2);
-                                /*
-                                    index 1 = öğrenci adı
-                                    index 0 = öğrenci numarası
-                                 */
-                            name = infoTxt[1];
-                            number = infoTxt[0];
-                            password = pass;
-                            cookieString = StringUtil.join(cookies, "; ");
-
-                            // Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
-                            try
-                            {
-                                saveToFile();
-                            } catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            if (listener != null)
-                                listener.onSuccess(name, number);
-                        }
-                        else
-                        {
-                            if (listener != null)
-                                listener.onFailure("credentials");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(String reason)
-                    {
-                        if (listener != null)
-                            listener.onFailure(reason);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(String reason)
-            {
-                if (listener != null)
-                    listener.onFailure(reason);
-            }
-        });
-    }
-
-    public void makePersonalInfoRequest(final ConnectionListener listener)
-    {
-        if (!loggedIn)
-            return;
-
-        if (department != null)
-        {
-            listener.onSuccess(department);
-            return;
-        }
-
-        String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/KisiselBilgiler/KisiselBilgiGoruntuleme.cfm";
-
-        Map<String, String> params = new HashMap<>();
-        params.put("Anketid", "0");
-        params.put("Baglanti", "Giris");
-        params.put("Veri", "-1;-1");
-
-        requestMaker.makePostRequest(url, params, new ConnectionListener()
-        {
-            @Override
-            public void onSuccess(String... args)
-            {
-                String response = args[0];
-
-                Document doc = Jsoup.parse(response);
-                Element form = doc.select("#OgrKisiselBilgiler").first();
-                Element boldDiv = form.select("b:contains(Bölüm)").first().parent();
-                Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
-
-                /*
-                    Öğrencinin bölüm bilgisini tüm kişisel bilgiler sayfası ndan ayrıştırmaya çalışıyoruz.
-                    Önce tüm sayfadan <b>Bölüm</b> elementini içeren ana element i buluyoruz daha sonra o ana element
-                    içindeki öğrencinin bölümü kısmını alıyoruz.
-
-                    Buradaki değişkenleri şöyle açıklayabilirim sayfada şu anlama geliyorlar:
-                        boldDiv =
-                            <div class="col-sm-4"><b>Bölüm</b></div>
-
-                        boldDiv.parent() =
-                            <div class="col-sm-6">
-                                <div class="col-sm-4"><b>Bölüm</b></div>
-                                <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
-                            </div>
-
-                        departmentDiv =
-                            <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
-                 */
-
-                String depart = departmentDiv.html();
-                depart = depart.replace("i", "İ");
-                depart = depart.replace(" Bölümü", "");
-                department = depart;
-                try
-                {
-                    saveToFile();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-                listener.onSuccess(depart);
-            }
-
-            @Override
-            public void onFailure(String reason)
-            {
-                if (listener != null)
-                    listener.onFailure(reason);
-            }
-        });
+        logIn(number, password, listener);
     }
 
     public String getCookies()
@@ -400,6 +242,38 @@ public class Student implements Serializable
     public String getNumber()
     {
         return number;
+    }
+
+    public void getPersonalInfo(final ConnectionListener listener)
+    {
+        if (department != null)
+            listener.onSuccess(department);
+        else
+        {
+            requestMaker.makePersonalInfoRequest(new ConnectionListener()
+            {
+                @Override
+                public void onSuccess(String... args)
+                {
+                    department = args[0];
+                    try
+                    {
+                        saveToFile();
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    listener.onSuccess(args);
+                }
+
+                @Override
+                public void onFailure(String reason)
+                {
+                    listener.onFailure(reason);
+                }
+            });
+        }
     }
 
     public String getDepartment()

@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.widget.GridView;
 
 /*
-    Source:
+    Kaynak:
         https://stackoverflow.com/a/28898401/12734824
  */
 

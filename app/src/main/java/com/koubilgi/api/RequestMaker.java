@@ -17,14 +17,21 @@ import com.android.volley.toolbox.StringRequest;
 import com.koubilgi.utils.ConnectionListener;
 import com.koubilgi.utils.SingletonRequestQueue;
 
+import org.jsoup.Jsoup;
+import org.jsoup.internal.StringUtil;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.CookieStore;
+import java.net.HttpCookie;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RequestMaker
 {
-    private static Context context;
     public CookieManager cookieManager;
     private Student student;
     private RequestQueue queue;
@@ -32,7 +39,6 @@ public class RequestMaker
     public RequestMaker(Context context, Student student)
     {
         this.student = student;
-        this.context = context;
         cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
         queue = SingletonRequestQueue.getInstance(context.getApplicationContext()).getRequestQueue();
@@ -67,7 +73,7 @@ public class RequestMaker
                         @Override
                         public void onFailure(String reason)
                         {
-
+                            listener.onFailure(reason);
                         }
                     });
                     return;
@@ -130,7 +136,7 @@ public class RequestMaker
                         @Override
                         public void onFailure(String reason)
                         {
-
+                            listener.onFailure(reason);
                         }
                     });
                     return;
@@ -163,15 +169,15 @@ public class RequestMaker
     {
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(student.getContext());
 
-        final WebView webView = new WebView(context);
+        final WebView webView = new WebView(student.getContext());
         webView.setBackgroundColor(Color.TRANSPARENT);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(false);
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setDomStorageEnabled(true);
         webView.setVerticalScrollBarEnabled(false);
 
@@ -209,5 +215,158 @@ public class RequestMaker
                         "padding:20px;\"> " + "</div>\n" + "</body>\n" + "\t<script type=\"text/javascript\">\n" +
                         "\t\tfunction onloadCallback()" + "\n" + "\t\t{\n" + "\t\t\tgrecaptcha.render(\"captcha\", " + "{\n" + "\t\t\t\t\"sitekey\" : " + "\"6Le02eMUAAAAAF8BB2Ur7AuEErb6hvvtlUUwcf2a\",\n" + "\t\t" + "\t\t\"callback\" : function(response) {\n" + "\t\t\t\t\tconsole.log" + "(\"koubilgicaptchatoken:\"+response)\n" + "\t\t\t\t}\n" + "\t\t\t})\n" + "\t\t}\n" + "\t" + "</script>\n" + "</html>";
         webView.loadDataWithBaseURL(url, data, "text/html", "UTF-8", null);
+    }
+
+
+    void makeLogInRequest(final String num, final String pass, final ConnectionListener listener)
+    {
+        final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
+        getRecaptchaToken(new ConnectionListener()
+        {
+            @Override
+            public void onSuccess(String... args)
+            {
+                final String token = args[0];
+
+                Map<String, String> params = new HashMap<>();
+                params.put("LoggingOn", "1");
+                params.put("OgrNo", num);
+                params.put("Sifre", pass);
+                params.put("g-recaptcha-response", token);
+
+                makePostRequest(url, params, new ConnectionListener()
+                {
+                    @Override
+                    public void onSuccess(String... args)
+                    {
+                        String response = args[0];
+
+                        if (response.contains("alert") && response.contains("hata"))
+                        {
+                            if (listener != null)
+                                listener.onFailure("relogin");
+                            // TODO: Offline moda geç
+                            return;
+                        }
+
+                        boolean success = true;
+                        if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
+                            success = false;
+
+                        Document doc = Jsoup.parse(response);
+
+                        // Öğrencinin adını ve numarasını ayrıştırır
+
+                        Element info = doc.select("h4").first();
+
+                        if (info == null)
+                            success = false;
+
+                        if (success)
+                        {
+                            // Session cookie lerini kaydet
+                            CookieStore store = cookieManager.getCookieStore();
+                            List<HttpCookie> cookies = store.getCookies();
+
+                            String[] infoTxt = info.text().split(" ", 2);
+                                /*
+                                    index 1 = öğrenci adı
+                                    index 0 = öğrenci numarası
+                                 */
+                            String name = infoTxt[1];
+                            String number = infoTxt[0];
+                            String cookieString = StringUtil.join(cookies, "; ");
+
+                            if (listener != null)
+                                listener.onSuccess(name, number, cookieString);
+                        }
+                        else
+                        {
+                            if (listener != null)
+                                listener.onFailure("credentials");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String reason)
+                    {
+                        if (listener != null)
+                            listener.onFailure(reason);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String reason)
+            {
+                if (listener != null)
+                    listener.onFailure(reason);
+            }
+        });
+    }
+
+    public void makePersonalInfoRequest(final ConnectionListener listener)
+    {
+        if (!student.isLoggedIn())
+            return;
+
+        if (student.getDepartment() != null)
+        {
+            listener.onSuccess(student.getDepartment());
+            return;
+        }
+
+        String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/KisiselBilgiler/KisiselBilgiGoruntuleme.cfm";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("Anketid", "0");
+        params.put("Baglanti", "Giris");
+        params.put("Veri", "-1;-1");
+
+        makePostRequest(url, params, new ConnectionListener()
+        {
+            @Override
+            public void onSuccess(String... args)
+            {
+                String response = args[0];
+
+                Document doc = Jsoup.parse(response);
+                Element form = doc.select("#OgrKisiselBilgiler").first();
+                Element boldDiv = form.select("b:contains(Bölüm)").first().parent();
+                Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
+
+                /*
+                    Öğrencinin bölüm bilgisini tüm kişisel bilgiler sayfası ndan ayrıştırmaya çalışıyoruz.
+                    Önce tüm sayfadan <b>Bölüm</b> elementini içeren ana element i buluyoruz daha sonra o ana element
+                    içindeki öğrencinin bölümü kısmını alıyoruz.
+
+                    Buradaki değişkenleri şöyle açıklayabilirim sayfada şu anlama geliyorlar:
+                        boldDiv =
+                            <div class="col-sm-4"><b>Bölüm</b></div>
+
+                        boldDiv.parent() =
+                            <div class="col-sm-6">
+                                <div class="col-sm-4"><b>Bölüm</b></div>
+                                <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
+                            </div>
+
+                        departmentDiv =
+                            <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
+                 */
+
+                String depart = departmentDiv.html();
+                depart = depart.replace("i", "İ");
+                depart = depart.replace(" Bölümü", "");
+
+                listener.onSuccess(depart);
+            }
+
+            @Override
+            public void onFailure(String reason)
+            {
+                if (listener != null)
+                    listener.onFailure(reason);
+            }
+        });
     }
 }

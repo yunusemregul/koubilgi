@@ -27,9 +27,10 @@ import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-/**
- * TODO: İçinde olduğumuz dönemin ne zaman başaldığını bulabilmemiz gerek şu an kaçıncı haftada olduğumuzu bulmak için.
- * Belki akademik takvimi indirip onu ayrıştırarak bulabiliriz. Akademik takvim sayfası da ekleriz uygulamaya.
+/*
+    TODO:
+        İçinde olduğumuz dönemin ne zaman başaldığını bulabilmemiz gerek şu an kaçıncı haftada olduğumuzu bulmak için.
+        Belki akademik takvimi indirip onu ayrıştırarak bulabiliriz. Akademik takvim sayfası da eklenebilir.
  */
 
 public class Syllabus extends Submenu
