@@ -40,7 +40,6 @@ public class Student implements Serializable
     private String cookieString;
     private static RequestMaker requestMaker;
 
-
     /**
      * Singleton öğrencinin constructor metodu.
      */
@@ -58,21 +57,22 @@ public class Student implements Serializable
      */
     public static synchronized Student getInstance(Context ctx)
     {
+        context = ctx;
+
         if (instance == null)
         {
-            context = ctx;
-            instance = new Student();
             try
             {
-                instance = instance.loadFromFile();
+                instance = Student.loadFromFile();
+
+                return instance;
             } catch (Exception e)
             {
                 e.printStackTrace();
+
+                instance = new Student();
             }
         }
-
-        // To avoid window leaks
-        context = ctx;
 
         return instance;
     }
@@ -97,20 +97,18 @@ public class Student implements Serializable
      * @return okunan bilgilerle oluşturulan öğrenci
      * @throws Exception dosya okunurken IO exceptionu oluşursa
      */
-    private Student loadFromFile() throws Exception
+    public static Student loadFromFile() throws Exception
     {
         File file = context.getFileStreamPath("student");
 
         if (file == null || !file.exists())
-            return this;
+            return new Student();
 
         FileInputStream inputStream = context.openFileInput("student");
         ObjectInputStream objectStream = new ObjectInputStream(inputStream);
         Student loaded = (Student) objectStream.readObject();
         objectStream.close();
         inputStream.close();
-
-        loggedIn = true;
 
         return loaded;
     }
@@ -182,37 +180,8 @@ public class Student implements Serializable
             }
         };
 
-        /*
-            Öğrencinin şu anda zaten giriş yapıp yapmadığını anlamak için HarcBilgi sayfasına GET isteği yapıyoruz.
-            Eğer sayfa giriş yapılmadığı yönünde hata verirse tekrar giriş yapıyoruz. HarcBilgi sayfasını seçtim çünkü
-            boyutu en az olan sayfa genelde o oluyor bence. Boyutu az olması kullanıcının internetini boşuna yemememiz
-            açısından önemli.
-         */
-
-        final String harcurl = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/OgrenciIsleri/HarcBilgi.cfm";
-
-        if (listener != null && name != null && number != null)
-        {
-            requestMaker.makeGetRequest(harcurl, new ConnectionListener()
-            {
-                @Override
-                public void onSuccess(String... args)
-                {
-                    loggingin.dismiss();
-                    listener.onSuccess(name, number);
-                }
-
-                @Override
-                public void onFailure(String reason)
-                {
-                    requestMaker.makeLogInRequest(num, pass, logginginListener);
-                }
-            });
-        }
-        else
-        {
-            requestMaker.makeLogInRequest(num, pass, logginginListener);
-        }
+        // Login isteğini gerçekleştiriyoruz
+        requestMaker.makeLogInRequest(num, pass, logginginListener);
     }
 
     /**
@@ -293,6 +262,9 @@ public class Student implements Serializable
 
     public RequestMaker getRequestMaker()
     {
+        if (requestMaker == null)
+            requestMaker = new RequestMaker(context, this);
+
         return requestMaker;
     }
 }

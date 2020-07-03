@@ -1,5 +1,6 @@
 package com.koubilgi.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.GridView;
@@ -25,11 +26,18 @@ public class Mainmenu extends AppCompatActivity
 
         Student student = Student.getInstance(this);
 
+        if (student == null || !student.hasCredentials())
+        {
+            finish();
+            Intent intent = new Intent(this, Login.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(intent);
+            overridePendingTransition(0, 0); // Kayma gibi bir animasyon oluyor onu engellemek için
+            return;
+        }
+
         final TextView tStudentName = findViewById(R.id.studentName), tStudentNumber =
                 findViewById(R.id.studentNumber), tStudentDepartment = findViewById(R.id.studentDepartment);
-
-        if (!student.hasCredentials())
-            return;
 
         if (student.getName() != null)
             tStudentName.setText(student.getName());
@@ -39,7 +47,7 @@ public class Mainmenu extends AppCompatActivity
             tStudentDepartment.setText(student.getDepartment());
         else
         {
-            Student.getInstance(this).getPersonalInfo(new ConnectionListener()
+            student.getPersonalInfo(new ConnectionListener()
             {
                 @Override
                 public void onSuccess(String... args)
