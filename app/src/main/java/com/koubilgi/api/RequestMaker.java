@@ -31,6 +31,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+    TODO:
+         ReCaptcha düzgün çalışmıyor. İlk seferde hepsini doğru işaretlesen bile güvenmeyip 2 kez ReCaptcha
+         doldurtuyor, ayrıca çok yavaş tepki veriyor. ReCaptcha robot olup olmadığını sorgularken cookie lere
+         de bakıyor diye biliyorum. ReCaptcha için kullandığımız WebView in cookie bilgilerini saklayabilrisek ReCaptcha
+         belki önceden doğru giriş yaptığımızı hatırlayıp daha az problem çıkartabilir.
+ */
+
 public class RequestMaker
 {
     public CookieManager cookieManager;

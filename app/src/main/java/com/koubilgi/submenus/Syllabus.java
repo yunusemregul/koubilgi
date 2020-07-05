@@ -29,7 +29,7 @@ import java.util.Calendar;
 
 /*
     TODO:
-        İçinde olduğumuz dönemin ne zaman başaldığını bulabilmemiz gerek şu an kaçıncı haftada olduğumuzu bulmak için.
+        İçinde olduğumuz dönemin ne zaman başladığını bulabilmemiz gerek şu an kaçıncı haftada olduğumuzu bulmak için.
         Belki akademik takvimi indirip onu ayrıştırarak bulabiliriz. Akademik takvim sayfası da eklenebilir.
  */
 
