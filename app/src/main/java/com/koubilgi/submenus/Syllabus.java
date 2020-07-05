@@ -60,6 +60,8 @@ public class Syllabus extends Submenu
                     days[i] = new Day(i);
                 }
 
+                // Ders programı tablosunun satır ve sütunlarını gezip dersleri ayrıştırıyoruz
+
                 Elements rows = doc.select("tr");
                 for (int rowIndex = 1; rowIndex < rows.size(); rowIndex++)
                 {

@@ -3,6 +3,7 @@ package com.koubilgi.api;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
@@ -86,7 +87,7 @@ public class RequestMaker
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                // We assume that we failed because site is not reachable
+                Log.e("makeGetRequest", "Can not connect to " + url);
                 listener.onFailure("site");
             }
         })
@@ -117,13 +118,16 @@ public class RequestMaker
      */
     public void makeGetRequest(final String url, final ConnectionListener listener)
     {
+        Log.d("makeGetRequest", "Making get request to " + url);
         StringRequest getReq = new StringRequest(Request.Method.GET, url, new Response.Listener<String>()
         {
             @Override
             public void onResponse(String response)
             {
+                Log.d("makeGetRequest", "Got response for " + url);
                 if (response.contains("alert") && response.contains("hata") && student.isLoggedIn())
                 {
+                    Log.d("makeGetRequest", "Relog is needed to make a get request for " + url);
                     listener.onFailure("relogin");
                     student.markForRelog(new ConnectionListener()
                     {
@@ -149,6 +153,7 @@ public class RequestMaker
             @Override
             public void onErrorResponse(VolleyError error)
             {
+                Log.e("makeGetRequest", "Can not connect to " + url);
                 listener.onFailure("site");
             }
         })

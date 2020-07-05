@@ -193,6 +193,8 @@ public class Student implements Serializable
         if (!loggedIn)
             return;
 
+        Log.d("markForRelog", "Relogging the student..");
+
         loggedIn = false;
         // Log in again
         logIn(number, password, listener);
