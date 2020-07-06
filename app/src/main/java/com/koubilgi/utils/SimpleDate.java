@@ -2,6 +2,9 @@ package com.koubilgi.utils;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Ders programı sayfasındaki bir günü temsil edecek sınıf.
+ */
 public class SimpleDate
 {
     private int day;
