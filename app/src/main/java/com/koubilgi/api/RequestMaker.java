@@ -1,5 +1,6 @@
 package com.koubilgi.api;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.koubilgi.utils.AssetReader;
 import com.koubilgi.utils.ConnectionListener;
 import com.koubilgi.utils.SingletonRequestQueue;
 
@@ -23,6 +25,9 @@ import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookieStore;
@@ -44,6 +49,7 @@ public class RequestMaker
     public CookieManager cookieManager;
     private Student student;
     private RequestQueue queue;
+    private String recaptchaHtml;
 
     public RequestMaker(Context context, Student student)
     {
@@ -51,6 +57,16 @@ public class RequestMaker
         cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
         queue = SingletonRequestQueue.getInstance(context.getApplicationContext()).getRequestQueue();
+
+        try
+        {
+	        recaptchaHtml = AssetReader.readFileAsString(context, "recaptcha.html");
+	        Log.d("RECAPTCHA", recaptchaHtml);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -178,6 +194,7 @@ public class RequestMaker
         queue.add(getReq);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     void getRecaptchaToken(final ConnectionListener listener)
     {
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
@@ -219,15 +236,7 @@ public class RequestMaker
             }
         });
 
-        // TODO: Kodda çok çirkin gözüküyor ve okunmuyor bir şekilde daha iyi bi çözüm bulunabilir belki dosyadan
-        //  okuyarak bunu
-        String data =
-                "<html>\n" + "<head>\n" + "\t<script src=\"https://www.google.com/recaptcha/api" + ".js?onload" +
-                        "=onloadCallback\"></script>\n" + "</head>\n" + "<body>\n" + "\t<div id=\"captcha\" " +
-                        "style" + "=\"display:flex;justify-content:center;align-items:center;overflow:hidden;" +
-                        "padding:20px;\"> " + "</div>\n" + "</body>\n" + "\t<script type=\"text/javascript\">\n" +
-                        "\t\tfunction onloadCallback()" + "\n" + "\t\t{\n" + "\t\t\tgrecaptcha.render(\"captcha\", " + "{\n" + "\t\t\t\t\"sitekey\" : " + "\"6Le02eMUAAAAAF8BB2Ur7AuEErb6hvvtlUUwcf2a\",\n" + "\t\t" + "\t\t\"callback\" : function(response) {\n" + "\t\t\t\t\tconsole.log" + "(\"koubilgicaptchatoken:\"+response)\n" + "\t\t\t\t}\n" + "\t\t\t})\n" + "\t\t}\n" + "\t" + "</script>\n" + "</html>";
-        webView.loadDataWithBaseURL(url, data, "text/html", "UTF-8", null);
+        webView.loadDataWithBaseURL(url, recaptchaHtml, "text/html", "UTF-8", null);
     }
 
     void makeLogInRequest(final String num, final String pass, final ConnectionListener listener)

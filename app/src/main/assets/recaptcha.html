@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback"></script>
+    </head>
+    <body>
+    <div id="captcha" style="display:flex;justify-content:center;align-items:center;overflow:hidden;padding:20px;"> </div>
+    </body>
+    <script type="text/javascript">
+        function onloadCallback()
+        {
+            grecaptcha.render("captcha", {
+                "sitekey" : "6Le02eMUAAAAAF8BB2Ur7AuEErb6hvvtlUUwcf2a",
+                "callback" : function(response) {
+                    console.log("koubilgicaptchatoken:"+response)
+                }
+            })
+        }
+    </script>
+</html>

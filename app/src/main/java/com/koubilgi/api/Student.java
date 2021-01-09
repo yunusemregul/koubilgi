@@ -264,9 +264,6 @@ public class Student implements Serializable
 
     public RequestMaker getRequestMaker()
     {
-        if (requestMaker == null)
-            requestMaker = new RequestMaker(context, this);
-
         return requestMaker;
     }
 }
