@@ -43,7 +43,7 @@ public class Syllabus extends Submenu
     @Override
     public void fillContentView(final Context context)
     {
-        Student.getInstance(context).getRequestMaker().makeGetRequest("https://ogr.kocaeli.edu" + ".tr/KOUBS/Ogrenci" +
+        Student.getInstance().getRequestMaker().makeGetRequest("https://ogr.kocaeli.edu" + ".tr/KOUBS/Ogrenci" +
                 "/DersIslemleri" + "/DersProgramiIcerik.cfm", new ConnectionListener()
         {
             @Override

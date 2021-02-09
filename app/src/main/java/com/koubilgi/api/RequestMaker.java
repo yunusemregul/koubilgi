@@ -16,6 +16,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.koubilgi.MainApplication;
 import com.koubilgi.utils.AssetReader;
 import com.koubilgi.utils.ConnectionListener;
 import com.koubilgi.utils.SingletonRequestQueue;
@@ -47,20 +48,18 @@ import java.util.Map;
 public class RequestMaker
 {
     public CookieManager cookieManager;
-    private Student student;
     private RequestQueue queue;
     private String recaptchaHtml;
 
-    public RequestMaker(Context context, Student student)
+    public RequestMaker()
     {
-        this.student = student;
         cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
-        queue = SingletonRequestQueue.getInstance(context.getApplicationContext()).getRequestQueue();
+        queue = SingletonRequestQueue.getInstance(MainApplication.getAppContext()).getRequestQueue();
 
         try
         {
-	        recaptchaHtml = AssetReader.readFileAsString(context, "recaptcha.html");
+	        recaptchaHtml = AssetReader.readFileAsString(MainApplication.getAppContext(), "recaptcha.html");
         }
         catch (IOException e)
         {
@@ -83,10 +82,10 @@ public class RequestMaker
             @Override
             public void onResponse(String response)
             {
-                if (response.contains("alert") && response.contains("hata") && student.isLoggedIn())
+                if (response.contains("alert") && response.contains("hata") && Student.getInstance().getInstance().isLoggedIn())
                 {
                     listener.onFailure("relogin");
-                    student.markForRelog(new ConnectionListener()
+                    Student.getInstance().getInstance().markForRelog(new ConnectionListener()
                     {
                         @Override
                         public void onSuccess(String... args)
@@ -119,7 +118,7 @@ public class RequestMaker
             public Map<String, String> getHeaders()
             {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Cookie", student.getCookies());
+                headers.put("Cookie", Student.getInstance().getInstance().getCookies());
 
                 return headers;
             }
@@ -148,11 +147,11 @@ public class RequestMaker
             public void onResponse(String response)
             {
                 Log.d("makeGetRequest", "Got response for " + url);
-                if (response.contains("alert") && response.contains("hata") && student.isLoggedIn())
+                if (response.contains("alert") && response.contains("hata") && Student.getInstance().getInstance().isLoggedIn())
                 {
                     Log.d("makeGetRequest", "Relog is needed to make a get request for " + url);
                     listener.onFailure("relogin");
-                    student.markForRelog(new ConnectionListener()
+                    Student.getInstance().getInstance().markForRelog(new ConnectionListener()
                     {
                         @Override
                         public void onSuccess(String... args)
@@ -185,7 +184,7 @@ public class RequestMaker
             public Map<String, String> getHeaders()
             {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Cookie", student.getCookies());
+                headers.put("Cookie", Student.getInstance().getCookies());
 
                 return headers;
             }
@@ -198,9 +197,9 @@ public class RequestMaker
     {
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(student.getContext());
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainApplication.getActiveActivity());
 
-        final WebView webView = new WebView(student.getContext());
+        final WebView webView = new WebView(MainApplication.getActiveActivity());
         webView.setBackgroundColor(Color.TRANSPARENT);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -327,12 +326,12 @@ public class RequestMaker
 
     public void makePersonalInfoRequest(final ConnectionListener listener)
     {
-        if (!student.isLoggedIn())
+        if (!Student.getInstance().isLoggedIn())
             return;
 
-        if (student.getDepartment() != null)
+        if (Student.getInstance().getDepartment() != null)
         {
-            listener.onSuccess(student.getDepartment());
+            listener.onSuccess(Student.getInstance().getDepartment());
             return;
         }
 

@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.koubilgi.MainApplication;
 import com.koubilgi.R;
 import com.koubilgi.api.Student;
 import com.koubilgi.components.SubmenuButtonAdapter;
@@ -24,7 +25,7 @@ public class Mainmenu extends AppCompatActivity
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_mainmenu);
 
-        Student student = Student.getInstance(this);
+        Student student = Student.getInstance();
 
         if (student == null || !student.hasCredentials())
         {
@@ -68,6 +69,13 @@ public class Mainmenu extends AppCompatActivity
         submenus.setAdapter(new SubmenuButtonAdapter(this));
     }
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        MainApplication.setActiveActivity(this);
+    }
+
     public void openSettingsSubmenu(View view)
     {
 
@@ -77,4 +85,6 @@ public class Mainmenu extends AppCompatActivity
     {
 
     }
+
+
 }

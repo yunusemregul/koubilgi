@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.koubilgi.MainApplication;
 import com.koubilgi.R;
 import com.koubilgi.api.Student;
 import com.koubilgi.utils.ConnectionListener;
@@ -22,7 +23,7 @@ public class Login extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-        final Student student = Student.getInstance(this);
+        final Student student = Student.getInstance();
         // Eğer öğrenci daha önceden giriş yaptıysa otomatik giriş yap, ana menü activity sini başlat
         if (student.hasCredentials())
         {
@@ -99,5 +100,12 @@ public class Login extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        MainApplication.setActiveActivity(this);
     }
 }

@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 
+import com.koubilgi.MainApplication;
 import com.koubilgi.R;
+import com.koubilgi.activities.Login;
 import com.koubilgi.utils.ConnectionListener;
 
 import java.io.File;
@@ -29,18 +31,12 @@ import java.io.Serializable;
  * Uygulamada oturumu açık sadece 1 öğrenci olacağı için bu sınıfın tüm uygulama genelinde tek olmasını daha doğru
  * buldum. Bu yüzden Singleton pattern kullandım.
  */
-public class Student implements Serializable
+public class Student
 {
-    private static boolean loggedIn;
-    private static Context context;
-    private String name;
-    private String number;
-    private String password;
-
+    private boolean loggedIn;
     private static Student instance;
-    private String department;
-    private String cookieString;
-    private static RequestMaker requestMaker;
+    private final RequestMaker requestMaker;
+    public StudentInfo info;
 
     /**
      * Singleton öğrencinin constructor metodu.
@@ -48,112 +44,30 @@ public class Student implements Serializable
     private Student()
     {
         setLoggedIn(false);
-        requestMaker = new RequestMaker(context, this);
+        requestMaker = new RequestMaker();
+	    try
+	    {
+		    this.info = StudentInfo.loadFromFile();
+	    }
+	    catch (IOException e)
+	    {
+		    this.info = new StudentInfo();
+	    }
     }
 
     /**
      * Öğrencinin tek instance ini döndürür, instance yoksa oluşturup döndürür.
      *
-     * @param ctx içinde olduğumuz context
      * @return singleton Student
      */
-    public static synchronized Student getInstance(Context ctx)
+    public static synchronized Student getInstance()
     {
-        context = ctx;
-
         if (instance == null)
         {
-        	if (saveFileExists())
-	        {
-		        try
-		        {
-			        instance = Student.loadFromFile();
-
-			        return instance;
-		        } catch (Exception e)
-		        {
-			        e.printStackTrace();
-		        }
-	        }
-        	else
-	        {
-		        instance = new Student();
-	        }
+        	instance = new Student();
         }
 
         return instance;
-    }
-
-    private static boolean saveFileExists()
-    {
-	    File file = new File(context.getFilesDir().getAbsolutePath()+"/"+"student");
-
-	    return file.exists();
-    }
-
-    private static void destroySaveFile()
-    {
-	    File file = new File(context.getFilesDir().getAbsolutePath()+"/"+"student");
-
-	    if (file.exists())
-	    {
-	    	file.delete();
-	    }
-    }
-
-    /**
-     * Öğrenci bilgilerini tekrar kullanmak üzere kaydeder.
-     *
-     * @throws Exception
-     */
-    private void saveToFile() throws Exception
-    {
-        FileOutputStream outputStream = context.openFileOutput("student", Context.MODE_PRIVATE);
-        ObjectOutputStream objectStream = new ObjectOutputStream(outputStream);
-        objectStream.writeObject(this);
-        objectStream.close();
-        outputStream.close();
-    }
-
-    /**
-     * Kaydedilmiş öğrenci bilgilerini okur, okuduğu bilgilerle bir öğrenci oluşturup döndürür.
-     *
-     * @return okunan bilgilerle oluşturulan öğrenci
-     * @throws Exception dosya okunurken IO exceptionu oluşursa
-     */
-    public static Student loadFromFile() throws IOException
-    {
-        File file = context.getFileStreamPath("student");
-
-        if (file == null || !file.exists())
-            return new Student();
-
-        FileInputStream inputStream = context.openFileInput("student");
-        ObjectInputStream objectStream = new ObjectInputStream(inputStream);
-
-	    Student loaded = null;
-	    try
-	    {
-		    loaded = (Student) objectStream.readObject();
-	    }
-	    catch (ClassNotFoundException | IOException e)
-	    {
-	    	Log.d("loadFromFile", "Destroying save file because of an exception.");
-		    objectStream.close();
-		    inputStream.close();
-		    destroySaveFile();
-		    return new Student();
-	    }
-
-	    objectStream.close();
-	    inputStream.close();
-
-        return loaded;
-    }
-
-    public static Context getContext()
-    {
-        return context;
     }
 
     /**
@@ -171,12 +85,12 @@ public class Student implements Serializable
         if (loggedIn)
         {
             if (listener != null)
-                listener.onSuccess(name, number);
+                listener.onSuccess(info.name, info.number);
             return;
         }
 
         // Giriş yapılıyor... popup
-        AlertDialog.Builder logginginPopup = new AlertDialog.Builder(context);
+        AlertDialog.Builder logginginPopup = new AlertDialog.Builder(MainApplication.getActiveActivity());
         logginginPopup.setMessage(R.string.logging_in);
 
         logginginPopup.setCancelable(false);
@@ -189,17 +103,17 @@ public class Student implements Serializable
             {
                 loggingin.dismiss();
 
-                name = args[0];
-                number = args[1];
-                password = pass;
-                cookieString = args[2];
+                info.name = args[0];
+	            info.number = args[1];
+	            info.password = pass;
+	            info.cookieString = args[2];
 
                 setLoggedIn(true);
 
                 // Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
                 try
                 {
-                    saveToFile();
+	                info.save();
                 } catch (Exception e)
                 {
                     e.printStackTrace();
@@ -235,28 +149,28 @@ public class Student implements Serializable
 
         setLoggedIn(false);
         // Log in again
-        logIn(number, password, listener);
+        logIn(info.number, info.password, listener);
     }
 
     public String getCookies()
     {
-        return cookieString;
+        return info.cookieString;
     }
 
     public String getName()
     {
-        return name;
+        return info.name;
     }
 
     public String getNumber()
     {
-        return number;
+        return info.number;
     }
 
     public void getPersonalInfo(final ConnectionListener listener)
     {
-        if (department != null)
-            listener.onSuccess(department);
+        if (info.department != null)
+            listener.onSuccess(info.department);
         else
         {
             requestMaker.makePersonalInfoRequest(new ConnectionListener()
@@ -264,10 +178,10 @@ public class Student implements Serializable
                 @Override
                 public void onSuccess(String... args)
                 {
-                    department = args[0];
+                    info.department = args[0];
                     try
                     {
-                        saveToFile();
+                        info.save();
                     } catch (Exception e)
                     {
                         e.printStackTrace();
@@ -287,7 +201,7 @@ public class Student implements Serializable
 
     public String getDepartment()
     {
-        return department;
+        return info.department;
     }
 
     public void setLoggedIn(boolean bool)
@@ -307,7 +221,7 @@ public class Student implements Serializable
 
     public boolean hasCredentials()
     {
-        return (number != null && password != null);
+        return (info.number != null && info.password != null);
     }
 
     public RequestMaker getRequestMaker()

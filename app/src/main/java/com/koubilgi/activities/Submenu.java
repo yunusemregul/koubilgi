@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.koubilgi.MainApplication;
 import com.koubilgi.R;
 import com.koubilgi.submenus.SubmenuManager;
 
@@ -22,5 +23,12 @@ public class Submenu extends AppCompatActivity
         header.setText(nameResource);
 
         SubmenuManager.getSubmenuByName(nameResource).fillContentView(this);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        MainApplication.setActiveActivity(this);
     }
 }
