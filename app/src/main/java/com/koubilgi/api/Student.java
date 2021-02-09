@@ -9,7 +9,9 @@ import com.koubilgi.utils.ConnectionListener;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -45,7 +47,7 @@ public class Student implements Serializable
      */
     private Student()
     {
-        loggedIn = false;
+        setLoggedIn(false);
         requestMaker = new RequestMaker(context, this);
     }
 
@@ -61,20 +63,42 @@ public class Student implements Serializable
 
         if (instance == null)
         {
-            try
-            {
-                instance = Student.loadFromFile();
+        	if (saveFileExists())
+	        {
+		        try
+		        {
+			        instance = Student.loadFromFile();
 
-                return instance;
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-
-                instance = new Student();
-            }
+			        return instance;
+		        } catch (Exception e)
+		        {
+			        e.printStackTrace();
+		        }
+	        }
+        	else
+	        {
+		        instance = new Student();
+	        }
         }
 
         return instance;
+    }
+
+    private static boolean saveFileExists()
+    {
+	    File file = new File(context.getFilesDir().getAbsolutePath()+"/"+"student");
+
+	    return file.exists();
+    }
+
+    private static void destroySaveFile()
+    {
+	    File file = new File(context.getFilesDir().getAbsolutePath()+"/"+"student");
+
+	    if (file.exists())
+	    {
+	    	file.delete();
+	    }
     }
 
     /**
@@ -97,7 +121,7 @@ public class Student implements Serializable
      * @return okunan bilgilerle oluşturulan öğrenci
      * @throws Exception dosya okunurken IO exceptionu oluşursa
      */
-    public static Student loadFromFile() throws Exception
+    public static Student loadFromFile() throws IOException
     {
         File file = context.getFileStreamPath("student");
 
@@ -106,9 +130,23 @@ public class Student implements Serializable
 
         FileInputStream inputStream = context.openFileInput("student");
         ObjectInputStream objectStream = new ObjectInputStream(inputStream);
-        Student loaded = (Student) objectStream.readObject();
-        objectStream.close();
-        inputStream.close();
+
+	    Student loaded = null;
+	    try
+	    {
+		    loaded = (Student) objectStream.readObject();
+	    }
+	    catch (ClassNotFoundException | IOException e)
+	    {
+	    	Log.d("loadFromFile", "Destroying save file because of an exception.");
+		    objectStream.close();
+		    inputStream.close();
+		    destroySaveFile();
+		    return new Student();
+	    }
+
+	    objectStream.close();
+	    inputStream.close();
 
         return loaded;
     }
@@ -156,7 +194,7 @@ public class Student implements Serializable
                 password = pass;
                 cookieString = args[2];
 
-                loggedIn = true;
+                setLoggedIn(true);
 
                 // Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
                 try
@@ -195,7 +233,7 @@ public class Student implements Serializable
 
         Log.d("markForRelog", "Relogging the student..");
 
-        loggedIn = false;
+        setLoggedIn(false);
         // Log in again
         logIn(number, password, listener);
     }
@@ -250,6 +288,16 @@ public class Student implements Serializable
     public String getDepartment()
     {
         return department;
+    }
+
+    public void setLoggedIn(boolean bool)
+    {
+        loggedIn = bool;
+
+        if(bool)
+        {
+            Log.d("setLoggedIn", bool + "");
+        }
     }
 
     public boolean isLoggedIn()

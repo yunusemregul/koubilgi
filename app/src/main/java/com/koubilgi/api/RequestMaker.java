@@ -61,7 +61,6 @@ public class RequestMaker
         try
         {
 	        recaptchaHtml = AssetReader.readFileAsString(context, "recaptcha.html");
-	        Log.d("RECAPTCHA", recaptchaHtml);
         }
         catch (IOException e)
         {
