@@ -64,6 +64,11 @@ public class RequestMaker
 		}
 	}
 
+	private boolean responseHasErrors(String response)
+	{
+		return response.contains("giriş yapınız");
+	}
+
 	/**
 	 * Verilen URL adresine verilen parametreler ile POST isteği gerçekleştirir ve sonuçlarını listener ile döndürür.
 	 * POST isteğini yaparken öğrencinin session cookie lerini kullanır.
@@ -79,7 +84,7 @@ public class RequestMaker
 			@Override
 			public void onResponse(String response)
 			{
-				if (response.contains("alert") && response.contains("hata") && Student.getInstance().isLoggedIn())
+				if (responseHasErrors(response))
 				{
 					listener.onFailure("relogin");
 					Student.getInstance().markForRelog(new ConnectionListener()
@@ -144,7 +149,7 @@ public class RequestMaker
 			public void onResponse(String response)
 			{
 				Log.d("makeGetRequest", "Got response for " + url);
-				if (response.contains("alert") && response.contains("hata") && Student.getInstance().isLoggedIn())
+				if (responseHasErrors(response))
 				{
 					Log.d("makeGetRequest", "Relog is needed to make a get request for " + url);
 					listener.onFailure("relogin");

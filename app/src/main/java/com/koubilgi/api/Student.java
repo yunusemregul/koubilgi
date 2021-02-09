@@ -132,9 +132,6 @@ public class Student
 	 */
 	void markForRelog(ConnectionListener listener)
 	{
-		// Sadece giriş yapmış öğrenciler giriş yapmadı olarak işaretlenebilir
-		if (!loggedIn) return;
-
 		Log.d("markForRelog", "Relogging the student..");
 
 		setLoggedIn(false);
