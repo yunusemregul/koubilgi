@@ -9,7 +9,8 @@ public class MainApplication extends Application
 	private static Context context;
 	private static Activity activeActivity;
 
-	public void onCreate() {
+	public void onCreate()
+	{
 		super.onCreate();
 		MainApplication.context = getApplicationContext();
 	}
@@ -25,7 +26,8 @@ public class MainApplication extends Application
 		return MainApplication.activeActivity;
 	}
 
-	public static Context getAppContext() {
+	public static Context getAppContext()
+	{
 		return MainApplication.context;
 	}
 }

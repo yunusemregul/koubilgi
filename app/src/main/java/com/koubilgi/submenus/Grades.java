@@ -6,14 +6,14 @@ import com.koubilgi.R;
 
 public class Grades extends Submenu
 {
-    public Grades()
-    {
-        super(R.string.submenu_grades, R.drawable.icon_mainmenu_notbilgileri);
-    }
+	public Grades()
+	{
+		super(R.string.submenu_grades, R.drawable.icon_mainmenu_notbilgileri);
+	}
 
-    @Override
-    public void fillContentView(Context context)
-    {
+	@Override
+	public void fillContentView(Context context)
+	{
 
-    }
+	}
 }

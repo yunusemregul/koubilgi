@@ -8,34 +8,33 @@ import com.android.volley.toolbox.Volley;
 
 public class SingletonRequestQueue
 {
-    private static SingletonRequestQueue instance;
-    private static Context context;
-    private RequestQueue requestQueue;
+	private static SingletonRequestQueue instance;
+	private static Context context;
+	private RequestQueue requestQueue;
 
-    private SingletonRequestQueue(Context ctx)
-    {
-        context = ctx;
-        requestQueue = getRequestQueue();
-    }
+	private SingletonRequestQueue(Context ctx)
+	{
+		context = ctx;
+		requestQueue = getRequestQueue();
+	}
 
-    public static synchronized SingletonRequestQueue getInstance(Context ctx)
-    {
-        if (instance == null)
-            instance = new SingletonRequestQueue(ctx);
+	public static synchronized SingletonRequestQueue getInstance(Context ctx)
+	{
+		if (instance == null) instance = new SingletonRequestQueue(ctx);
 
-        return instance;
-    }
+		return instance;
+	}
 
-    public RequestQueue getRequestQueue()
-    {
-        if (requestQueue == null)
-            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+	public RequestQueue getRequestQueue()
+	{
+		if (requestQueue == null)
+			requestQueue = Volley.newRequestQueue(context.getApplicationContext());
 
-        return requestQueue;
-    }
+		return requestQueue;
+	}
 
-    public <T> void add(Request<T> req)
-    {
-        getRequestQueue().add(req);
-    }
+	public <T> void add(Request<T> req)
+	{
+		getRequestQueue().add(req);
+	}
 }

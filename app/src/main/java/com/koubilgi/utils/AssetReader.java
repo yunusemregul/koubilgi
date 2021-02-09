@@ -3,7 +3,6 @@ package com.koubilgi.utils;
 import android.content.Context;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 
 public class AssetReader

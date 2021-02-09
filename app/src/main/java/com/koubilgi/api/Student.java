@@ -1,22 +1,13 @@
 package com.koubilgi.api;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.util.Log;
 
 import com.koubilgi.MainApplication;
 import com.koubilgi.R;
-import com.koubilgi.activities.Login;
 import com.koubilgi.utils.ConnectionListener;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
 /*
     TODO:
@@ -33,199 +24,198 @@ import java.io.Serializable;
  */
 public class Student
 {
-    private boolean loggedIn;
-    private static Student instance;
-    private final RequestMaker requestMaker;
-    public StudentInfo info;
+	private boolean loggedIn;
+	private static Student instance;
+	private final RequestMaker requestMaker;
+	public StudentInfo info;
 
-    /**
-     * Singleton öğrencinin constructor metodu.
-     */
-    private Student()
-    {
-        setLoggedIn(false);
-        requestMaker = new RequestMaker();
-	    try
-	    {
-		    this.info = StudentInfo.loadFromFile();
-	    }
-	    catch (IOException e)
-	    {
-		    this.info = new StudentInfo();
-	    }
-    }
+	/**
+	 * Singleton öğrencinin constructor metodu.
+	 */
+	private Student()
+	{
+		setLoggedIn(false);
+		requestMaker = new RequestMaker();
+		try
+		{
+			this.info = StudentInfo.loadFromFile();
+		}
+		catch (IOException e)
+		{
+			this.info = new StudentInfo();
+		}
+	}
 
-    /**
-     * Öğrencinin tek instance ini döndürür, instance yoksa oluşturup döndürür.
-     *
-     * @return singleton Student
-     */
-    public static synchronized Student getInstance()
-    {
-        if (instance == null)
-        {
-        	instance = new Student();
-        }
+	/**
+	 * Öğrencinin tek instance ini döndürür, instance yoksa oluşturup döndürür.
+	 *
+	 * @return singleton Student
+	 */
+	public static synchronized Student getInstance()
+	{
+		if (instance == null)
+		{
+			instance = new Student();
+		}
 
-        return instance;
-    }
+		return instance;
+	}
 
-    /**
-     * Verilen credential bilgileri ile öğrenci girişi yapmaya çalışır. Eğer giriş başarılı olursa listener.onSuccess
-     * metoduna öğrencinin adını numarasını ve departmanını verir. Eğer giriş başarılı değilse listener.onFailure
-     * metodunu ilgili sebep ile çağırır.
-     *
-     * @param num      giriş yapacak öğrencinin numarası
-     * @param pass     giriş yapacak öğrencinin şifresi
-     * @param listener giriş sonucunu bekleyen listener
-     */
-    public void logIn(final String num, final String pass, final ConnectionListener listener)
-    {
-        // Eğer zaten önceden giriş yaptıysak tekrar girmeyi deneme
-        if (loggedIn)
-        {
-            if (listener != null)
-                listener.onSuccess(info.name, info.number);
-            return;
-        }
+	/**
+	 * Verilen credential bilgileri ile öğrenci girişi yapmaya çalışır. Eğer giriş başarılı olursa listener.onSuccess
+	 * metoduna öğrencinin adını numarasını ve departmanını verir. Eğer giriş başarılı değilse listener.onFailure
+	 * metodunu ilgili sebep ile çağırır.
+	 *
+	 * @param num      giriş yapacak öğrencinin numarası
+	 * @param pass     giriş yapacak öğrencinin şifresi
+	 * @param listener giriş sonucunu bekleyen listener
+	 */
+	public void logIn(final String num, final String pass, final ConnectionListener listener)
+	{
+		// Eğer zaten önceden giriş yaptıysak tekrar girmeyi deneme
+		if (loggedIn)
+		{
+			if (listener != null) listener.onSuccess(info.name, info.number);
+			return;
+		}
 
-        // Giriş yapılıyor... popup
-        AlertDialog.Builder logginginPopup = new AlertDialog.Builder(MainApplication.getActiveActivity());
-        logginginPopup.setMessage(R.string.logging_in);
+		// Giriş yapılıyor... popup
+		AlertDialog.Builder logginginPopup = new AlertDialog.Builder(MainApplication.getActiveActivity());
+		logginginPopup.setMessage(R.string.logging_in);
 
-        logginginPopup.setCancelable(false);
-        final AlertDialog loggingin = logginginPopup.show();
+		logginginPopup.setCancelable(false);
+		final AlertDialog loggingin = logginginPopup.show();
 
-        final ConnectionListener logginginListener = new ConnectionListener()
-        {
-            @Override
-            public void onSuccess(String... args)
-            {
-                loggingin.dismiss();
+		final ConnectionListener logginginListener = new ConnectionListener()
+		{
+			@Override
+			public void onSuccess(String... args)
+			{
+				loggingin.dismiss();
 
-                info.name = args[0];
-	            info.number = args[1];
-	            info.password = pass;
-	            info.cookieString = args[2];
+				info.name = args[0];
+				info.number = args[1];
+				info.password = pass;
+				info.cookieString = args[2];
 
-                setLoggedIn(true);
+				setLoggedIn(true);
 
-                // Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
-                try
-                {
-	                info.save();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+				// Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
+				try
+				{
+					info.save();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 
-                listener.onSuccess(args);
-            }
+				listener.onSuccess(args);
+			}
 
-            @Override
-            public void onFailure(String reason)
-            {
-                loggingin.dismiss();
-                listener.onFailure(reason);
-                // TODO: Offline moda geç
-                Log.d("HATA", "Giriş yapılamadı! (Sebep: " + reason + ")");
-            }
-        };
+			@Override
+			public void onFailure(String reason)
+			{
+				loggingin.dismiss();
+				listener.onFailure(reason);
+				// TODO: Offline moda geç
+				Log.d("HATA", "Giriş yapılamadı! (Sebep: " + reason + ")");
+			}
+		};
 
-        // Login isteğini gerçekleştiriyoruz
-        requestMaker.makeLogInRequest(num, pass, logginginListener);
-    }
+		// Login isteğini gerçekleştiriyoruz
+		requestMaker.makeLogInRequest(num, pass, logginginListener);
+	}
 
-    /**
-     * Daha önceden giriş yapmış öğrenciyi giriş yapmadı olarak işaretleyerek tekrar giriş yaptırır.
-     */
-    void markForRelog(ConnectionListener listener)
-    {
-        // Sadece giriş yapmış öğrenciler giriş yapmadı olarak işaretlenebilir
-        if (!loggedIn)
-            return;
+	/**
+	 * Daha önceden giriş yapmış öğrenciyi giriş yapmadı olarak işaretleyerek tekrar giriş yaptırır.
+	 */
+	void markForRelog(ConnectionListener listener)
+	{
+		// Sadece giriş yapmış öğrenciler giriş yapmadı olarak işaretlenebilir
+		if (!loggedIn) return;
 
-        Log.d("markForRelog", "Relogging the student..");
+		Log.d("markForRelog", "Relogging the student..");
 
-        setLoggedIn(false);
-        // Log in again
-        logIn(info.number, info.password, listener);
-    }
+		setLoggedIn(false);
+		// Log in again
+		logIn(info.number, info.password, listener);
+	}
 
-    public String getCookies()
-    {
-        return info.cookieString;
-    }
+	public String getCookies()
+	{
+		return info.cookieString;
+	}
 
-    public String getName()
-    {
-        return info.name;
-    }
+	public String getName()
+	{
+		return info.name;
+	}
 
-    public String getNumber()
-    {
-        return info.number;
-    }
+	public String getNumber()
+	{
+		return info.number;
+	}
 
-    public void getPersonalInfo(final ConnectionListener listener)
-    {
-        if (info.department != null)
-            listener.onSuccess(info.department);
-        else
-        {
-            requestMaker.makePersonalInfoRequest(new ConnectionListener()
-            {
-                @Override
-                public void onSuccess(String... args)
-                {
-                    info.department = args[0];
-                    try
-                    {
-                        info.save();
-                    } catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
+	public void getPersonalInfo(final ConnectionListener listener)
+	{
+		if (info.department != null) listener.onSuccess(info.department);
+		else
+		{
+			requestMaker.makePersonalInfoRequest(new ConnectionListener()
+			{
+				@Override
+				public void onSuccess(String... args)
+				{
+					info.department = args[0];
+					try
+					{
+						info.save();
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 
-                    listener.onSuccess(args);
-                }
+					listener.onSuccess(args);
+				}
 
-                @Override
-                public void onFailure(String reason)
-                {
-                    listener.onFailure(reason);
-                }
-            });
-        }
-    }
+				@Override
+				public void onFailure(String reason)
+				{
+					listener.onFailure(reason);
+				}
+			});
+		}
+	}
 
-    public String getDepartment()
-    {
-        return info.department;
-    }
+	public String getDepartment()
+	{
+		return info.department;
+	}
 
-    public void setLoggedIn(boolean bool)
-    {
-        loggedIn = bool;
+	public void setLoggedIn(boolean bool)
+	{
+		loggedIn = bool;
 
-        if(bool)
-        {
-            Log.d("setLoggedIn", bool + "");
-        }
-    }
+		if (bool)
+		{
+			Log.d("setLoggedIn", bool + "");
+		}
+	}
 
-    public boolean isLoggedIn()
-    {
-        return loggedIn;
-    }
+	public boolean isLoggedIn()
+	{
+		return loggedIn;
+	}
 
-    public boolean hasCredentials()
-    {
-        return (info.number != null && info.password != null);
-    }
+	public boolean hasCredentials()
+	{
+		return (info.number != null && info.password != null);
+	}
 
-    public RequestMaker getRequestMaker()
-    {
-        return requestMaker;
-    }
+	public RequestMaker getRequestMaker()
+	{
+		return requestMaker;
+	}
 }

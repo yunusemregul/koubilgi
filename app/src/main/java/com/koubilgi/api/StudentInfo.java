@@ -45,8 +45,7 @@ public class StudentInfo implements Serializable
 	{
 		File file = MainApplication.getAppContext().getFileStreamPath("StudentInfo");
 
-		if (file == null || !file.exists())
-			return new StudentInfo();
+		if (file == null || !file.exists()) return new StudentInfo();
 
 		FileInputStream inputStream = MainApplication.getAppContext().openFileInput("StudentInfo");
 		ObjectInputStream objectStream = new ObjectInputStream(inputStream);
