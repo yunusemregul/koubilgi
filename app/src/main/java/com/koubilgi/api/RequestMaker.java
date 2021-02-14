@@ -46,6 +46,7 @@ public class RequestMaker {
     private final RequestQueue queue;
     public CookieManager cookieManager;
     private String recaptchaHtml;
+    private AlertDialog recaptchaDialog;
 
     public RequestMaker() {
         cookieManager = new CookieManager();
@@ -167,6 +168,9 @@ public class RequestMaker {
 
     @SuppressLint("SetJavaScriptEnabled")
     void getRecaptchaToken(final ConnectionListener listener) {
+        if (recaptchaDialog != null)
+            return;
+
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainApplication.getActiveActivity());
@@ -185,7 +189,7 @@ public class RequestMaker {
         dialogBuilder.setCancelable(false);
         dialogBuilder.setTitle("reCAPTCHA");
 
-        final AlertDialog recaptchaDialog = dialogBuilder.show();
+        recaptchaDialog = dialogBuilder.show();
         recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
         webView.setWebChromeClient(new WebChromeClient() {
@@ -196,6 +200,7 @@ public class RequestMaker {
                     final String token = message.substring(21);
 
                     recaptchaDialog.dismiss();
+                    recaptchaDialog = null;
                     listener.onSuccess(token);
                 }
                 return super.onConsoleMessage(consoleMessage);
