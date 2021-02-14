@@ -13,60 +13,54 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-public class StudentInfo implements Serializable
-{
-	public String name;
-	public String number;
-	public String password;
-	public String department;
-	public String cookieString;
+public class StudentInfo implements Serializable {
+    public String name;
+    public String number;
+    public String password;
+    public String department;
+    public String cookieString;
 
-	/**
-	 * Öğrenci bilgilerini tekrar kullanmak üzere kaydeder.
-	 *
-	 * @throws Exception
-	 */
-	public void save() throws Exception
-	{
-		FileOutputStream outputStream = MainApplication.getAppContext().openFileOutput("StudentInfo", Context.MODE_PRIVATE);
-		ObjectOutputStream objectStream = new ObjectOutputStream(outputStream);
-		objectStream.writeObject(this);
-		objectStream.close();
-		outputStream.close();
-	}
+    /**
+     * Kaydedilmiş öğrenci bilgilerini okur, okuduğu bilgilerle bir öğrenci oluşturup döndürür.
+     *
+     * @return okunan bilgilerle oluşturulan öğrenci
+     * @throws Exception dosya okunurken IO exceptionu oluşursa
+     */
+    public static StudentInfo loadFromFile() throws IOException {
+        File file = MainApplication.getAppContext().getFileStreamPath("StudentInfo");
 
-	/**
-	 * Kaydedilmiş öğrenci bilgilerini okur, okuduğu bilgilerle bir öğrenci oluşturup döndürür.
-	 *
-	 * @return okunan bilgilerle oluşturulan öğrenci
-	 * @throws Exception dosya okunurken IO exceptionu oluşursa
-	 */
-	public static StudentInfo loadFromFile() throws IOException
-	{
-		File file = MainApplication.getAppContext().getFileStreamPath("StudentInfo");
+        if (file == null || !file.exists()) return new StudentInfo();
 
-		if (file == null || !file.exists()) return new StudentInfo();
+        FileInputStream inputStream = MainApplication.getAppContext().openFileInput("StudentInfo");
+        ObjectInputStream objectStream = new ObjectInputStream(inputStream);
 
-		FileInputStream inputStream = MainApplication.getAppContext().openFileInput("StudentInfo");
-		ObjectInputStream objectStream = new ObjectInputStream(inputStream);
+        StudentInfo loaded = new StudentInfo();
+        try {
+            loaded = (StudentInfo) objectStream.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            Log.d("loadFromFile", "Destroying save file because of an exception.");
+            objectStream.close();
+            inputStream.close();
+            file.delete();
+            return loaded;
+        }
 
-		StudentInfo loaded = new StudentInfo();
-		try
-		{
-			loaded = (StudentInfo) objectStream.readObject();
-		}
-		catch (ClassNotFoundException | IOException e)
-		{
-			Log.d("loadFromFile", "Destroying save file because of an exception.");
-			objectStream.close();
-			inputStream.close();
-			file.delete();
-			return loaded;
-		}
+        objectStream.close();
+        inputStream.close();
 
-		objectStream.close();
-		inputStream.close();
+        return loaded;
+    }
 
-		return loaded;
-	}
+    /**
+     * Öğrenci bilgilerini tekrar kullanmak üzere kaydeder.
+     *
+     * @throws Exception
+     */
+    public void save() throws Exception {
+        FileOutputStream outputStream = MainApplication.getAppContext().openFileOutput("StudentInfo", Context.MODE_PRIVATE);
+        ObjectOutputStream objectStream = new ObjectOutputStream(outputStream);
+        objectStream.writeObject(this);
+        objectStream.close();
+        outputStream.close();
+    }
 }

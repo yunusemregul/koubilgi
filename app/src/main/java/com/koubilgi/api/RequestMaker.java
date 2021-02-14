@@ -42,311 +42,263 @@ import java.util.Map;
          belki önceden doğru giriş yaptığımızı hatırlayıp daha az problem çıkartabilir.
  */
 
-public class RequestMaker
-{
-	public CookieManager cookieManager;
-	private final RequestQueue queue;
-	private String recaptchaHtml;
+public class RequestMaker {
+    private final RequestQueue queue;
+    public CookieManager cookieManager;
+    private String recaptchaHtml;
 
-	public RequestMaker()
-	{
-		cookieManager = new CookieManager();
-		CookieHandler.setDefault(cookieManager);
-		queue = SingletonRequestQueue.getInstance(MainApplication.getAppContext()).getRequestQueue();
+    public RequestMaker() {
+        cookieManager = new CookieManager();
+        CookieHandler.setDefault(cookieManager);
+        queue = SingletonRequestQueue.getInstance(MainApplication.getAppContext()).getRequestQueue();
 
-		try
-		{
-			recaptchaHtml = AssetReader.readFileAsString(MainApplication.getAppContext(), "recaptcha.html");
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+        try {
+            recaptchaHtml = AssetReader.readFileAsString(MainApplication.getAppContext(), "recaptcha.html");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	private boolean responseHasErrors(String response)
-	{
-		return response.contains("giriş yapınız");
-	}
+    private boolean responseHasErrors(String response) {
+        return response.contains("giriş yapınız");
+    }
 
-	/**
-	 * Verilen URL adresine verilen parametreler ile POST isteği gerçekleştirir ve sonuçlarını listener ile döndürür.
-	 * POST isteğini yaparken öğrencinin session cookie lerini kullanır.
-	 *
-	 * @param url      istek yapılacak URL adresi
-	 * @param params   POST parametreleri
-	 * @param listener isteğin sonucunu bekleyen listener
-	 */
-	public void makePostRequest(final String url, final Map<String, String> params, final ConnectionListener listener)
-	{
-		StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
-		{
-			@Override
-			public void onResponse(String response)
-			{
-				if (responseHasErrors(response))
-				{
-					listener.onFailure("relogin");
-					Student.getInstance().markForRelog(new ConnectionListener()
-					{
-						@Override
-						public void onSuccess(String... args)
-						{
-							makePostRequest(url, params, listener);
-						}
+    /**
+     * Verilen URL adresine verilen parametreler ile POST isteği gerçekleştirir ve sonuçlarını listener ile döndürür.
+     * POST isteğini yaparken öğrencinin session cookie lerini kullanır.
+     *
+     * @param url      istek yapılacak URL adresi
+     * @param params   POST parametreleri
+     * @param listener isteğin sonucunu bekleyen listener
+     */
+    public void makePostRequest(final String url, final Map<String, String> params, final ConnectionListener listener) {
+        StringRequest postReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if (responseHasErrors(response)) {
+                    listener.onFailure("relogin");
+                    Student.getInstance().markForRelog(new ConnectionListener() {
+                        @Override
+                        public void onSuccess(String... args) {
+                            makePostRequest(url, params, listener);
+                        }
 
-						@Override
-						public void onFailure(String reason)
-						{
-							listener.onFailure(reason);
-						}
-					});
-					return;
-				}
+                        @Override
+                        public void onFailure(String reason) {
+                            listener.onFailure(reason);
+                        }
+                    });
+                    return;
+                }
 
-				listener.onSuccess(response);
-			}
-		}, new Response.ErrorListener()
-		{
-			@Override
-			public void onErrorResponse(VolleyError error)
-			{
-				Log.e("makeGetRequest", "Can not connect to " + url);
-				listener.onFailure("site");
-			}
-		})
-		{
-			@Override
-			public Map<String, String> getHeaders()
-			{
-				Map<String, String> headers = new HashMap<>();
-				headers.put("Cookie", Student.getInstance().getCookies());
+                listener.onSuccess(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("makeGetRequest", "Can not connect to " + url);
+                listener.onFailure("site");
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Cookie", Student.getInstance().getCookies());
 
-				return headers;
-			}
+                return headers;
+            }
 
-			@Override
-			protected Map<String, String> getParams()
-			{
-				return params;
-			}
-		};
-		queue.add(postReq);
-	}
+            @Override
+            protected Map<String, String> getParams() {
+                return params;
+            }
+        };
+        queue.add(postReq);
+    }
 
-	/**
-	 * Belirtilen URL adresine GET isteği yapar. GET isteğini yaparken öğrencinin session cookie lerini kullanır.
-	 *
-	 * @param url      GET isteği yapılacak URL adresi
-	 * @param listener isteğin sonucunu bekleyen listener
-	 */
-	public void makeGetRequest(final String url, final ConnectionListener listener)
-	{
-		Log.d("makeGetRequest", "Making get request to " + url);
-		StringRequest getReq = new StringRequest(Request.Method.GET, url, new Response.Listener<String>()
-		{
-			@Override
-			public void onResponse(String response)
-			{
-				Log.d("makeGetRequest", "Got response for " + url);
-				if (responseHasErrors(response))
-				{
-					Log.d("makeGetRequest", "Relog is needed to make a get request for " + url);
-					listener.onFailure("relogin");
-					Student.getInstance().markForRelog(new ConnectionListener()
-					{
-						@Override
-						public void onSuccess(String... args)
-						{
-							makeGetRequest(url, listener);
-						}
+    /**
+     * Belirtilen URL adresine GET isteği yapar. GET isteğini yaparken öğrencinin session cookie lerini kullanır.
+     *
+     * @param url      GET isteği yapılacak URL adresi
+     * @param listener isteğin sonucunu bekleyen listener
+     */
+    public void makeGetRequest(final String url, final ConnectionListener listener) {
+        Log.d("makeGetRequest", "Making get request to " + url);
+        StringRequest getReq = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("makeGetRequest", "Got response for " + url);
+                if (responseHasErrors(response)) {
+                    Log.d("makeGetRequest", "Relog is needed to make a get request for " + url);
+                    listener.onFailure("relogin");
+                    Student.getInstance().markForRelog(new ConnectionListener() {
+                        @Override
+                        public void onSuccess(String... args) {
+                            makeGetRequest(url, listener);
+                        }
 
-						@Override
-						public void onFailure(String reason)
-						{
-							listener.onFailure(reason);
-						}
-					});
-					return;
-				}
+                        @Override
+                        public void onFailure(String reason) {
+                            listener.onFailure(reason);
+                        }
+                    });
+                    return;
+                }
 
-				listener.onSuccess(response);
-			}
-		}, new Response.ErrorListener()
-		{
-			@Override
-			public void onErrorResponse(VolleyError error)
-			{
-				Log.e("makeGetRequest", "Can not connect to " + url);
-				listener.onFailure("site");
-			}
-		})
-		{
-			@Override
-			public Map<String, String> getHeaders()
-			{
-				Map<String, String> headers = new HashMap<>();
-				headers.put("Cookie", Student.getInstance().getCookies());
+                listener.onSuccess(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("makeGetRequest", "Can not connect to " + url);
+                listener.onFailure("site");
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Cookie", Student.getInstance().getCookies());
 
-				return headers;
-			}
-		};
-		queue.add(getReq);
-	}
+                return headers;
+            }
+        };
+        queue.add(getReq);
+    }
 
-	@SuppressLint("SetJavaScriptEnabled")
-	void getRecaptchaToken(final ConnectionListener listener)
-	{
-		final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
+    @SuppressLint("SetJavaScriptEnabled")
+    void getRecaptchaToken(final ConnectionListener listener) {
+        final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
 
-		final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainApplication.getActiveActivity());
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainApplication.getActiveActivity());
 
-		final WebView webView = new WebView(MainApplication.getActiveActivity());
-		webView.setBackgroundColor(Color.TRANSPARENT);
-		WebSettings settings = webView.getSettings();
-		settings.setJavaScriptEnabled(true);
-		settings.setLoadWithOverviewMode(true);
-		settings.setBuiltInZoomControls(false);
-		settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-		settings.setDomStorageEnabled(true);
-		webView.setVerticalScrollBarEnabled(false);
+        final WebView webView = new WebView(MainApplication.getActiveActivity());
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setBuiltInZoomControls(false);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setDomStorageEnabled(true);
+        webView.setVerticalScrollBarEnabled(false);
 
-		dialogBuilder.setView(webView);
-		dialogBuilder.setCancelable(false);
-		dialogBuilder.setTitle("reCAPTCHA");
+        dialogBuilder.setView(webView);
+        dialogBuilder.setCancelable(false);
+        dialogBuilder.setTitle("reCAPTCHA");
 
-		final AlertDialog recaptchaDialog = dialogBuilder.show();
-		recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        final AlertDialog recaptchaDialog = dialogBuilder.show();
+        recaptchaDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
-		webView.setWebChromeClient(new WebChromeClient()
-		{
-			@Override
-			public boolean onConsoleMessage(ConsoleMessage consoleMessage)
-			{
-				String message = consoleMessage.message();
-				if (message.startsWith("koubilgicaptchatoken:"))
-				{
-					final String token = message.substring(21);
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                String message = consoleMessage.message();
+                if (message.startsWith("koubilgicaptchatoken:")) {
+                    final String token = message.substring(21);
 
-					recaptchaDialog.dismiss();
-					listener.onSuccess(token);
-				}
-				return super.onConsoleMessage(consoleMessage);
-			}
-		});
+                    recaptchaDialog.dismiss();
+                    listener.onSuccess(token);
+                }
+                return super.onConsoleMessage(consoleMessage);
+            }
+        });
 
-		webView.loadDataWithBaseURL(url, recaptchaHtml, "text/html", "UTF-8", null);
-	}
+        webView.loadDataWithBaseURL(url, recaptchaHtml, "text/html", "UTF-8", null);
+    }
 
-	void makeLogInRequest(final String num, final String pass, final ConnectionListener listener)
-	{
-		final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
-		getRecaptchaToken(new ConnectionListener()
-		{
-			@Override
-			public void onSuccess(String... args)
-			{
-				final String token = args[0];
+    void makeLogInRequest(final String num, final String pass, final ConnectionListener listener) {
+        final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
+        getRecaptchaToken(new ConnectionListener() {
+            @Override
+            public void onSuccess(String... args) {
+                final String token = args[0];
 
-				Map<String, String> params = new HashMap<>();
-				params.put("LoggingOn", "1");
-				params.put("OgrNo", num);
-				params.put("Sifre", pass);
-				params.put("g-recaptcha-response", token);
+                Map<String, String> params = new HashMap<>();
+                params.put("LoggingOn", "1");
+                params.put("OgrNo", num);
+                params.put("Sifre", pass);
+                params.put("g-recaptcha-response", token);
 
-				makePostRequest(url, params, new ConnectionListener()
-				{
-					@Override
-					public void onSuccess(String... args)
-					{
-						String response = args[0];
+                makePostRequest(url, params, new ConnectionListener() {
+                    @Override
+                    public void onSuccess(String... args) {
+                        String response = args[0];
 
-						if (response.contains("alert") && response.contains("hata"))
-						{
-							if (listener != null) listener.onFailure("relogin");
-							// TODO: Offline moda geç
-							return;
-						}
+                        if (response.contains("alert") && response.contains("hata")) {
+                            if (listener != null) listener.onFailure("relogin");
+                            // TODO: Offline moda geç
+                            return;
+                        }
 
-						boolean success = true;
-						if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
-							success = false;
+                        boolean success = true;
+                        if (response.contains("<div class=\"alert alert-danger\" id=\"OgrNoUyari\"></div>"))
+                            success = false;
 
-						Document doc = Jsoup.parse(response);
+                        Document doc = Jsoup.parse(response);
 
-						// Öğrencinin adını ve numarasını ayrıştırır
+                        // Öğrencinin adını ve numarasını ayrıştırır
 
-						Element info = doc.select("h4").first();
+                        Element info = doc.select("h4").first();
 
-						if (info == null) success = false;
+                        if (info == null) success = false;
 
-						if (success)
-						{
-							// Session cookie lerini kaydet
-							CookieStore store = cookieManager.getCookieStore();
-							List<HttpCookie> cookies = store.getCookies();
+                        if (success) {
+                            // Session cookie lerini kaydet
+                            CookieStore store = cookieManager.getCookieStore();
+                            List<HttpCookie> cookies = store.getCookies();
 
-							String[] infoTxt = info.text().split(" ", 2);
+                            String[] infoTxt = info.text().split(" ", 2);
                                 /*
                                     index 1 = öğrenci adı
                                     index 0 = öğrenci numarası
                                  */
-							String name = infoTxt[1];
-							String number = infoTxt[0];
-							String cookieString = StringUtil.join(cookies, "; ");
+                            String name = infoTxt[1];
+                            String number = infoTxt[0];
+                            String cookieString = StringUtil.join(cookies, "; ");
 
-							if (listener != null) listener.onSuccess(name, number, cookieString);
-						}
-						else
-						{
-							if (listener != null) listener.onFailure("credentials");
-						}
-					}
+                            if (listener != null) listener.onSuccess(name, number, cookieString);
+                        } else {
+                            if (listener != null) listener.onFailure("credentials");
+                        }
+                    }
 
-					@Override
-					public void onFailure(String reason)
-					{
-						if (listener != null) listener.onFailure(reason);
-					}
-				});
-			}
+                    @Override
+                    public void onFailure(String reason) {
+                        if (listener != null) listener.onFailure(reason);
+                    }
+                });
+            }
 
-			@Override
-			public void onFailure(String reason)
-			{
-				if (listener != null) listener.onFailure(reason);
-			}
-		});
-	}
+            @Override
+            public void onFailure(String reason) {
+                if (listener != null) listener.onFailure(reason);
+            }
+        });
+    }
 
-	public void makePersonalInfoRequest(final ConnectionListener listener)
-	{
-		if (!Student.getInstance().isLoggedIn()) return;
+    public void makePersonalInfoRequest(final ConnectionListener listener) {
+        if (!Student.getInstance().isLoggedIn()) return;
 
-		if (Student.getInstance().getDepartment() != null)
-		{
-			listener.onSuccess(Student.getInstance().getDepartment());
-			return;
-		}
+        if (Student.getInstance().getDepartment() != null) {
+            listener.onSuccess(Student.getInstance().getDepartment());
+            return;
+        }
 
-		String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/KisiselBilgiler/KisiselBilgiGoruntuleme.cfm";
+        String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/KisiselBilgiler/KisiselBilgiGoruntuleme.cfm";
 
-		Map<String, String> params = new HashMap<>();
-		params.put("Anketid", "0");
-		params.put("Baglanti", "Giris");
-		params.put("Veri", "-1;-1");
+        Map<String, String> params = new HashMap<>();
+        params.put("Anketid", "0");
+        params.put("Baglanti", "Giris");
+        params.put("Veri", "-1;-1");
 
-		makePostRequest(url, params, new ConnectionListener()
-		{
-			@Override
-			public void onSuccess(String... args)
-			{
-				String response = args[0];
+        makePostRequest(url, params, new ConnectionListener() {
+            @Override
+            public void onSuccess(String... args) {
+                String response = args[0];
 
-				Document doc = Jsoup.parse(response);
-				Element form = doc.select("#OgrKisiselBilgiler").first();
-				Element boldDiv = form.select("b:contains(Bölüm)").first().parent();
-				Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
+                Document doc = Jsoup.parse(response);
+                Element form = doc.select("#OgrKisiselBilgiler").first();
+                Element boldDiv = form.select("b:contains(Bölüm)").first().parent();
+                Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
 
                 /*
                     Öğrencinin bölüm bilgisini tüm kişisel bilgiler sayfası ndan ayrıştırmaya çalışıyoruz.
@@ -367,18 +319,17 @@ public class RequestMaker
                             <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
                  */
 
-				String depart = departmentDiv.html();
-				depart = depart.replace("i", "İ");
-				depart = depart.replace(" Bölümü", "");
+                String depart = departmentDiv.html();
+                depart = depart.replace("i", "İ");
+                depart = depart.replace(" Bölümü", "");
 
-				listener.onSuccess(depart);
-			}
+                listener.onSuccess(depart);
+            }
 
-			@Override
-			public void onFailure(String reason)
-			{
-				if (listener != null) listener.onFailure(reason);
-			}
-		});
-	}
+            @Override
+            public void onFailure(String reason) {
+                if (listener != null) listener.onFailure(reason);
+            }
+        });
+    }
 }
