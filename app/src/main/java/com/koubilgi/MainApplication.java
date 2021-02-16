@@ -1,11 +1,14 @@
 package com.koubilgi;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
 public class MainApplication extends Application {
+    @SuppressLint("StaticFieldLeak")
     private static Context context;
+    @SuppressLint("StaticFieldLeak")
     private static Activity activeActivity;
 
     public static Activity getActiveActivity() {

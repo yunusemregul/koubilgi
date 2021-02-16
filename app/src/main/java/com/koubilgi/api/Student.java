@@ -18,7 +18,7 @@ import java.io.IOException;
 /**
  * Uygulamayı kullanan öğrenciyi temsil eden sınıf. Öğrenciyle ilgili, giriş yapmak, bilgilerini almak (isim, bölüm)
  * gibi temel işlemleri yerine getirir.
- *
+ * <p>
  * Uygulamada oturumu açık sadece 1 öğrenci olacağı için bu sınıfın tüm uygulama genelinde tek olmasını daha doğru
  * buldum. Bu yüzden Singleton pattern kullandım.
  */

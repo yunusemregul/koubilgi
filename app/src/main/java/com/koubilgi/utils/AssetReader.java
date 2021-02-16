@@ -1,7 +1,5 @@
 package com.koubilgi.utils;
 
-import android.content.Context;
-
 import com.koubilgi.MainApplication;
 
 import java.io.BufferedReader;

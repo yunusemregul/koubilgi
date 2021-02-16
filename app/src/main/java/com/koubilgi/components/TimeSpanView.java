@@ -15,12 +15,12 @@ import java.util.Calendar;
  * Ders programı sayfasında derslerin yanında dersin ne kadar kısmının tamamlandığını gösteren çubuk componenti.
  */
 public class TimeSpanView extends View {
-    SimpleDate startTime;
-    SimpleDate endTime;
+    public SimpleDate startTime;
+    public SimpleDate endTime;
 
-    Paint colorBordersPaint;
-    Paint colorTextPaint;
-    Paint colorPrimaryPaint;
+    public Paint colorBordersPaint;
+    public Paint colorTextPaint;
+    public Paint colorPrimaryPaint;
 
     public TimeSpanView(Context context) {
         super(context);

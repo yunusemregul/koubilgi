@@ -210,7 +210,7 @@ public class RequestMaker {
         webView.loadDataWithBaseURL(url, recaptchaHtml, "text/html", "UTF-8", null);
     }
 
-    void makeLogInRequest(final String num, final String pass, final ConnectionListener listener) {
+    public void makeLogInRequest(final String num, final String pass, final ConnectionListener listener) {
         final String url = "https://ogr.kocaeli.edu.tr/KOUBS/Ogrenci/index.cfm";
         getRecaptchaToken(new ConnectionListener() {
             @Override

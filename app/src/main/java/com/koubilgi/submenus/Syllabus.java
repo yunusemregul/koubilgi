@@ -197,7 +197,7 @@ class Day implements Serializable {
 
 class Class implements Serializable {
     public final String name;
-    public  final String location;
+    public final String location;
     public final String teacher;
 
     public final SimpleDate startTime;
