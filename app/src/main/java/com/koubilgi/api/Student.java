@@ -115,7 +115,7 @@ public class Student {
     /**
      * Daha önceden giriş yapmış öğrenciyi giriş yapmadı olarak işaretleyerek tekrar giriş yaptırır.
      */
-    void markForRelog(ConnectionListener listener) {
+    public void markForRelog(ConnectionListener listener) {
         Log.d("markForRelog", "Relogging the student..");
 
         setLoggedIn(false);

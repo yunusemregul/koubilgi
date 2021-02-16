@@ -51,10 +51,10 @@ public class RequestMaker {
     public RequestMaker() {
         cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
-        queue = SingletonRequestQueue.getInstance(MainApplication.getAppContext()).getRequestQueue();
+        queue = SingletonRequestQueue.getInstance().getRequestQueue();
 
         try {
-            recaptchaHtml = AssetReader.readFileAsString(MainApplication.getAppContext(), "recaptcha.html");
+            recaptchaHtml = AssetReader.readFileAsString("recaptcha.html");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -65,12 +65,10 @@ public class Mainmenu extends AppCompatActivity {
     }
 
     public void openSettingsSubmenu(View view) {
-
+        // TODO
     }
 
     public void openMessagesSubmenu(View view) {
-
+        // TODO
     }
-
-
 }

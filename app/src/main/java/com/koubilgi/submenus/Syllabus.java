@@ -110,14 +110,14 @@ public class Syllabus extends Submenu {
  * Represents a syllabus day which includes classes
  */
 class Day implements Serializable {
-    final int dayIndex;
-    final ArrayList<Class> classes = new ArrayList<>();
+    public final int dayIndex;
+    public final ArrayList<Class> classes = new ArrayList<>();
 
     Day(int dayIndex) {
         this.dayIndex = dayIndex;
     }
 
-    View getView(Context context) {
+    public View getView(Context context) {
         final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -175,11 +175,11 @@ class Day implements Serializable {
         return layout;
     }
 
-    String getName() {
+    public String getName() {
         return DateFormatSymbols.getInstance().getWeekdays()[Calendar.MONDAY + dayIndex];
     }
 
-    void addClass(Class toAdd) {
+    public void addClass(Class toAdd) {
         for (int i = 0; i < this.classes.size(); i++) {
             Class cl = this.classes.get(i);
 
@@ -196,12 +196,12 @@ class Day implements Serializable {
 }
 
 class Class implements Serializable {
-    final String name;
-    final String location;
-    final String teacher;
+    public final String name;
+    public  final String location;
+    public final String teacher;
 
-    final SimpleDate startTime;
-    SimpleDate endTime;
+    public final SimpleDate startTime;
+    public SimpleDate endTime;
 
     private int count = 1; // bu dersten kaç tane olduğu
 
@@ -213,7 +213,7 @@ class Class implements Serializable {
         this.endTime = start.addMinutes(40 * count);
     }
 
-    View getView(Context context) {
+    public View getView(Context context) {
         final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
         LinearLayout layout = new LinearLayout(context);
@@ -250,12 +250,12 @@ class Class implements Serializable {
         return layout;
     }
 
-    void increaseCount() {
+    public void increaseCount() {
         count++;
         endTime = startTime.addMinutes(count * 40);
     }
 
-    int getCount() {
+    public int getCount() {
         return this.count;
     }
 }

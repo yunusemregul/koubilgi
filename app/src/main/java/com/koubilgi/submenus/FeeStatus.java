@@ -71,12 +71,12 @@ public class FeeStatus extends Submenu {
 }
 
 class Fee {
-    String term;
-    String status;
-    String fee;
-    String paid;
+    public String term;
+    public String status;
+    public String fee;
+    public String paid;
 
-    View getView(Context context) {
+    public View getView(Context context) {
         final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
