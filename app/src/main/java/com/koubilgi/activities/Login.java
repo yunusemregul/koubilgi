@@ -43,9 +43,12 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // öğrenci numarası ve şifresi girişleri
-                EditText eStud = findViewById(R.id.entry_studentnumber), ePass = findViewById(R.id.entry_pass);
+                EditText eStud = findViewById(R.id.entry_studentnumber);
+                EditText ePass = findViewById(R.id.entry_pass);
 
-                final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground(), gPassBackground = (GradientDrawable) ePass.getBackground();
+                final GradientDrawable gStudBackground = (GradientDrawable) eStud.getBackground();
+                final GradientDrawable gPassBackground = (GradientDrawable) ePass.getBackground();
+
 
                 // TODO: 'Numara ve şifre girişleri doldurulmalıdır' hata ekranı gösterilmeli.
                 // Eğer girişler doldurulmadıysa 2DP kırmızı çerçeve ekler
@@ -62,7 +65,8 @@ public class Login extends AppCompatActivity {
 
                 if (eStud.getText().length() > 0 && ePass.getText().length() > 0) {
                     // Öğrencinin girdiği bilgilerle giriş yapmaya çalış
-                    final String numb = eStud.getText().toString(), pass = ePass.getText().toString();
+                    final String numb = eStud.getText().toString();
+                    final String pass = ePass.getText().toString();
 
                     student.logIn(numb, pass, new ConnectionListener() {
                         @Override

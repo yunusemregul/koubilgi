@@ -34,7 +34,9 @@ public class Mainmenu extends AppCompatActivity {
             return;
         }
 
-        final TextView tStudentName = findViewById(R.id.studentName), tStudentNumber = findViewById(R.id.studentNumber), tStudentDepartment = findViewById(R.id.studentDepartment);
+        final TextView tStudentName = findViewById(R.id.studentName);
+        final TextView tStudentNumber = findViewById(R.id.studentNumber);
+        final TextView tStudentDepartment = findViewById(R.id.studentDepartment);
 
         if (student.getName() != null) tStudentName.setText(student.getName());
         if (student.getNumber() != null) tStudentNumber.setText(student.getNumber());
@@ -49,7 +51,7 @@ public class Mainmenu extends AppCompatActivity {
 
                 @Override
                 public void onFailure(String reason) {
-
+                    // TODO
                 }
             });
         }

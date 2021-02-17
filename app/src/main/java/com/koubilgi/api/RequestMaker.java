@@ -167,7 +167,7 @@ public class RequestMaker {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    void getRecaptchaToken(final ConnectionListener listener) {
+    public void getRecaptchaToken(final ConnectionListener listener) {
         if (recaptchaDialog != null)
             return;
 
