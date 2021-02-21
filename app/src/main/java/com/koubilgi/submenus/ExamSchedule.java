@@ -4,6 +4,10 @@ import android.content.Context;
 
 import com.koubilgi.R;
 
+/**
+ * Sınav takvimi sayfası
+ */
+
 public class ExamSchedule extends Submenu {
     public ExamSchedule() {
         super(R.string.submenu_exam_schedule, R.drawable.icon_mainmenu_sinavprogrami);

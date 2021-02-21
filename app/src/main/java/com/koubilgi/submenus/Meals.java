@@ -4,6 +4,10 @@ import android.content.Context;
 
 import com.koubilgi.R;
 
+/**
+ * Yemekhane sayfası
+ */
+
 public class Meals extends Submenu {
     public Meals() {
         super(R.string.submenu_meals, R.drawable.icon_mainmenu_yemekhane);

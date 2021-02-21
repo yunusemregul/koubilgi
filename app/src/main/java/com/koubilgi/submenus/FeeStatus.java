@@ -18,6 +18,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * Harç bilgileri sayfası
+ */
+
 public class FeeStatus extends Submenu {
     FeeStatus() {
         super(R.string.submenu_fee_status, R.drawable.icon_mainmenu_harcdurumu);
@@ -70,6 +74,9 @@ public class FeeStatus extends Submenu {
     }
 }
 
+/**
+ * Tek bir harcı temsil eden sınıf
+ */
 class Fee {
     public String term;
     public String status;

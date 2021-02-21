@@ -5,6 +5,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.koubilgi.MainApplication;
 
+/**
+ * Volley ile isteklerin böyle yapılması tavsiye ediliyor
+ * https://developer.android.com/training/volley/requestqueue#java
+ */
+
 public class SingletonRequestQueue {
     private static SingletonRequestQueue instance;
     private RequestQueue requestQueue;

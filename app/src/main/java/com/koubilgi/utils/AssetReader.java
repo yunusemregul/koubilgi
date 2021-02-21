@@ -5,6 +5,10 @@ import com.koubilgi.MainApplication;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+/**
+ * Uygulamanın içindeki assetlere kolayca ulaşmayı sağlayan sınıf
+ */
+
 public class AssetReader {
     // https://stackoverflow.com/a/4867192/12734824
     public static String readFileAsString(String fileName) throws java.io.IOException {
