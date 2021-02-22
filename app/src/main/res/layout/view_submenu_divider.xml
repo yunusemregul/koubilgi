@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
@@ -10,28 +11,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:src="@drawable/icon_lesson_daymarker" />
+        android:src="@drawable/icon_lesson_daymarker"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/textdivider_maintext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
         android:fontFamily="@font/seguisb"
         android:text="SAMPLE"
         android:textAllCaps="true"
         android:textColor="@color/colorText"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/textdivider_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
         android:fontFamily="@font/segoeuil"
         android:text="DATA"
         android:textColor="@color/colorText"
         android:textAllCaps="true"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>

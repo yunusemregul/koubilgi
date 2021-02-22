@@ -19,14 +19,15 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/background_mainmenu" />
+            app:srcCompat="@drawable/background_mainmenu"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
             android:layout_marginTop="12dp"
-            android:layout_marginRight="12dp"
             android:clickable="true"
             android:drawableTop="@drawable/icon_mainmenu_ayarlar"
             android:focusable="true"
@@ -35,7 +36,7 @@
             android:text="@string/settings"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="11sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -51,7 +52,7 @@
             android:text="@string/messages"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="11sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="@+id/textView"
             app:layout_constraintStart_toStartOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -149,14 +150,13 @@
             android:id="@+id/announcements"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="10dp"
-
             android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+
+            android:layout_marginTop="10dp"
             android:clipToPadding="false"
             android:orientation="vertical"
             android:padding="10dp"
-            app:layout_constraintDimensionRatio="w,"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/submenus">

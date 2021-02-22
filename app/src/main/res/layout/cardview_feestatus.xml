@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="325dp"
     android:layout_height="70dp"
     android:layout_gravity="center_horizontal"
@@ -39,7 +40,8 @@
             android:textSize="25sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline6"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
-            app:layout_constraintTop_toTopOf="@+id/guideline3" />
+            app:layout_constraintTop_toTopOf="@+id/guideline3"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/textView11"
@@ -65,7 +67,8 @@
             android:textSize="25sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline6"
             app:layout_constraintStart_toEndOf="@+id/feestatus_fee"
-            app:layout_constraintTop_toTopOf="@+id/guideline3" />
+            app:layout_constraintTop_toTopOf="@+id/guideline3"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/textView12"
@@ -125,6 +128,7 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline5"
             app:layout_constraintStart_toStartOf="@+id/guideline10"
             app:layout_constraintTop_toTopOf="@+id/guideline3"
-            app:srcCompat="@drawable/checkmark" />
+            app:srcCompat="@drawable/checkmark"
+            tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

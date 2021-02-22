@@ -6,17 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.koubilgi.activities.Login">
 
-    <ImageView
-        android:id="@+id/image_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:contentDescription="@string/app_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo_login" />
-
     <TextView
         android:id="@+id/text_disclaimer"
         android:layout_width="wrap_content"
@@ -31,53 +20,67 @@
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/entry_studentnumber"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="85dp"
-        android:background="@drawable/background_generalbox"
-        android:drawableStart="@drawable/icon_login_numara"
-        android:drawablePadding="8dp"
-        android:fontFamily="@font/segoeui"
-        android:hint="@string/number"
-        android:inputType="numberSigned"
-        android:paddingStart="16dp"
-        android:textColor="@color/colorText"
-        android:textSize="14sp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/text_disclaimer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_logo" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/entry_pass"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="10dp"
-        android:inputType="textPassword"
-        android:hint="@string/password"
-        android:background="@drawable/background_generalbox"
-        android:paddingStart="16dp"
-        android:fontFamily="@font/segoeui"
-        android:textSize="14sp"
-        android:drawableStart="@drawable/icon_login_sifre"
-        android:textColor="@color/colorText"
-        android:drawablePadding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/entry_studentnumber" />
+        <ImageView
+            android:id="@+id/image_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/logo_login" />
 
-    <Button
-        android:id="@+id/button_login"
-        android:layout_width="300dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/background_loginbutton"
-        android:textColor="@color/colorWhite"
-        android:fontFamily="@font/seguisb"
-        android:text="@string/login"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/entry_pass" />
+        <EditText
+            android:id="@+id/entry_studentnumber"
+            android:layout_width="300dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="85dp"
+            android:background="@drawable/background_generalbox"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/icon_login_numara"
+            android:fontFamily="@font/segoeui"
+            android:hint="@string/number"
+            android:inputType="numberSigned"
+            android:paddingStart="16dp"
+            android:textColor="@color/colorText"
+            android:textSize="14sp"
+            tools:ignore="RtlSymmetry" />
+
+        <EditText
+            android:id="@+id/entry_pass"
+            android:layout_width="300dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/background_generalbox"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/icon_login_sifre"
+            android:fontFamily="@font/segoeui"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:paddingStart="16dp"
+            android:textColor="@color/colorText"
+            android:textSize="14sp"
+            tools:ignore="RtlSymmetry" />
+
+        <Button
+            android:id="@+id/button_login"
+            android:layout_width="300dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/background_loginbutton"
+            android:fontFamily="@font/seguisb"
+            android:text="@string/login"
+            android:textColor="@color/colorWhite"
+            android:textSize="12sp" />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

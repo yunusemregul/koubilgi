@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="307dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
@@ -22,7 +23,8 @@
             android:textColor="@color/colorText"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="@+id/guideline7" />
+            app:layout_constraintTop_toTopOf="@+id/guideline7"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/syllabus_subject"
@@ -33,7 +35,8 @@
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_classname_subject" />
+            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_classname_subject"
+            tools:ignore="HardcodedText" />
 
         <Space
             android:id="@+id/space_marginbottom_classname_subject"
@@ -55,7 +58,8 @@
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@+id/syllabus_subject" />
+            app:layout_constraintTop_toBottomOf="@+id/syllabus_subject"
+            tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -64,7 +68,8 @@
             android:src="@drawable/icon_lesson_teacher"
             app:layout_constraintBottom_toBottomOf="@+id/syllabus_teacher"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="@+id/syllabus_teacher" />
+            app:layout_constraintTop_toTopOf="@+id/syllabus_teacher"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/syllabus_location"
@@ -77,7 +82,8 @@
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline9"
             app:layout_constraintStart_toStartOf="@+id/syllabus_teacher"
-            app:layout_constraintTop_toBottomOf="@+id/syllabus_teacher" />
+            app:layout_constraintTop_toBottomOf="@+id/syllabus_teacher"
+            tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/imageView2"
@@ -86,7 +92,8 @@
             android:src="@drawable/icon_lesson_location"
             app:layout_constraintBottom_toBottomOf="@+id/syllabus_location"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="@+id/syllabus_location" />
+            app:layout_constraintTop_toTopOf="@+id/syllabus_location"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/syllabus_starttime"
@@ -98,7 +105,8 @@
             android:textColor="@color/colorText"
             android:textSize="23sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline8"
-            app:layout_constraintTop_toTopOf="@+id/guideline7" />
+            app:layout_constraintTop_toTopOf="@+id/guideline7"
+            tools:ignore="HardcodedText" />
 
         <Space
             android:id="@+id/space_marginbottom_starttime_count"
@@ -119,7 +127,8 @@
             android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline8"
-            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_starttime_count" />
+            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_starttime_count"
+            tools:ignore="HardcodedText" />
 
         <Space
             android:id="@+id/space_marginbottom_count_totaltime"
@@ -140,7 +149,8 @@
             android:textColor="@color/colorText"
             android:textSize="10sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline8"
-            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_count_totaltime" />
+            app:layout_constraintTop_toBottomOf="@+id/space_marginbottom_count_totaltime"
+            tools:ignore="HardcodedText,SmallSp" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="96dp"
     android:layout_height="wrap_content"
     android:clickable="true"
@@ -21,7 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="13dp"
-            android:src="@drawable/icon_mainmenu_notbilgileri" />
+            android:src="@drawable/icon_mainmenu_notbilgileri"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/submenu_text"
@@ -35,6 +37,7 @@
             android:textAllCaps="true"
             android:textColor="@color/colorText"
             android:maxLines="1"
-            android:textSize="11sp" />
+            android:textSize="11sp"
+            tools:ignore="HardcodedText,SmallSp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
