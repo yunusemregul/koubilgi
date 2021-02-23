@@ -92,8 +92,8 @@ class Fee {
         layout.setClipToPadding(false);
         layout.setPadding((int) metrics.density * 20, (int) metrics.density * 10, (int) metrics.density * 20, (int) metrics.density * 10);
 
-        View divider = inflater.inflate(R.layout.view_submenu_divider, null);
-        TextView dividerMain = divider.findViewById(R.id.textdivider_maintext);
+        View divider = inflater.inflate(R.layout.view_submenu_divider, null); // "2020-2021 BAHAR ayracı" gibi ayraçlar
+        TextView dividerMain = divider.findViewById(R.id.textdivider_maintext); // ayracın yazısı
         TextView dividerText = divider.findViewById(R.id.textdivider_text);
         dividerText.setVisibility(View.GONE);
         dividerMain.setText(term);
