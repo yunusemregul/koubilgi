@@ -7,7 +7,7 @@ with open("subdomains.txt") as f:
     data = json.load(f)
     for site in data:
         try:
-            request = requests.head("http://"+site+"/duyurular.php", timeout=2)
+            request = requests.head("http://"+site+"/duyurular.php", timeout=5)
         except Exception:
             print("-" + site)
             continue
