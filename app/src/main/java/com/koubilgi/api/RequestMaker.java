@@ -24,6 +24,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -280,6 +281,11 @@ public class RequestMaker {
         });
     }
 
+    /**
+     * Kişisel bilgiler sayfasındaki bilgileri anahtar: değer şeklinde döndürür
+     *
+     * @param listener
+     */
     public void makePersonalInfoRequest(final ConnectionListener listener) {
         if (!Student.getInstance().isLoggedIn()) return;
 
@@ -302,33 +308,20 @@ public class RequestMaker {
 
                 Document doc = Jsoup.parse(response);
                 Element form = doc.select("#OgrKisiselBilgiler").first();
-                Element boldDiv = form.select("b:contains(Bölüm)").first().parent();
-                Element departmentDiv = boldDiv.parent().select("div.col-sm-8").first();
+                Elements colsm6s = form.select(".col-sm-6");
 
-                /*
-                    Öğrencinin bölüm bilgisini tüm kişisel bilgiler sayfası ndan ayrıştırmaya çalışıyoruz.
-                    Önce tüm sayfadan <b>Bölüm</b> elementini içeren ana element i buluyoruz daha sonra o ana element
-                    içindeki öğrencinin bölümü kısmını alıyoruz.
+                StringBuilder infoStr = new StringBuilder();
 
-                    Buradaki değişkenleri şöyle açıklayabilirim sayfada şu anlama geliyorlar:
-                        boldDiv =
-                            <div class="col-sm-4"><b>Bölüm</b></div>
+                for (Element colsm6 : colsm6s) {
+                    Element key = colsm6.selectFirst(".col-sm-4 > b");
+                    Element value = colsm6.selectFirst(".col-sm-8");
 
-                        boldDiv.parent() =
-                            <div class="col-sm-6">
-                                <div class="col-sm-4"><b>Bölüm</b></div>
-                                <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
-                            </div>
+                    if (key != null && value != null) {
+                        infoStr.append(String.format("%s=%s;", key.text().trim(), value.text().trim()));
+                    }
+                }
 
-                        departmentDiv =
-                            <div class="col-sm-8">Bilgisayar Mühendisliği (İÖ) Bölümü</div>
-                 */
-
-                String depart = departmentDiv.html();
-                depart = depart.replace("i", "İ");
-                depart = depart.replace(" Bölümü", "");
-
-                listener.onSuccess(depart);
+                listener.onSuccess(infoStr.toString());
             }
 
             @Override

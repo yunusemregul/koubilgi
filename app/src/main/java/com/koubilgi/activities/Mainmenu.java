@@ -12,7 +12,10 @@ import com.koubilgi.MainApplication;
 import com.koubilgi.R;
 import com.koubilgi.api.Student;
 import com.koubilgi.components.SubmenuButtonAdapter;
+import com.koubilgi.utils.AssetReader;
 import com.koubilgi.utils.ConnectionListener;
+
+import org.json.JSONObject;
 
 // TODO: Duyurulara scroll atarken üst bar küçülmeli parallax gibi. Neye benzeyeceği tasarım hedeflerinde görülebilir.
 
@@ -42,11 +45,15 @@ public class Mainmenu extends AppCompatActivity {
         if (student.getNumber() != null) tStudentNumber.setText(student.getNumber());
         if (student.getDepartment() != null) tStudentDepartment.setText(student.getDepartment());
         else {
-            student.getPersonalInfo(new ConnectionListener() {
+            student.getPersonalInfo("Bölüm", new ConnectionListener() {
                 @Override
                 public void onSuccess(String... args) {
                     String department = args[0];
-                    tStudentDepartment.setText(department);
+                    if (department != null) {
+                        tStudentDepartment.setText(department);
+                    } else {
+                        // TODO
+                    }
                 }
 
                 @Override
@@ -58,6 +65,17 @@ public class Mainmenu extends AppCompatActivity {
 
         GridView submenus = findViewById(R.id.submenus);
         submenus.setAdapter(new SubmenuButtonAdapter(this));
+
+        String departmentDuyurularUrlAndTitles = "";
+        JSONObject duyurularUrlAndTitles;
+        try {
+            departmentDuyurularUrlAndTitles = AssetReader.readFileAsString("departmentDuyurularUrlAndTitles.txt");
+            duyurularUrlAndTitles = new JSONObject(departmentDuyurularUrlAndTitles);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override

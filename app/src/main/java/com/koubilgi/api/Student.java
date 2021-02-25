@@ -25,7 +25,7 @@ import java.io.IOException;
 public class Student {
     private static Student instance;
     private final RequestMaker requestMaker;
-    public StudentInfo info;
+    public StudentInfo studentInfo;
     private boolean loggedIn;
 
     /**
@@ -35,9 +35,9 @@ public class Student {
         setLoggedIn(false);
         requestMaker = new RequestMaker();
         try {
-            this.info = StudentInfo.loadFromFile();
+            this.studentInfo = StudentInfo.loadFromFile();
         } catch (IOException e) {
-            this.info = new StudentInfo();
+            this.studentInfo = new StudentInfo();
         }
     }
 
@@ -66,7 +66,7 @@ public class Student {
     public void logIn(final String num, final String pass, final ConnectionListener listener) {
         // Eğer zaten önceden giriş yaptıysak tekrar girmeyi deneme
         if (loggedIn) {
-            if (listener != null) listener.onSuccess(info.name, info.number);
+            if (listener != null) listener.onSuccess(studentInfo.name, studentInfo.number);
             return;
         }
 
@@ -82,16 +82,16 @@ public class Student {
             public void onSuccess(String... args) {
                 loggingin.dismiss();
 
-                info.name = args[0];
-                info.number = args[1];
-                info.password = pass;
-                info.cookieString = args[2];
+                studentInfo.name = args[0];
+                studentInfo.number = args[1];
+                studentInfo.password = pass;
+                studentInfo.cookieString = args[2];
 
                 setLoggedIn(true);
 
                 // Öğrenci bilgilerini ilerde otomatik giriş yapmak üzere kaydet
                 try {
-                    info.save();
+                    studentInfo.save();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -120,35 +120,68 @@ public class Student {
 
         setLoggedIn(false);
         // Log in again
-        logIn(info.number, info.password, listener);
+        logIn(studentInfo.number, studentInfo.password, listener);
     }
 
     public String getCookies() {
-        return info.cookieString;
+        return studentInfo.cookieString;
     }
 
     public String getName() {
-        return info.name;
+        return studentInfo.name;
     }
 
     public String getNumber() {
-        return info.number;
+        return studentInfo.number;
     }
 
-    public void getPersonalInfo(final ConnectionListener listener) {
-        if (info.department != null) listener.onSuccess(info.department);
+    /**
+     * Öğrencinin kişisel bilgiler sayfasından daha önce kaydedilmiş bilgilerden isteneni döndürmeye yarar.
+     *
+     * @param infoKey istenen bilginin adı örnek: Bölüm
+     * @return bilginin içeriği
+     */
+    private String getInfoFromPersonalInfo(String infoKey) {
+        if (studentInfo.personalInfo == null)
+            return null;
+
+        infoKey = infoKey.toLowerCase();
+        for (String keyValue : studentInfo.personalInfo.split(";")) {
+            String[] splitted = keyValue.split("=");
+            String key = splitted[0].toLowerCase();
+            String value = splitted[1];
+
+            if (key.contains(infoKey)) {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Öğrencinin kişisel bilgiler sayfasından istenen bilgiyi döndürür.
+     *
+     * @param infoKey  istenen bilginin adı örnek: Bölüm
+     * @param listener bilginin gelmesini bekleyen listener
+     */
+    public void getPersonalInfo(final String infoKey, final ConnectionListener listener) {
+        String info = getInfoFromPersonalInfo(infoKey);
+
+        if (info != null)
+            listener.onSuccess(info);
         else {
             requestMaker.makePersonalInfoRequest(new ConnectionListener() {
                 @Override
                 public void onSuccess(String... args) {
-                    info.department = args[0];
+                    studentInfo.personalInfo = args[0];
                     try {
-                        info.save();
+                        studentInfo.save();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    listener.onSuccess(args);
+                    listener.onSuccess(getInfoFromPersonalInfo(infoKey));
                 }
 
                 @Override
@@ -160,7 +193,7 @@ public class Student {
     }
 
     public String getDepartment() {
-        return info.department;
+        return getInfoFromPersonalInfo("Bölüm");
     }
 
     public boolean isLoggedIn() {
@@ -176,7 +209,7 @@ public class Student {
     }
 
     public boolean hasCredentials() {
-        return (info.number != null && info.password != null);
+        return (studentInfo.number != null && studentInfo.password != null);
     }
 
     public RequestMaker getRequestMaker() {

@@ -17,8 +17,12 @@ public class StudentInfo implements Serializable {
     public String name;
     public String number;
     public String password;
-    public String department;
     public String cookieString;
+
+    /**
+     * ÖBS > Kişisel Bilgiler sayfasındaki bilgilerin Bölüm=Bilgisayar Mühendisliği;Sınıf=3;... şeklinde birleştirilmiş hali
+     */
+    public String personalInfo;
 
     /**
      * Kaydedilmiş öğrenci bilgilerini okur, okuduğu bilgilerle bir öğrenci oluşturup döndürür.
