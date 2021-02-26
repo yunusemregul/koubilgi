@@ -2,6 +2,7 @@ package com.koubilgi.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -16,6 +17,8 @@ import com.koubilgi.utils.AssetReader;
 import com.koubilgi.utils.ConnectionListener;
 
 import org.json.JSONObject;
+
+import me.xdrop.fuzzywuzzy.FuzzySearch;
 
 // TODO: Duyurulara scroll atarken üst bar küçülmeli parallax gibi. Neye benzeyeceği tasarım hedeflerinde görülebilir.
 
@@ -66,16 +69,31 @@ public class Mainmenu extends AppCompatActivity {
         GridView submenus = findViewById(R.id.submenus);
         submenus.setAdapter(new SubmenuButtonAdapter(this));
 
-        String departmentDuyurularUrlAndTitles = "";
-        JSONObject duyurularUrlAndTitles;
+        String departmentDuyurularUrlAndTitles;
+        JSONObject duyurularUrlAndTitles ;
         try {
             departmentDuyurularUrlAndTitles = AssetReader.readFileAsString("departmentDuyurularUrlAndTitles.txt");
             duyurularUrlAndTitles = new JSONObject(departmentDuyurularUrlAndTitles);
+
+            int maxRatio = 0;
+            String mostSimilar = "";
+            for (int i = 0; i < duyurularUrlAndTitles.names().length(); i++) {
+                String url = duyurularUrlAndTitles.names().getString(i);
+                String title = (String) duyurularUrlAndTitles.get(url);
+
+                int ratio = FuzzySearch.ratio(title, "kocaeli üniversitesi " + student.getFaculty().toLowerCase()+ " " + student.getDepartment().toLowerCase());
+
+                if (ratio > maxRatio)
+                {
+                    mostSimilar = url;
+                    maxRatio = ratio;
+                }
+            }
+
+            Log.d("duyurular", String.format("student faculty and department: %s, most similar title: %s, url: %s",student.getFaculty().toLowerCase()+ " " + student.getDepartment().toLowerCase(), duyurularUrlAndTitles.get(mostSimilar), mostSimilar));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override

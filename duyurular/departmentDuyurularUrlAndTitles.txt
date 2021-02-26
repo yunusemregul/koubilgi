@@ -35,7 +35,6 @@
   "http://jeofizik.kocaeli.edu.tr": "mühendislik fakültesi jeofizik mühendisliği",
   "http://jeoloji.kocaeli.edu.tr": "mühendislik fakültesi bilgisayar mühendisliği",
   "http://kandiramyo.kocaeli.edu.tr": "kandıra meslek yüksekokulu",
-  "http://karamursel.kocaeli.edu.tr": "karamürsel meslek yüksekokulu",
   "http://kartepe.kocaeli.edu.tr": "kartepe atçılık meslek yüksekokulu",
   "http://kimya.kocaeli.edu.tr": "mühendislik fakültesi kimya mühendisliği",
   "http://kosekoy.kocaeli.edu.tr": "köseköy meslek yüksek okulu",

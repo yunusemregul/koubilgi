@@ -141,7 +141,7 @@ public class Student {
      * @param infoKey istenen bilginin adı örnek: Bölüm
      * @return bilginin içeriği
      */
-    private String getInfoFromPersonalInfo(String infoKey) {
+    public String getInfoFromPersonalInfo(String infoKey) {
         if (studentInfo.personalInfo == null)
             return null;
 
@@ -160,7 +160,7 @@ public class Student {
     }
 
     /**
-     * Öğrencinin kişisel bilgiler sayfasından istenen bilgiyi döndürür.
+     * Öğrencinin kişisel bilgiler sayfasından istenen bilgiyi döndürür. Daha önceden kaydedilmişse kaydedileni döndürür.
      *
      * @param infoKey  istenen bilginin adı örnek: Bölüm
      * @param listener bilginin gelmesini bekleyen listener
@@ -190,6 +190,10 @@ public class Student {
                 }
             });
         }
+    }
+
+    public String getFaculty() {
+        return getInfoFromPersonalInfo("Fakülte");
     }
 
     public String getDepartment() {
