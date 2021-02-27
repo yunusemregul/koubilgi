@@ -29,4 +29,5 @@
     <string name="menu_sub">Alt Menü</string>
     <string name="settings">Ayarlar</string>
     <string name="messages">Mesajlar</string>
+    <string name="submenu_settings">AYARLAR</string>
 </resources>

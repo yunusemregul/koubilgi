@@ -36,5 +36,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/LoadingScreenTheme"
             tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name="com.koubilgi.activities.Settings"
+            android:label="@string/menu_sub"
+            android:screenOrientation="portrait"
+            android:theme="@style/LoadingScreenTheme"
+            tools:ignore="LockedOrientationActivity" />
     </application>
 </manifest>

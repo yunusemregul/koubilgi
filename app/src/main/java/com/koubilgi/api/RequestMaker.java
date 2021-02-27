@@ -37,10 +37,11 @@ import java.util.Map;
 
 /*
     TODO:
-         ReCaptcha düzgün çalışmıyor. İlk seferde hepsini doğru işaretlesen bile güvenmeyip 2 kez ReCaptcha
-         doldurtuyor, ayrıca çok yavaş tepki veriyor. ReCaptcha robot olup olmadığını sorgularken cookie lere
-         de bakıyor diye biliyorum. ReCaptcha için kullandığımız WebView in cookie bilgilerini saklayabilrisek ReCaptcha
-         belki önceden doğru giriş yaptığımızı hatırlayıp daha az problem çıkartabilir.
+         ReCaptcha düzgün çalışıp çalışmadığı test edilmeli.
+ */
+
+/**
+ * Öğrenciyle alakalı HTTP requestleri yapan sınıf.
  */
 
 public class RequestMaker {
@@ -62,7 +63,7 @@ public class RequestMaker {
     }
 
     private boolean responseHasErrors(String response) {
-        return response.contains("giriş yapınız");
+        return response.toLowerCase().contains("giriş yapınız");
     }
 
     /**

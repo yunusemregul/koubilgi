@@ -13,6 +13,7 @@ import com.koubilgi.MainApplication;
 import com.koubilgi.R;
 import com.koubilgi.api.Student;
 import com.koubilgi.components.SubmenuButtonAdapter;
+import com.koubilgi.submenus.SubmenuManager;
 import com.koubilgi.utils.AssetReader;
 import com.koubilgi.utils.ConnectionListener;
 
@@ -90,7 +91,7 @@ public class Mainmenu extends AppCompatActivity {
                 }
             }
 
-            Log.d("duyurular", String.format("student faculty and department: %s, most similar title: %s, url: %s",student.getFaculty().toLowerCase()+ " " + student.getDepartment().toLowerCase(), duyurularUrlAndTitles.get(mostSimilar), mostSimilar));
+            Log.d("duyurular", String.format("student faculty and department: %s, most similar title: %s, url: %s","kocaeli üniversitesi "+ student.getFaculty().toLowerCase()+ " " + student.getDepartment().toLowerCase(), duyurularUrlAndTitles.get(mostSimilar), mostSimilar));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,7 +104,8 @@ public class Mainmenu extends AppCompatActivity {
     }
 
     public void openSettingsSubmenu(View view) {
-        // TODO
+        Intent intent = new Intent(getBaseContext(), Settings.class);
+        startActivity(intent);
     }
 
     public void openMessagesSubmenu(View view) {

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/submenu_headerimage"
+            android:layout_width="match_parent"
+            android:layout_height="63dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/background_header"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/submenu_headertext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/submenu_headerimage"
+            android:layout_alignEnd="@id/submenu_headerimage"
+            android:layout_alignStart="@+id/submenu_headerimage"
+            android:layout_alignTop="@id/submenu_headerimage"
+            android:layout_marginBottom="12sp"
+            android:fontFamily="@font/segoeuib"
+            android:gravity="center"
+            android:text="@string/submenu_settings"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/submenu_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:id="@+id/submenu_linearlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:orientation="vertical" />
+    </ScrollView>
+</LinearLayout>

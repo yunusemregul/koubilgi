@@ -9,6 +9,8 @@ import com.koubilgi.MainApplication;
 import com.koubilgi.R;
 import com.koubilgi.submenus.SubmenuManager;
 
+import java.util.Objects;
+
 public class Submenu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +22,7 @@ public class Submenu extends AppCompatActivity {
         TextView header = findViewById(R.id.submenu_headertext);
         header.setText(nameResource);
 
-        SubmenuManager.getSubmenuByName(nameResource).fillContentView(this);
+        Objects.requireNonNull(SubmenuManager.getSubmenuByName(nameResource)).fillContentView(this);
     }
 
     @Override
