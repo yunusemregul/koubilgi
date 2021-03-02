@@ -8,7 +8,9 @@ avoidTitles = ["başkanlığı", "merkezi", "laboratuvarı", "birimi", "kurulu",
 validSubdomainTitles = {}
 with open("validSubdomains.txt") as f:
     data = json.load(f)
-    for site in data:
+    for index, site in enumerate(data):
+        print('%.2f%%' % (index / len(data) * 100))
+
         try:
             request = requests.get("http://" + site + "/duyurular.php", timeout=5)
         except Exception:
@@ -16,7 +18,12 @@ with open("validSubdomains.txt") as f:
             continue
 
         if request.status_code == 200:
+            if 'col-md-12' not in str(request.content):
+                print("-" + site + " * is an old page")
+                continue
+
             tree = fromstring(request.content)
+
             title = tree.findtext('.//title')
             if title:
                 title = re.sub(r'KOÜ?-?', '', title)
