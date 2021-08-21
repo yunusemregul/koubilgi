@@ -1,7 +1,4 @@
 # KOU Bilgi
-
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7581209b58a44a9f8628ac962dde452b)](https://app.codacy.com/gh/yunusemregul/koubilgi?utm_source=github.com&utm_medium=referral&utm_content=yunusemregul/koubilgi&utm_campaign=Badge_Grade_Settings)
-
 Kocaeli Üniversitesi'nden bağımsız, öğrenci bilgi sistemi Android uygulaması. Projenin amacı açık kaynaklı, ücretsiz, reklamsız, hızlı bir mobil tecrübe sağlamak. Ayrıca isteyen herkesi birlikte çalışmaya yöneltecek bir açık kaynak ortamı oluşturmak.
 
 ## Tasarım Hedefleri
