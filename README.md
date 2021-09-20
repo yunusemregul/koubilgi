@@ -1,5 +1,5 @@
 # KOU Bilgi
-Kocaeli Üniversitesi'nden bağımsız, öğrenci bilgi sistemi Android uygulaması. Projenin amacı açık kaynaklı, ücretsiz, reklamsız, hızlı bir mobil tecrübe sağlamak. Ayrıca isteyen herkesi birlikte çalışmaya yöneltecek bir açık kaynak ortamı oluşturmak.
+Kocaeli Üniversitesi için üçüncü parti öğrenci bilgi sistemi Android uygulaması. Projenin amacı açık kaynaklı, ücretsiz, reklamsız, hızlı bir mobil tecrübe sağlamak. Ayrıca isteyen herkesi birlikte çalışmaya yöneltecek bir açık kaynak ortamı oluşturmak.
 
 ## Tasarım Hedefleri
 
